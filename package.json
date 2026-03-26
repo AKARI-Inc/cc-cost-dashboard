@@ -1,0 +1,10 @@
+{
+  "name": "cc-cost-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "deploy": "bash scripts/build.sh"
+  }
+}
