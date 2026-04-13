@@ -1,0 +1,44 @@
+services:
+  collector:
+    build:
+      context: .
+      dockerfile: cmd/collector/Dockerfile
+    ports:
+      - "4318:4318"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATA_DIR=/data
+
+  api:
+    build:
+      context: .
+      dockerfile: cmd/api/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATA_DIR=/data
+
+  # Phase 3 で実装予定
+  processor:
+    profiles: ["full"]
+    build:
+      context: .
+      dockerfile: cmd/processor/Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATA_DIR=/data
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "5174:5173"
+    depends_on:
+      - api

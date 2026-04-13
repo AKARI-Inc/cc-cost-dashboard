@@ -1,7 +1,24 @@
+# Go
+/vendor/
+
+# Node
 node_modules/
 dist/
+
+# Environment
 .env
 .env.*
-*.log
+
+# Data (local storage)
+data/
+
+# OS
 .DS_Store
+*.log
+
+# Legacy
 appscript/client/index.html
+
+# IDE
+.idea/
+.vscode/
