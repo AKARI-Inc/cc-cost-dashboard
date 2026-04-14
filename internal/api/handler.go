@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,9 +13,32 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/storage"
 )
 
+// EventReader は OTel イベントを読み取る抽象。
+// ローカルでは FileReader (JSONL)、本番では CloudWatchReader を使う。
+type EventReader interface {
+	ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error)
+}
+
+// fileReader は既存の storage.ReadOtelEvents をラップする。
+type fileReader struct {
+	dataDir string
+}
+
+func (r *fileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
+	return storage.ReadOtelEvents(r.dataDir, from, to)
+}
+
 // Handler はコストダッシュボード API の HTTP ハンドラを提供する。
 type Handler struct {
 	DataDir string
+	Reader  EventReader // nil の場合は DataDir からファイル読み取り
+}
+
+func (h *Handler) reader() EventReader {
+	if h.Reader != nil {
+		return h.Reader
+	}
+	return &fileReader{dataDir: h.DataDir}
 }
 
 // Register は全ルートを指定された ServeMux に登録する。
@@ -46,7 +70,7 @@ func (h *Handler) ClaudeCodeUsage(w http.ResponseWriter, r *http.Request) {
 		groupBy = "day"
 	}
 
-	events, err := storage.ReadOtelEvents(h.DataDir, from, to)
+	events, err := h.reader().ReadOtelEvents(r.Context(), from, to)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -148,7 +172,7 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 
 	eventName := r.URL.Query().Get("eventName")
 
-	events, err := storage.ReadOtelEvents(h.DataDir, from, to)
+	events, err := h.reader().ReadOtelEvents(r.Context(), from, to)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -209,7 +233,8 @@ func parseDateRange(r *http.Request) (time.Time, time.Time, error) {
 		if err != nil {
 			return time.Time{}, time.Time{}, fmt.Errorf("invalid to date: %s", s)
 		}
-		to = t
+		// 当日を含めるため 23:59:59.999 まで拡張
+		to = t.Add(24*time.Hour - time.Nanosecond)
 	}
 
 	return from, to, nil

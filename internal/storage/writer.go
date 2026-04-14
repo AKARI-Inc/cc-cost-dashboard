@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,12 +10,31 @@ import (
 	"time"
 )
 
-// AppendEvent は event を JSON にマーシャルし、
-// {dataDir}/logs/{logGroup}/YYYY-MM-DD.jsonl という当日分の JSONL ファイルへ
-// 1 行として追記する。
-func AppendEvent(dataDir string, logGroup string, event any) error {
+// Writer は 1 件のイベントを指定の logGroup に書き込む抽象。
+// ローカル開発では FileWriter（JSONL 追記）、
+// 本番 / LocalStack では CloudWatchWriter（PutLogEvents）を使う。
+type Writer interface {
+	AppendEvent(ctx context.Context, logGroup string, event any) error
+}
+
+// ---------- FileWriter ----------
+
+// FileWriter は {DataDir}/logs/{logGroup}/YYYY-MM-DD.jsonl に 1 行として追記する。
+// ローカル開発のデフォルト実装。JSONL ファイルは jq や cat で直接デバッグできる。
+type FileWriter struct {
+	DataDir string
+}
+
+// NewFileWriter はローカルファイルベースの Writer を生成する。
+func NewFileWriter(dataDir string) *FileWriter {
+	return &FileWriter{DataDir: dataDir}
+}
+
+// AppendEvent は event を JSON にマーシャルし当日分の JSONL に追記する。
+// syscall.Flock でファイルロックを取り、同時書き込みから保護する。
+func (w *FileWriter) AppendEvent(_ context.Context, logGroup string, event any) error {
 	now := time.Now().UTC()
-	dir := filepath.Join(dataDir, "logs", logGroup)
+	dir := filepath.Join(w.DataDir, "logs", logGroup)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return fmt.Errorf("create directory %s: %w", dir, err)
 	}
@@ -43,4 +63,13 @@ func AppendEvent(dataDir string, logGroup string, event any) error {
 	}
 
 	return nil
+}
+
+// ---------- 後方互換エイリアス ----------
+
+// AppendEvent はパッケージレベルの旧インタフェース。
+// 既存コードとテストを壊さないために FileWriter を介して実装する。
+// 新規コードは Writer インタフェースを使うこと。
+func AppendEvent(dataDir string, logGroup string, event any) error {
+	return NewFileWriter(dataDir).AppendEvent(context.Background(), logGroup, event)
 }

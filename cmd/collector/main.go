@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -14,10 +15,21 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+
 	dataDir := os.Getenv("DATA_DIR")
 	if dataDir == "" {
 		dataDir = "data"
 	}
+
+	// STORAGE=file (default) または cloudwatch で切り替え可能。
+	// cloudwatch は LocalStack（AWS_ENDPOINT_URL=http://localstack:4566）と
+	// 本番 AWS の両方をカバーする。
+	writer, err := storage.NewWriter(ctx, dataDir)
+	if err != nil {
+		log.Fatalf("init storage writer: %v", err)
+	}
+	log.Printf("Storage backend: %s", os.Getenv("STORAGE"))
 
 	mux := http.NewServeMux()
 
@@ -59,7 +71,7 @@ func main() {
 		// 各イベントをストレージに書き込む
 		var writeErrors int
 		for _, event := range events {
-			if err := storage.AppendEvent(dataDir, "otel", event); err != nil {
+			if err := writer.AppendEvent(r.Context(), "otel", event); err != nil {
 				log.Printf("ERROR: failed to write event: %v", err)
 				writeErrors++
 			}
