@@ -1,5 +1,22 @@
 import { useState, useEffect } from 'react';
 
+// UTC タイムスタンプを JST (Asia/Tokyo) 表示に変換
+function toJST(ts: string): string {
+  if (!ts) return '';
+  const d = new Date(ts);
+  if (isNaN(d.getTime())) return ts; // パース失敗時は原文表示
+  return new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(d);
+}
+
 type RawEvent = {
   timestamp: string;
   event_name: string;
@@ -73,7 +90,7 @@ export function RawEventsTable({ from, to }: Props) {
           <table>
             <thead>
               <tr>
-                <th>timestamp</th>
+                <th>timestamp (JST)</th>
                 <th>event_name</th>
                 <th>user_email</th>
                 <th>model</th>
@@ -85,7 +102,7 @@ export function RawEventsTable({ from, to }: Props) {
               {events.map((ev, i) => (
                 <>
                   <tr key={i}>
-                    <td>{ev.timestamp}</td>
+                    <td>{toJST(ev.timestamp)}</td>
                     <td>{ev.event_name}</td>
                     <td>{ev.user_email}</td>
                     <td>{ev.model}</td>
