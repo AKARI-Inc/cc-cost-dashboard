@@ -9,14 +9,23 @@ import { GroupByTabs } from './components/GroupByTabs';
 import { ClaudeAiUpload } from './components/ClaudeAiUpload';
 import { RawEventsTable } from './components/RawEventsTable';
 
+// ローカルタイムゾーン基準の YYYY-MM-DD を返す（toISOString は UTC で
+// JST 早朝に前日扱いになるバグの対応）
+function formatLocalDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function daysAgo(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
+  return formatLocalDate(d);
 }
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return formatLocalDate(new Date());
 }
 
 type Tab = 'claude-code' | 'claude-ai' | 'raw-events';

@@ -216,25 +216,30 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	enc.Encode(v)
 }
 
+// jst は from/to 解釈に使うタイムゾーン。
+// クライアント (ダッシュボード) は JST 基準の YYYY-MM-DD を送ってくるので、
+// API 内では JST → UTC に変換してから CloudWatch に問い合わせる。
+var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
+
 func parseDateRange(r *http.Request) (time.Time, time.Time, error) {
 	now := time.Now().UTC()
 	from := now.AddDate(0, 0, -30)
 	to := now
 
 	if s := r.URL.Query().Get("from"); s != "" {
-		t, err := time.Parse("2006-01-02", s)
+		t, err := time.ParseInLocation("2006-01-02", s, jst)
 		if err != nil {
 			return time.Time{}, time.Time{}, fmt.Errorf("invalid from date: %s", s)
 		}
-		from = t
+		from = t.UTC()
 	}
 	if s := r.URL.Query().Get("to"); s != "" {
-		t, err := time.Parse("2006-01-02", s)
+		t, err := time.ParseInLocation("2006-01-02", s, jst)
 		if err != nil {
 			return time.Time{}, time.Time{}, fmt.Errorf("invalid to date: %s", s)
 		}
-		// 当日を含めるため 23:59:59.999 まで拡張
-		to = t.Add(24*time.Hour - time.Nanosecond)
+		// 当日を含めるため 23:59:59.999 まで拡張 (JST)
+		to = t.Add(24*time.Hour - time.Nanosecond).UTC()
 	}
 
 	return from, to, nil
