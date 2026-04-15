@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
 
+// generator が S3 に出力する per-day × per-key の集計レコード
+type Bucket = {
+  date: string;
+  key: string;
+  total_cost_usd: number;
+  input_tokens: number;
+  output_tokens: number;
+  request_count: number;
+};
+
 export type UsageRow = {
   date?: string;
   model?: string;
@@ -15,8 +25,110 @@ type UsageResult = {
   data: UsageRow[] | null;
   loading: boolean;
   error: string | null;
+  generated?: string; // generator の生成時刻
 };
 
+// groupBy に応じて取得する S3 ファイルパスを返す。
+// "day" は per-day-per-model を date で再集計して使う。
+function summaryPathFor(groupBy: string): string {
+  switch (groupBy) {
+    case 'user':
+      return '/data/summary/per-day-per-user.json';
+    case 'terminal':
+      return '/data/summary/per-day-per-terminal.json';
+    case 'version':
+      return '/data/summary/per-day-per-version.json';
+    case 'speed':
+      return '/data/summary/per-day-per-speed.json';
+    case 'day':
+    case 'model':
+    default:
+      return '/data/summary/per-day-per-model.json';
+  }
+}
+
+// from <= date <= to の範囲フィルタ (date は YYYY-MM-DD 文字列、辞書順比較)
+function filterByDate(buckets: Bucket[], from: string, to: string): Bucket[] {
+  return buckets.filter((b) => b.date >= from && b.date <= to);
+}
+
+// groupBy に応じて再集計
+function aggregate(buckets: Bucket[], groupBy: string): UsageRow[] {
+  if (groupBy === 'day') {
+    const byDate = new Map<string, UsageRow>();
+    for (const b of buckets) {
+      const cur = byDate.get(b.date) ?? {
+        date: b.date,
+        total_cost_usd: 0,
+        input_tokens: 0,
+        output_tokens: 0,
+        request_count: 0,
+      };
+      cur.total_cost_usd += b.total_cost_usd;
+      cur.input_tokens += b.input_tokens;
+      cur.output_tokens += b.output_tokens;
+      cur.request_count += b.request_count;
+      byDate.set(b.date, cur);
+    }
+    return [...byDate.values()].sort((a, b) => (a.date! < b.date! ? -1 : 1));
+  }
+
+  // それ以外 (model/user/terminal/version/speed) は key で集計
+  const byKey = new Map<string, UsageRow>();
+  for (const b of buckets) {
+    const k = b.key;
+    const cur = byKey.get(k) ?? {
+      total_cost_usd: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      request_count: 0,
+    };
+    cur.total_cost_usd += b.total_cost_usd;
+    cur.input_tokens += b.input_tokens;
+    cur.output_tokens += b.output_tokens;
+    cur.request_count += b.request_count;
+    // groupBy に応じて適切なフィールドにも値を入れる
+    if (groupBy === 'model') cur.model = k;
+    else if (groupBy === 'user') cur.user_email = k;
+    else cur.key = k;
+    byKey.set(k, cur);
+  }
+  return [...byKey.values()].sort((a, b) => b.total_cost_usd - a.total_cost_usd);
+}
+
+// キャッシュ: 同じ S3 ファイルを複数フックが同時に取得しないように
+const cache = new Map<string, Promise<{ buckets: Bucket[]; generated: string }>>();
+
+function fetchSummary(path: string): Promise<{ buckets: Bucket[]; generated: string }> {
+  const cached = cache.get(path);
+  if (cached) return cached;
+  const p = fetch(path)
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((json) => ({
+      buckets: (json.data ?? []) as Bucket[],
+      generated: json.generated ?? '',
+    }))
+    .catch((err) => {
+      cache.delete(path); // 失敗時はキャッシュしない
+      throw err;
+    });
+  cache.set(path, p);
+  // 60 秒で expire (generator の更新間隔と合わせる)
+  setTimeout(() => cache.delete(path), 60_000);
+  return p;
+}
+
+/**
+ * useUsageData は generator が S3 に出力した per-day × per-key の集計を
+ * fetch して、from〜to の範囲フィルタとクライアント側再集計を行う。
+ *
+ * 旧 API: { endpoint, from, to, groupBy } を受け取る。endpoint は
+ * 後方互換のため受け取るが、Claude Code 用は S3 から取得し、
+ * Claude AI 用は API にフォールバックする。
+ */
 export function useUsageData(params: {
   endpoint: string;
   from: string;
@@ -24,6 +136,7 @@ export function useUsageData(params: {
   groupBy: string;
 }): UsageResult {
   const [data, setData] = useState<UsageRow[] | null>(null);
+  const [generated, setGenerated] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,17 +145,42 @@ export function useUsageData(params: {
     setLoading(true);
     setError(null);
 
-    const url = `${params.endpoint}?from=${params.from}&to=${params.to}&groupBy=${params.groupBy}`;
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((json) => {
-        if (!cancelled) {
-          setData(json.data ?? []);
-          setLoading(false);
-        }
+    // Claude AI は S3 にまだ集計を出していないので API フォールバック
+    const isClaudeAi = params.endpoint.includes('claude-ai');
+    if (isClaudeAi) {
+      const url = `${params.endpoint}?from=${params.from}&to=${params.to}&groupBy=${params.groupBy}`;
+      fetch(url)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((json) => {
+          if (!cancelled) {
+            setData(json.data ?? []);
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            setError(err.message);
+            setLoading(false);
+          }
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    // Claude Code: S3 から fetch + クライアント側で再集計
+    const path = summaryPathFor(params.groupBy);
+    fetchSummary(path)
+      .then(({ buckets, generated }) => {
+        if (cancelled) return;
+        const filtered = filterByDate(buckets, params.from, params.to);
+        const rows = aggregate(filtered, params.groupBy);
+        setData(rows);
+        setGenerated(generated);
+        setLoading(false);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -56,5 +194,5 @@ export function useUsageData(params: {
     };
   }, [params.endpoint, params.from, params.to, params.groupBy]);
 
-  return { data, loading, error };
+  return { data, loading, error, generated };
 }
