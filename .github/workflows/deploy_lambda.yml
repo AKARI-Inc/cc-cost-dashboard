@@ -1,0 +1,103 @@
+name: Deploy Lambda (dev)
+
+on:
+  push:
+    branches: [main, wip-demo-dash-boad] # TODO: wip-demo-dash-boad は検証後に削除
+    paths:
+      - "cmd/**"
+      - "lambda/**"
+      - "internal/**"
+      - "go.mod"
+      - "go.sum"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-1
+  ECR_REGISTRY: 050721760927.dkr.ecr.ap-northeast-1.amazonaws.com
+  OIDC_ROLE_ARN: arn:aws:iam::050721760927:role/cc-cost-dashboard-dev-github-actions-role
+
+jobs:
+  build-and-push:
+    name: Build & Push ECR
+    runs-on: ubuntu-latest
+    environment: development
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: collector
+            dockerfile: lambda/collector/Dockerfile
+            ecr_repo: cc-cost-dashboard-dev/collector
+          - name: api
+            dockerfile: lambda/api/Dockerfile
+            ecr_repo: cc-cost-dashboard-dev/api
+          - name: generator
+            dockerfile: lambda/generator/Dockerfile
+            ecr_repo: cc-cost-dashboard-dev/generator
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.service.dockerfile }}
+          push: true
+          platforms: linux/arm64
+          tags: ${{ env.ECR_REGISTRY }}/${{ matrix.service.ecr_repo }}:latest
+          # Lambda は Docker v2 manifest のみ対応。OCI attestation を無効化
+          provenance: false
+          sbom: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Update Lambda
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: development
+    strategy:
+      fail-fast: false
+      matrix:
+        function:
+          - name: cc-cost-dashboard-dev-collector
+            ecr_repo: cc-cost-dashboard-dev/collector
+          - name: cc-cost-dashboard-dev-api
+            ecr_repo: cc-cost-dashboard-dev/api
+          - name: cc-cost-dashboard-dev-generator
+            ecr_repo: cc-cost-dashboard-dev/generator
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Update Lambda function code
+        run: |
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ matrix.function.ecr_repo }}:latest"
+          aws lambda update-function-code \
+            --function-name ${{ matrix.function.name }} \
+            --image-uri "$IMAGE_URI"
+          echo "Updated ${{ matrix.function.name }} → $IMAGE_URI"
