@@ -1,5 +1,10 @@
 # Go
 /vendor/
+# go build で作られるルート直下のバイナリ (cmd/lambda ディレクトリ名に由来)
+/api
+/collector
+/generator
+/processor
 
 # Node
 node_modules/
@@ -22,3 +27,21 @@ appscript/client/index.html
 # IDE
 .idea/
 .vscode/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+tfplan*
+terraform.tfstate.backup
+terraform.tfstate.*.backup
+*.tfvars.local
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Claude Code local
+.claude/settings.local.json

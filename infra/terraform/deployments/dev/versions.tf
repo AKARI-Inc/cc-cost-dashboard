@@ -30,3 +30,18 @@ provider "aws" {
     }
   }
 }
+
+# WAF for CloudFront は us-east-1 必須
+provider "aws" {
+  alias   = "us_east_1"
+  region  = "us-east-1"
+  profile = "squad-ep-internal"
+
+  default_tags {
+    tags = {
+      Project     = "cc-cost-dashboard"
+      Environment = "dev"
+      ManagedBy   = "terraform"
+    }
+  }
+}

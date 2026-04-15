@@ -112,14 +112,10 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 // normalizeLogGroup は "otel" のような短縮名を "/otel/claude-code" にマップする。
 // 既にスラッシュ始まりならそのまま返す（柔軟性を保つ）。
 func normalizeLogGroup(group string) string {
-	switch group {
-	case "otel":
+	if group == "otel" {
 		return "/otel/claude-code"
-	case "claude-ai":
-		return "/claude-ai/usage"
-	default:
-		return group
 	}
+	return group
 }
 
 // errorAs は errors.As の薄いラッパー（循環依存を避けるため別ファイルに分けない）。

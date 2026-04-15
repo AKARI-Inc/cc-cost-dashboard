@@ -7,8 +7,18 @@ locals {
 module "lambda" {
   source = "../../modules/lambda"
 
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
+
   project_name = local.project_name
   aws_region   = local.aws_region
+
+  # WAF: ダッシュボードへのアクセスを許可する IP CIDR
+  waf_allowed_ips = [
+    "122.210.117.198/32",
+  ]
 
   collector_image_uri = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.project_name}/collector:latest"
   api_image_uri       = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.project_name}/api:latest"

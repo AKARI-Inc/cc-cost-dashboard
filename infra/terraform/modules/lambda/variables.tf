@@ -53,3 +53,9 @@ variable "create_github_oidc_provider" {
   type        = bool
   default     = false
 }
+
+variable "waf_allowed_ips" {
+  description = "ダッシュボードへのアクセスを許可する IP CIDR リスト (例: [\"122.210.117.198/32\"])"
+  type        = list(string)
+  default     = []
+}

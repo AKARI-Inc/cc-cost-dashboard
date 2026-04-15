@@ -42,36 +42,6 @@ func ReadOtelEvents(dataDir string, from, to time.Time) ([]model.OtelEvent, erro
 	return events, nil
 }
 
-// ReadClaudeAiEvents は claude-ai ログ グループ配下の JSONL ファイルから、
-// [from, to] の範囲（両端含む）に該当するすべての ClaudeAiEvent を読み込む。
-// 存在しないファイルは無言でスキップし、パースに失敗した行もスキップする。
-// 戻り値のスライスはタイムスタンプ昇順でソートされる。
-func ReadClaudeAiEvents(dataDir string, from, to time.Time) ([]model.ClaudeAiEvent, error) {
-	var events []model.ClaudeAiEvent
-
-	for d := truncateToDay(from); !d.After(truncateToDay(to)); d = d.AddDate(0, 0, 1) {
-		filename := filepath.Join(dataDir, "logs", "claude-ai", d.Format("2006-01-02")+".jsonl")
-
-		lines, err := readLines(filename)
-		if err != nil {
-			continue
-		}
-
-		for _, line := range lines {
-			var ev model.ClaudeAiEvent
-			if json.Unmarshal(line, &ev) == nil {
-				events = append(events, ev)
-			}
-		}
-	}
-
-	sort.Slice(events, func(i, j int) bool {
-		return events[i].Timestamp < events[j].Timestamp
-	})
-
-	return events, nil
-}
-
 // truncateToDay は t を UTC におけるその日の 00:00 に丸めて返す。
 func truncateToDay(t time.Time) time.Time {
 	y, m, d := t.UTC().Date()

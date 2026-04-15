@@ -33,6 +33,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   comment             = "${var.project_name} dashboard"
 
+  # WAF: 許可 IP 以外を 403 で拒否（waf_allowed_ips 設定時のみ）
+  web_acl_id = length(var.waf_allowed_ips) > 0 ? aws_wafv2_web_acl.main[0].arn : null
+
   # --- S3 Origin (静的ファイル) ---
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name

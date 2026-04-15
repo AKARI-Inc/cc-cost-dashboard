@@ -44,7 +44,6 @@ func (h *Handler) reader() EventReader {
 // Register は全ルートを指定された ServeMux に登録する。
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/claude-code/usage", h.ClaudeCodeUsage)
-	mux.HandleFunc("GET /api/claude-ai/usage", h.ClaudeAiUsage)
 	mux.HandleFunc("GET /api/claude-code/events", h.ClaudeCodeEvents)
 	mux.HandleFunc("GET /api/health", h.Health)
 }
@@ -105,48 +104,6 @@ func (h *Handler) ClaudeCodeUsage(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ClaudeAiUsage は Claude AI の集計済み利用データを返す。
-func (h *Handler) ClaudeAiUsage(w http.ResponseWriter, r *http.Request) {
-	setCORS(w)
-
-	from, to, err := parseDateRange(r)
-	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
-		return
-	}
-
-	groupBy := r.URL.Query().Get("groupBy")
-	if groupBy == "" {
-		groupBy = "day"
-	}
-
-	events, err := storage.ReadClaudeAiEvents(h.DataDir, from, to)
-	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		return
-	}
-
-	var data any
-	switch groupBy {
-	case "day":
-		data = aggregateClaudeAiByDay(events)
-	case "user":
-		data = aggregateClaudeAiByUser(events)
-	default:
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid groupBy: " + groupBy})
-		return
-	}
-
-	writeJSON(w, http.StatusOK, map[string]any{
-		"data": data,
-		"meta": map[string]string{
-			"from":    from.Format("2006-01-02"),
-			"to":      to.Format("2006-01-02"),
-			"groupBy": groupBy,
-		},
-	})
-}
-
 // ClaudeCodeEvents は任意のフィルタを適用した生の OtelEvent データを返す。
 func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 	setCORS(w)
@@ -157,20 +114,22 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	limit := 100
+	limit := 500
 	if s := r.URL.Query().Get("limit"); s != "" {
 		n, err := strconv.Atoi(s)
 		if err != nil || n < 1 {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid limit"})
 			return
 		}
-		if n > 1000 {
-			n = 1000
+		if n > 5000 {
+			n = 5000
 		}
 		limit = n
 	}
 
 	eventName := r.URL.Query().Get("eventName")
+	userEmail := r.URL.Query().Get("userEmail")
+	order := r.URL.Query().Get("order") // "asc" / "desc" (default: desc)
 
 	events, err := h.reader().ReadOtelEvents(r.Context(), from, to)
 	if err != nil {
@@ -178,9 +137,22 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// デフォルトは降順 (新しい順)
+	if order != "asc" {
+		// reader は昇順で返すので逆順イテレーション
+		reversed := make([]model.OtelEvent, len(events))
+		for i, ev := range events {
+			reversed[len(events)-1-i] = ev
+		}
+		events = reversed
+	}
+
 	var filtered []model.OtelEvent
 	for _, ev := range events {
 		if eventName != "" && ev.EventName != eventName {
+			continue
+		}
+		if userEmail != "" && ev.UserEmail != userEmail {
 			continue
 		}
 		filtered = append(filtered, ev)
@@ -195,6 +167,8 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 			"from":      from.Format("2006-01-02"),
 			"to":        to.Format("2006-01-02"),
 			"eventName": eventName,
+			"userEmail": userEmail,
+			"order":     order,
 			"limit":     limit,
 			"count":     len(filtered),
 		},
@@ -282,64 +256,3 @@ func aggregateOtelByKey(events []model.OtelEvent, keyFn func(model.OtelEvent) st
 	return result
 }
 
-// ClaudeAiDaySummary は Claude AI イベントの日次集計結果を保持する。
-type ClaudeAiDaySummary struct {
-	Date            string `json:"date"`
-	EstimatedTokens int    `json:"estimated_tokens"`
-	MessageCount    int    `json:"message_count"`
-}
-
-func aggregateClaudeAiByDay(events []model.ClaudeAiEvent) []ClaudeAiDaySummary {
-	m := make(map[string]*ClaudeAiDaySummary)
-	for _, ev := range events {
-		date := ev.Timestamp
-		if len(date) >= 10 {
-			date = date[:10]
-		}
-		s, ok := m[date]
-		if !ok {
-			s = &ClaudeAiDaySummary{Date: date}
-			m[date] = s
-		}
-		s.EstimatedTokens += ev.EstimatedTokens
-		s.MessageCount++
-	}
-
-	result := make([]ClaudeAiDaySummary, 0, len(m))
-	for _, s := range m {
-		result = append(result, *s)
-	}
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].Date < result[j].Date
-	})
-	return result
-}
-
-// ClaudeAiUserSummary は Claude AI イベントのユーザー別集計結果を保持する。
-type ClaudeAiUserSummary struct {
-	UserEmail       string `json:"user_email"`
-	EstimatedTokens int    `json:"estimated_tokens"`
-	MessageCount    int    `json:"message_count"`
-}
-
-func aggregateClaudeAiByUser(events []model.ClaudeAiEvent) []ClaudeAiUserSummary {
-	m := make(map[string]*ClaudeAiUserSummary)
-	for _, ev := range events {
-		s, ok := m[ev.UserEmail]
-		if !ok {
-			s = &ClaudeAiUserSummary{UserEmail: ev.UserEmail}
-			m[ev.UserEmail] = s
-		}
-		s.EstimatedTokens += ev.EstimatedTokens
-		s.MessageCount++
-	}
-
-	result := make([]ClaudeAiUserSummary, 0, len(m))
-	for _, s := range m {
-		result = append(result, *s)
-	}
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].EstimatedTokens > result[j].EstimatedTokens
-	})
-	return result
-}

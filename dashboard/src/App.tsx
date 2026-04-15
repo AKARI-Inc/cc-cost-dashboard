@@ -6,7 +6,6 @@ import { CostChart } from './components/CostChart';
 import { ModelBreakdown } from './components/ModelBreakdown';
 import { UserSummary } from './components/UserSummary';
 import { GroupByTabs } from './components/GroupByTabs';
-import { ClaudeAiUpload } from './components/ClaudeAiUpload';
 import { RawEventsTable } from './components/RawEventsTable';
 
 // ローカルタイムゾーン基準の YYYY-MM-DD を返す（toISOString は UTC で
@@ -28,7 +27,7 @@ function today(): string {
   return formatLocalDate(new Date());
 }
 
-type Tab = 'claude-code' | 'claude-ai' | 'raw-events';
+type Tab = 'claude-code' | 'raw-events';
 
 export function App() {
   const [tab, setTab] = useState<Tab>('claude-code');
@@ -51,7 +50,6 @@ export function App() {
       <nav className="main-tabs">
         {([
           ['claude-code', 'Claude Code'],
-          ['claude-ai', 'claude.ai'],
           ['raw-events', 'Raw Events'],
         ] as [Tab, string][]).map(([key, label]) => (
           <button
@@ -67,7 +65,6 @@ export function App() {
       {tab === 'claude-code' && (
         <ClaudeCodeView from={from} to={to} groupBy={groupBy} onGroupByChange={setGroupBy} />
       )}
-      {tab === 'claude-ai' && <ClaudeAiView from={from} to={to} />}
       {tab === 'raw-events' && <RawEventsTable from={from} to={to} />}
     </div>
   );
@@ -78,8 +75,8 @@ function ClaudeCodeView({
 }: {
   from: string; to: string; groupBy: string; onGroupByChange: (v: string) => void;
 }) {
-  const dayData = useUsageData({ endpoint: '/api/claude-code/usage', from, to, groupBy: 'day' });
-  const groupData = useUsageData({ endpoint: '/api/claude-code/usage', from, to, groupBy });
+  const dayData = useUsageData({ from, to, groupBy: 'day' });
+  const groupData = useUsageData({ from, to, groupBy });
 
   return (
     <div>
@@ -106,27 +103,6 @@ function ClaudeCodeView({
           <h3>{groupBy} 別詳細</h3>
           <DataTable data={groupData.data} labelKey="key" />
         </div>
-      )}
-    </div>
-  );
-}
-
-function ClaudeAiView({ from, to }: { from: string; to: string }) {
-  const data = useUsageData({ endpoint: '/api/claude-ai/usage', from, to, groupBy: 'day' });
-
-  return (
-    <div>
-      <ClaudeAiUpload />
-      {data.loading && <p className="info">読み込み中...</p>}
-      {data.error && <p className="error">エラー: {data.error}</p>}
-      {data.data && data.data.length > 0 && (
-        <>
-          <SummaryCards data={data.data} />
-          <CostChart data={data.data} />
-        </>
-      )}
-      {data.data && data.data.length === 0 && (
-        <p className="info">claude.ai のデータはまだありません。ZIPファイルをアップロードしてください。</p>
       )}
     </div>
   );

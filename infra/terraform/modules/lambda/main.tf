@@ -44,11 +44,6 @@ resource "aws_cloudwatch_log_group" "otel_logs" {
   retention_in_days = 90
 }
 
-resource "aws_cloudwatch_log_group" "claude_ai_logs" {
-  name              = "/claude-ai/usage"
-  retention_in_days = 90
-}
-
 # Lambda 実行ログ
 resource "aws_cloudwatch_log_group" "collector_lambda_logs" {
   name              = "/aws/lambda/${var.project_name}-collector"
