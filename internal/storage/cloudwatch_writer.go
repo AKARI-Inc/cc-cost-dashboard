@@ -15,15 +15,25 @@ import (
 	cwltypes "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
 )
 
+const (
+	flushMaxEvents  = 500           // PutLogEvents の上限は 10,000 だが余裕を持たせる
+	flushInterval   = 5 * time.Second
+)
+
 // ローカル JSONL を本番 CloudWatch Logs に差し替えるための Writer。
+// AppendEventはバッファに溜め、一定件数 or 一定間隔でバッチ送信する。
 type CloudWatchWriter struct {
 	client *cloudwatchlogs.Client
 
 	mu            sync.Mutex
 	streamByGroup map[string]string
+	bufByGroup    map[string][]cwltypes.InputLogEvent
+
+	stopOnce sync.Once
+	done     chan struct{}
 }
 
-// CloudWatch Logs クライアントを構築するためのコンストラクタ。
+// CloudWatch Logs クライアントを構築し、バックグラウンド flush を開始するためのコンストラクタ。
 func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -37,35 +47,111 @@ func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 		})
 	}
 
-	return &CloudWatchWriter{
+	w := &CloudWatchWriter{
 		client:        cloudwatchlogs.NewFromConfig(cfg, opts...),
 		streamByGroup: make(map[string]string),
-	}, nil
+		bufByGroup:    make(map[string][]cwltypes.InputLogEvent),
+		done:          make(chan struct{}),
+	}
+	go w.flushLoop(ctx)
+	return w, nil
 }
 
-// パイプラインイベントを JSON 化して CloudWatch Logs に永続化するためのメソッド。
+// パイプラインイベントを JSON 化してバッファに追加するためのメソッド。
+// バッファが flushMaxEvents に達した場合は即座に flush する。
 func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, event any) error {
 	logGroupName := normalizeLogGroup(logGroup)
-
-	stream, err := w.ensureStream(ctx, logGroupName)
-	if err != nil {
-		return err
-	}
 
 	data, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("marshal event: %w", err)
 	}
 
+	entry := cwltypes.InputLogEvent{
+		Message:   aws.String(string(data)),
+		Timestamp: aws.Int64(time.Now().UnixMilli()),
+	}
+
+	w.mu.Lock()
+	w.bufByGroup[logGroupName] = append(w.bufByGroup[logGroupName], entry)
+	shouldFlush := len(w.bufByGroup[logGroupName]) >= flushMaxEvents
+	w.mu.Unlock()
+
+	if shouldFlush {
+		return w.flushGroup(ctx, logGroupName)
+	}
+	return nil
+}
+
+// バッファに残っている全イベントを送信する。graceful shutdown 用。
+func (w *CloudWatchWriter) Flush(ctx context.Context) error {
+	w.mu.Lock()
+	groups := make([]string, 0, len(w.bufByGroup))
+	for g := range w.bufByGroup {
+		groups = append(groups, g)
+	}
+	w.mu.Unlock()
+
+	var firstErr error
+	for _, g := range groups {
+		if err := w.flushGroup(ctx, g); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
+}
+
+// flush ループを停止し、残りバッファを送信する。
+func (w *CloudWatchWriter) Close(ctx context.Context) error {
+	w.stopOnce.Do(func() { close(w.done) })
+	return w.Flush(ctx)
+}
+
+func (w *CloudWatchWriter) flushLoop(ctx context.Context) {
+	ticker := time.NewTicker(flushInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			_ = w.Flush(ctx)
+		case <-w.done:
+			return
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func (w *CloudWatchWriter) flushGroup(ctx context.Context, logGroup string) error {
+	w.mu.Lock()
+	buf := w.bufByGroup[logGroup]
+	if len(buf) == 0 {
+		w.mu.Unlock()
+		return nil
+	}
+	w.bufByGroup[logGroup] = nil
+	w.mu.Unlock()
+
+	stream, err := w.ensureStream(ctx, logGroup)
+	if err != nil {
+		// 送信失敗分をバッファに戻す
+		w.mu.Lock()
+		w.bufByGroup[logGroup] = append(buf, w.bufByGroup[logGroup]...)
+		w.mu.Unlock()
+		return err
+	}
+
 	_, err = w.client.PutLogEvents(ctx, &cloudwatchlogs.PutLogEventsInput{
-		LogGroupName:  aws.String(logGroupName),
+		LogGroupName:  aws.String(logGroup),
 		LogStreamName: aws.String(stream),
-		LogEvents: []cwltypes.InputLogEvent{{
-			Message:   aws.String(string(data)),
-			Timestamp: aws.Int64(time.Now().UnixMilli()),
-		}},
+		LogEvents:     buf,
 	})
 	if err != nil {
+		// 送信失敗分をバッファに戻す
+		w.mu.Lock()
+		w.bufByGroup[logGroup] = append(buf, w.bufByGroup[logGroup]...)
+		w.mu.Unlock()
 		return fmt.Errorf("put log events: %w", err)
 	}
 	return nil
@@ -106,4 +192,3 @@ func normalizeLogGroup(group string) string {
 	}
 	return group
 }
-
