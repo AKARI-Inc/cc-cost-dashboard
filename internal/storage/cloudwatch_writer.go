@@ -16,12 +16,11 @@ import (
 )
 
 const (
-	flushMaxEvents  = 500           // PutLogEvents の上限は 10,000 だが余裕を持たせる
-	flushInterval   = 5 * time.Second
+	flushMaxEvents = 500
+	flushInterval  = 5 * time.Second
 )
 
 // ローカル JSONL を本番 CloudWatch Logs に差し替えるための Writer。
-// AppendEventはバッファに溜め、一定件数 or 一定間隔でバッチ送信する。
 type CloudWatchWriter struct {
 	client *cloudwatchlogs.Client
 
@@ -33,7 +32,6 @@ type CloudWatchWriter struct {
 	done     chan struct{}
 }
 
-// CloudWatch Logs クライアントを構築し、バックグラウンド flush を開始するためのコンストラクタ。
 func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -57,8 +55,7 @@ func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	return w, nil
 }
 
-// パイプラインイベントを JSON 化してバッファに追加するためのメソッド。
-// バッファが flushMaxEvents に達した場合は即座に flush する。
+// パイプラインイベントを CloudWatch Logs に永続化するためのメソッド。
 func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, event any) error {
 	logGroupName := normalizeLogGroup(logGroup)
 
@@ -83,7 +80,7 @@ func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, eve
 	return nil
 }
 
-// バッファに残っている全イベントを送信する。graceful shutdown 用。
+// graceful shutdown 時にバッファを確実に送りきるためのメソッド。
 func (w *CloudWatchWriter) Flush(ctx context.Context) error {
 	w.mu.Lock()
 	groups := make([]string, 0, len(w.bufByGroup))
@@ -101,7 +98,6 @@ func (w *CloudWatchWriter) Flush(ctx context.Context) error {
 	return firstErr
 }
 
-// flush ループを停止し、残りバッファを送信する。
 func (w *CloudWatchWriter) Close(ctx context.Context) error {
 	w.stopOnce.Do(func() { close(w.done) })
 	return w.Flush(ctx)

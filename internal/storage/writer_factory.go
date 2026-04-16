@@ -6,19 +6,15 @@ import (
 	"os"
 )
 
-// NewWriter は環境変数 STORAGE に応じて実装を選択する。
-//
-//	STORAGE=file       (default) -> FileWriter  : data/logs/{group}/YYYY-MM-DD.jsonl
-//	STORAGE=cloudwatch           -> CloudWatchWriter : LocalStack / 本番 AWS
-//
-// AWS_ENDPOINT_URL が設定されていれば自動的に LocalStack を指す。
-func NewWriter(ctx context.Context, dataDir string) (Writer, error) {
+// NewWriter は STORAGE 環境変数に応じて Writer を返す。backendName はログ表示用。
+func NewWriter(ctx context.Context, dataDir string) (w Writer, backendName string, err error) {
 	switch os.Getenv("STORAGE") {
 	case "", "file":
-		return NewFileWriter(dataDir), nil
+		return NewFileWriter(dataDir), "file", nil
 	case "cloudwatch":
-		return NewCloudWatchWriter(ctx)
+		cw, err := NewCloudWatchWriter(ctx)
+		return cw, "cloudwatch", err
 	default:
-		return nil, fmt.Errorf("unknown STORAGE value: %q", os.Getenv("STORAGE"))
+		return nil, "", fmt.Errorf("unknown STORAGE value: %q", os.Getenv("STORAGE"))
 	}
 }
