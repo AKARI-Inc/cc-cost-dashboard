@@ -22,14 +22,16 @@ func main() {
 
 	h := &api.Handler{DataDir: dataDir}
 
-	// STORAGE=cloudwatch の場合は CloudWatch Logs から読み取る
-	if os.Getenv("STORAGE") == "cloudwatch" {
+	switch s := os.Getenv("STORAGE"); s {
+	case "cloudwatch":
 		reader, err := storage.NewCloudWatchReader(ctx)
 		if err != nil {
 			log.Fatalf("init cloudwatch reader: %v", err)
 		}
 		h.Reader = reader
 		log.Println("API Lambda using CloudWatch reader")
+	default:
+		log.Printf("WARN: STORAGE=%q — falling back to local file reader (DATA_DIR=%s). Set STORAGE=cloudwatch for production.", s, dataDir)
 	}
 
 	mux := http.NewServeMux()

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -11,8 +12,9 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/model"
 )
 
-func TestAppendEvent_WritesValidJSONL(t *testing.T) {
+func TestFileWriter_WritesValidJSONL(t *testing.T) {
 	dataDir := t.TempDir()
+	w := NewFileWriter(dataDir)
 
 	ev := model.OtelEvent{
 		Timestamp:   "2025-06-01T10:00:00Z",
@@ -24,11 +26,10 @@ func TestAppendEvent_WritesValidJSONL(t *testing.T) {
 		CostUSD:     0.05,
 	}
 
-	if err := AppendEvent(dataDir, "otel", ev); err != nil {
+	if err := w.AppendEvent(context.Background(), "otel", ev); err != nil {
 		t.Fatalf("AppendEvent returned error: %v", err)
 	}
 
-	// 書き込まれたファイル名を特定する（当日の UTC 日付で日次分割される）。
 	today := time.Now().UTC().Format("2006-01-02")
 	filename := filepath.Join(dataDir, "logs", "otel", today+".jsonl")
 
@@ -54,10 +55,10 @@ func TestAppendEvent_WritesValidJSONL(t *testing.T) {
 	}
 }
 
-func TestAppendEvent_CreatesDirectories(t *testing.T) {
+func TestFileWriter_CreatesDirectories(t *testing.T) {
 	dataDir := t.TempDir()
+	w := NewFileWriter(dataDir)
 
-	// ネストしたディレクトリ logs/custom-group はまだ存在しない想定。
 	logGroup := "custom-group"
 	dir := filepath.Join(dataDir, "logs", logGroup)
 
@@ -66,7 +67,7 @@ func TestAppendEvent_CreatesDirectories(t *testing.T) {
 	}
 
 	ev := model.OtelEvent{Timestamp: "2025-06-01T10:00:00Z", EventName: "test"}
-	if err := AppendEvent(dataDir, logGroup, ev); err != nil {
+	if err := w.AppendEvent(context.Background(), logGroup, ev); err != nil {
 		t.Fatalf("AppendEvent returned error: %v", err)
 	}
 
@@ -79,8 +80,9 @@ func TestAppendEvent_CreatesDirectories(t *testing.T) {
 	}
 }
 
-func TestAppendEvent_MultipleCallsAppendToSameFile(t *testing.T) {
+func TestFileWriter_MultipleCallsAppendToSameFile(t *testing.T) {
 	dataDir := t.TempDir()
+	w := NewFileWriter(dataDir)
 
 	events := []model.OtelEvent{
 		{Timestamp: "2025-06-01T10:00:00Z", EventName: "claude_code.api_request", CostUSD: 0.01},
@@ -89,7 +91,7 @@ func TestAppendEvent_MultipleCallsAppendToSameFile(t *testing.T) {
 	}
 
 	for _, ev := range events {
-		if err := AppendEvent(dataDir, "otel", ev); err != nil {
+		if err := w.AppendEvent(context.Background(), "otel", ev); err != nil {
 			t.Fatalf("AppendEvent returned error: %v", err)
 		}
 	}
@@ -107,7 +109,6 @@ func TestAppendEvent_MultipleCallsAppendToSameFile(t *testing.T) {
 		t.Fatalf("expected %d lines, got %d", len(events), len(lines))
 	}
 
-	// 各行が有効な JSON で、期待したコストを持つことを検証する。
 	for i, line := range lines {
 		var got model.OtelEvent
 		if err := json.Unmarshal([]byte(line), &got); err != nil {

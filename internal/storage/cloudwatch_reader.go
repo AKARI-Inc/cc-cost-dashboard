@@ -15,12 +15,11 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/model"
 )
 
-// CloudWatchReader は CloudWatch Logs から FilterLogEvents でイベントを読み取る。
+// ローカル JSONL を本番 CloudWatch Logs に差し替えるための Reader。
 type CloudWatchReader struct {
 	client *cloudwatchlogs.Client
 }
 
-// NewCloudWatchReader は AWS SDK の設定を読んで CloudWatchReader を生成する。
 func NewCloudWatchReader(ctx context.Context) (*CloudWatchReader, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -39,9 +38,8 @@ func NewCloudWatchReader(ctx context.Context) (*CloudWatchReader, error) {
 	}, nil
 }
 
-// ReadOtelEvents は CloudWatch Logs の /otel/claude-code から OtelEvent を読み取る。
 func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error) {
-	logGroup := "/otel/claude-code"
+	logGroup := LogGroupOtel
 	var events []model.OtelEvent
 
 	var nextToken *string

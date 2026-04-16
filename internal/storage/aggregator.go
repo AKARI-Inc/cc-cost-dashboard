@@ -6,19 +6,15 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/model"
 )
 
-const apiRequestEvent = "claude_code.api_request"
-
-// AggregateByDay は OtelEvent を日付単位でグループ化し、コスト・トークン数・
-// リクエスト数を合算する。event_name が "claude_code.api_request" のイベントのみ
-// 集計対象となる。結果は日付の昇順でソートされる。
+// ダッシュボードの日別コスト推移チャートを描画するための集計。
 func AggregateByDay(events []model.OtelEvent) []model.DailySummary {
 	m := make(map[string]*model.DailySummary)
 
 	for _, ev := range events {
-		if ev.EventName != apiRequestEvent {
+		if ev.EventName != model.APIRequestEvent {
 			continue
 		}
-		date := extractDate(ev.Timestamp)
+		date := model.ExtractDate(ev.Timestamp)
 		s, ok := m[date]
 		if !ok {
 			s = &model.DailySummary{Date: date}
@@ -42,14 +38,12 @@ func AggregateByDay(events []model.OtelEvent) []model.DailySummary {
 	return result
 }
 
-// AggregateByModel は OtelEvent をモデル単位でグループ化し、コスト・トークン数・
-// リクエスト数を合算する。api_request イベントのみ集計対象となる。
-// 結果は total_cost_usd の降順でソートされる。
+// ダッシュボードのモデル別利用比率チャートを描画するための集計。
 func AggregateByModel(events []model.OtelEvent) []model.ModelSummary {
 	m := make(map[string]*model.ModelSummary)
 
 	for _, ev := range events {
-		if ev.EventName != apiRequestEvent {
+		if ev.EventName != model.APIRequestEvent {
 			continue
 		}
 		s, ok := m[ev.Model]
@@ -75,14 +69,12 @@ func AggregateByModel(events []model.OtelEvent) []model.ModelSummary {
 	return result
 }
 
-// AggregateByUser は OtelEvent を user_email 単位でグループ化し、コスト・
-// トークン数・リクエスト数を合算する。api_request イベントのみ集計対象となる。
-// 結果は total_cost_usd の降順でソートされる。
+// ダッシュボードのユーザー別消費量テーブルを描画するための集計。
 func AggregateByUser(events []model.OtelEvent) []model.UserSummary {
 	m := make(map[string]*model.UserSummary)
 
 	for _, ev := range events {
-		if ev.EventName != apiRequestEvent {
+		if ev.EventName != model.APIRequestEvent {
 			continue
 		}
 		s, ok := m[ev.UserEmail]
@@ -108,11 +100,41 @@ func AggregateByUser(events []model.OtelEvent) []model.UserSummary {
 	return result
 }
 
-// extractDate はタイムスタンプ文字列の先頭 10 文字（YYYY-MM-DD）を返す。
-// タイムスタンプが 10 文字未満の場合はそのまま全体を返す。
-func extractDate(ts string) string {
-	if len(ts) >= 10 {
-		return ts[:10]
-	}
-	return ts
+// KeySummary は任意のキーで groupBy した汎用集計結果。
+type KeySummary struct {
+	Key          string  `json:"key"`
+	TotalCostUSD float64 `json:"total_cost_usd"`
+	InputTokens  int     `json:"input_tokens"`
+	OutputTokens int     `json:"output_tokens"`
+	RequestCount int     `json:"request_count"`
 }
+
+// AggregateByKey は keyFn で抽出したキーごとにイベントを集計する。
+func AggregateByKey(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []KeySummary {
+	m := make(map[string]*KeySummary)
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		k := keyFn(ev)
+		s, ok := m[k]
+		if !ok {
+			s = &KeySummary{Key: k}
+			m[k] = s
+		}
+		s.TotalCostUSD += ev.CostUSD
+		s.InputTokens += ev.InputTokens
+		s.OutputTokens += ev.OutputTokens
+		s.RequestCount++
+	}
+
+	result := make([]KeySummary, 0, len(m))
+	for _, s := range m {
+		result = append(result, *s)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].TotalCostUSD > result[j].TotalCostUSD
+	})
+	return result
+}
+

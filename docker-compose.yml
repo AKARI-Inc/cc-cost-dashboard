@@ -71,6 +71,7 @@ services:
       - localstack
 
   api:
+    profiles: ["full"]
     build:
       context: .
       dockerfile: cmd/api/Dockerfile
@@ -103,6 +104,7 @@ services:
       - S3_SECRET_KEY=minioadmin
 
   dashboard:
+    profiles: ["full"]
     build:
       context: ./dashboard
       dockerfile: Dockerfile
