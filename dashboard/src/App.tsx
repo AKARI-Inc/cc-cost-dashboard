@@ -7,25 +7,8 @@ import { ModelBreakdown } from './components/ModelBreakdown';
 import { UserSummary } from './components/UserSummary';
 import { GroupByTabs } from './components/GroupByTabs';
 import { RawEventsTable } from './components/RawEventsTable';
-
-// ローカルタイムゾーン基準の YYYY-MM-DD を返す（toISOString は UTC で
-// JST 早朝に前日扱いになるバグの対応）
-function formatLocalDate(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function daysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return formatLocalDate(d);
-}
-
-function today(): string {
-  return formatLocalDate(new Date());
-}
+import { DataTable } from './components/DataTable';
+import { daysAgo, today } from './dateUtil';
 
 type Tab = 'claude-code' | 'raw-events';
 
@@ -76,7 +59,8 @@ function ClaudeCodeView({
   from: string; to: string; groupBy: string; onGroupByChange: (v: string) => void;
 }) {
   const dayData = useUsageData({ from, to, groupBy: 'day' });
-  const groupData = useUsageData({ from, to, groupBy });
+  const groupData = useUsageData({ from, to, groupBy, enabled: groupBy !== 'day' });
+  const activeGroupData = groupBy === 'day' ? dayData : groupData;
 
   return (
     <div>
@@ -87,56 +71,23 @@ function ClaudeCodeView({
 
       <GroupByTabs value={groupBy} onChange={onGroupByChange} />
 
-      {groupData.loading && <p className="info">読み込み中...</p>}
-      {groupData.error && <p className="error">エラー: {groupData.error}</p>}
+      {activeGroupData.loading && <p className="info">読み込み中...</p>}
+      {activeGroupData.error && <p className="error">エラー: {activeGroupData.error}</p>}
 
-      {groupData.data && groupBy === 'model' && <ModelBreakdown data={groupData.data} />}
-      {groupData.data && groupBy === 'user' && <UserSummary data={groupData.data} />}
-      {groupData.data && groupBy === 'day' && (
+      {activeGroupData.data && groupBy === 'model' && <ModelBreakdown data={activeGroupData.data} />}
+      {activeGroupData.data && groupBy === 'user' && <UserSummary data={activeGroupData.data} />}
+      {activeGroupData.data && groupBy === 'day' && (
         <div className="card">
           <h3>日別詳細</h3>
-          <DataTable data={groupData.data} labelKey="date" />
+          <DataTable data={activeGroupData.data} labelKey="date" />
         </div>
       )}
-      {groupData.data && ['terminal', 'version', 'speed'].includes(groupBy) && (
+      {activeGroupData.data && ['terminal', 'version', 'speed'].includes(groupBy) && (
         <div className="card">
           <h3>{groupBy} 別詳細</h3>
-          <DataTable data={groupData.data} labelKey="key" />
+          <DataTable data={activeGroupData.data} labelKey="key" />
         </div>
       )}
-    </div>
-  );
-}
-
-function DataTable({ data, labelKey }: {
-  data: { [k: string]: unknown; total_cost_usd: number; input_tokens: number; output_tokens: number; request_count: number }[];
-  labelKey: string;
-}) {
-  const sorted = [...data].sort((a, b) => b.total_cost_usd - a.total_cost_usd);
-  return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>{labelKey}</th>
-            <th className="num">リクエスト数</th>
-            <th className="num">入力トークン</th>
-            <th className="num">出力トークン</th>
-            <th className="num">コスト</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((r, i) => (
-            <tr key={i}>
-              <td>{String(r[labelKey] ?? '-')}</td>
-              <td className="num">{r.request_count.toLocaleString()}</td>
-              <td className="num">{r.input_tokens.toLocaleString()}</td>
-              <td className="num">{r.output_tokens.toLocaleString()}</td>
-              <td className="num">${r.total_cost_usd.toFixed(4)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

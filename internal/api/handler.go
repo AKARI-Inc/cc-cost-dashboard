@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"time"
@@ -50,14 +52,11 @@ func (h *Handler) Register(mux *http.ServeMux) {
 
 // Health は簡易なヘルスチェックレスポンスを返す。
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
-	setCORS(w)
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
 // ClaudeCodeUsage は Claude Code の集計済み利用データを返す。
 func (h *Handler) ClaudeCodeUsage(w http.ResponseWriter, r *http.Request) {
-	setCORS(w)
-
 	from, to, err := parseDateRange(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
@@ -106,8 +105,6 @@ func (h *Handler) ClaudeCodeUsage(w http.ResponseWriter, r *http.Request) {
 
 // ClaudeCodeEvents は任意のフィルタを適用した生の OtelEvent データを返す。
 func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
-	setCORS(w)
-
 	from, to, err := parseDateRange(r)
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
@@ -129,7 +126,10 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 
 	eventName := r.URL.Query().Get("eventName")
 	userEmail := r.URL.Query().Get("userEmail")
-	order := r.URL.Query().Get("order") // "asc" / "desc" (default: desc)
+	order := r.URL.Query().Get("order")
+	if order != "asc" {
+		order = "desc"
+	}
 
 	events, err := h.reader().ReadOtelEvents(r.Context(), from, to)
 	if err != nil {
@@ -137,14 +137,8 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// デフォルトは降順 (新しい順)
-	if order != "asc" {
-		// reader は昇順で返すので逆順イテレーション
-		reversed := make([]model.OtelEvent, len(events))
-		for i, ev := range events {
-			reversed[len(events)-1-i] = ev
-		}
-		events = reversed
+	if order == "desc" {
+		slices.Reverse(events)
 	}
 
 	var filtered []model.OtelEvent
@@ -177,17 +171,12 @@ func (h *Handler) ClaudeCodeEvents(w http.ResponseWriter, r *http.Request) {
 
 // --- ヘルパー ---
 
-func setCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-}
-
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	enc := json.NewEncoder(w)
-	enc.SetIndent("", "  ")
-	enc.Encode(v)
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		log.Printf("writeJSON: encode error: %v", err)
+	}
 }
 
 // jst は from/to 解釈に使うタイムゾーン。
@@ -196,9 +185,10 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 func parseDateRange(r *http.Request) (time.Time, time.Time, error) {
-	now := time.Now().UTC()
-	from := now.AddDate(0, 0, -30)
-	to := now
+	nowJST := time.Now().In(jst)
+	todayStart := time.Date(nowJST.Year(), nowJST.Month(), nowJST.Day(), 0, 0, 0, 0, jst)
+	from := todayStart.AddDate(0, 0, -30).UTC()
+	to := todayStart.Add(24*time.Hour - time.Nanosecond).UTC()
 
 	if s := r.URL.Query().Get("from"); s != "" {
 		t, err := time.ParseInLocation("2006-01-02", s, jst)

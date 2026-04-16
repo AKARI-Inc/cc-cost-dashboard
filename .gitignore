@@ -43,5 +43,5 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Claude Code local
-.claude/settings.local.json
+# Claude Code local (project-scoped settings はユーザー固有のため全除外)
+.claude/

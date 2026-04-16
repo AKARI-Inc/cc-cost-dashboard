@@ -1,18 +1,10 @@
+import { daysAgo, today } from '../dateUtil';
+
 type Props = {
   from: string;
   to: string;
   onChange: (from: string, to: string) => void;
 };
-
-function daysAgo(n: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
-}
-
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 const presets = [
   { label: '7日', days: 7 },

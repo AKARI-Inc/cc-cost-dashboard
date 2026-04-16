@@ -8,9 +8,7 @@ import (
 
 const apiRequestEvent = "claude_code.api_request"
 
-// AggregateByDay は OtelEvent を日付単位でグループ化し、コスト・トークン数・
-// リクエスト数を合算する。event_name が "claude_code.api_request" のイベントのみ
-// 集計対象となる。結果は日付の昇順でソートされる。
+// ダッシュボードの日別コスト推移チャートを描画するための集計。
 func AggregateByDay(events []model.OtelEvent) []model.DailySummary {
 	m := make(map[string]*model.DailySummary)
 
@@ -42,9 +40,7 @@ func AggregateByDay(events []model.OtelEvent) []model.DailySummary {
 	return result
 }
 
-// AggregateByModel は OtelEvent をモデル単位でグループ化し、コスト・トークン数・
-// リクエスト数を合算する。api_request イベントのみ集計対象となる。
-// 結果は total_cost_usd の降順でソートされる。
+// ダッシュボードのモデル別利用比率チャートを描画するための集計。
 func AggregateByModel(events []model.OtelEvent) []model.ModelSummary {
 	m := make(map[string]*model.ModelSummary)
 
@@ -75,9 +71,7 @@ func AggregateByModel(events []model.OtelEvent) []model.ModelSummary {
 	return result
 }
 
-// AggregateByUser は OtelEvent を user_email 単位でグループ化し、コスト・
-// トークン数・リクエスト数を合算する。api_request イベントのみ集計対象となる。
-// 結果は total_cost_usd の降順でソートされる。
+// ダッシュボードのユーザー別消費量テーブルを描画するための集計。
 func AggregateByUser(events []model.OtelEvent) []model.UserSummary {
 	m := make(map[string]*model.UserSummary)
 
@@ -108,8 +102,6 @@ func AggregateByUser(events []model.OtelEvent) []model.UserSummary {
 	return result
 }
 
-// extractDate はタイムスタンプ文字列の先頭 10 文字（YYYY-MM-DD）を返す。
-// タイムスタンプが 10 文字未満の場合はそのまま全体を返す。
 func extractDate(ts string) string {
 	if len(ts) >= 10 {
 		return ts[:10]
