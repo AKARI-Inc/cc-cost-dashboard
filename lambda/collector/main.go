@@ -61,6 +61,10 @@ func handler(ctx context.Context, req events.LambdaFunctionURLRequest) (events.L
 		log.Printf("WARN: %d/%d event(s) failed to write", writeErrors, len(otelEvents))
 	}
 
+	if writeErrors == len(otelEvents) && len(otelEvents) > 0 {
+		return respond(500, `{"error":"all events failed to write"}`), nil
+	}
+
 	return respond(200, `{}`), nil
 }
 

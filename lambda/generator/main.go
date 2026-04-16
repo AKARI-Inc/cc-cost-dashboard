@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	apiRequestEvent = "claude_code.api_request"
 	// 集計対象の遡及日数。Frontend は client-side で再フィルタするので
 	// 最大の検索期間 (1 年) をカバー。
 	lookbackDays = 365
@@ -117,10 +116,10 @@ func bucketize(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []B
 	m := make(map[bucketKey]*Bucket)
 
 	for _, ev := range events {
-		if ev.EventName != apiRequestEvent {
+		if ev.EventName != model.APIRequestEvent {
 			continue
 		}
-		date := extractDate(ev.Timestamp)
+		date := model.ExtractDate(ev.Timestamp)
 		k := keyFn(ev)
 		if k == "" {
 			k = "(unknown)"
@@ -148,13 +147,6 @@ func bucketize(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []B
 		return result[i].Key < result[j].Key
 	})
 	return result
-}
-
-func extractDate(ts string) string {
-	if len(ts) >= 10 {
-		return ts[:10]
-	}
-	return ts
 }
 
 func putJSON(ctx context.Context, key string, data any) error {

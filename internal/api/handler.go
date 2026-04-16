@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"slices"
-	"sort"
 	"strconv"
 	"time"
 
@@ -83,11 +82,11 @@ func (h *Handler) ClaudeCodeUsage(w http.ResponseWriter, r *http.Request) {
 	case "user":
 		data = storage.AggregateByUser(events)
 	case "terminal":
-		data = aggregateOtelByKey(events, func(e model.OtelEvent) string { return e.TerminalType })
+		data = storage.AggregateByKey(events, func(e model.OtelEvent) string { return e.TerminalType })
 	case "version":
-		data = aggregateOtelByKey(events, func(e model.OtelEvent) string { return e.ServiceVersion })
+		data = storage.AggregateByKey(events, func(e model.OtelEvent) string { return e.ServiceVersion })
 	case "speed":
-		data = aggregateOtelByKey(events, func(e model.OtelEvent) string { return e.Speed })
+		data = storage.AggregateByKey(events, func(e model.OtelEvent) string { return e.Speed })
 	default:
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid groupBy: " + groupBy})
 		return
@@ -188,7 +187,7 @@ func parseDateRange(r *http.Request) (time.Time, time.Time, error) {
 	nowJST := time.Now().In(jst)
 	todayStart := time.Date(nowJST.Year(), nowJST.Month(), nowJST.Day(), 0, 0, 0, 0, jst)
 	from := todayStart.AddDate(0, 0, -30).UTC()
-	to := todayStart.Add(24*time.Hour - time.Nanosecond).UTC()
+	to := todayStart.Add(24 * time.Hour).UTC() // exclusive upper bound (翌日 00:00:00)
 
 	if s := r.URL.Query().Get("from"); s != "" {
 		t, err := time.ParseInLocation("2006-01-02", s, jst)
@@ -202,47 +201,10 @@ func parseDateRange(r *http.Request) (time.Time, time.Time, error) {
 		if err != nil {
 			return time.Time{}, time.Time{}, fmt.Errorf("invalid to date: %s", s)
 		}
-		// 当日を含めるため 23:59:59.999 まで拡張 (JST)
-		to = t.Add(24*time.Hour - time.Nanosecond).UTC()
+		to = t.Add(24 * time.Hour).UTC() // exclusive upper bound
 	}
 
 	return from, to, nil
 }
 
-// KeySummary はカスタム groupBy 向けの汎用集計結果。
-type KeySummary struct {
-	Key          string  `json:"key"`
-	TotalCostUSD float64 `json:"total_cost_usd"`
-	InputTokens  int     `json:"input_tokens"`
-	OutputTokens int     `json:"output_tokens"`
-	RequestCount int     `json:"request_count"`
-}
-
-func aggregateOtelByKey(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []KeySummary {
-	m := make(map[string]*KeySummary)
-	for _, ev := range events {
-		if ev.EventName != "claude_code.api_request" {
-			continue
-		}
-		k := keyFn(ev)
-		s, ok := m[k]
-		if !ok {
-			s = &KeySummary{Key: k}
-			m[k] = s
-		}
-		s.TotalCostUSD += ev.CostUSD
-		s.InputTokens += ev.InputTokens
-		s.OutputTokens += ev.OutputTokens
-		s.RequestCount++
-	}
-
-	result := make([]KeySummary, 0, len(m))
-	for _, s := range m {
-		result = append(result, *s)
-	}
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].TotalCostUSD > result[j].TotalCostUSD
-	})
-	return result
-}
 

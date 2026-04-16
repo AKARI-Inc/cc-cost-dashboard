@@ -20,8 +20,8 @@ export function UserSummary({ data }: Props) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((r, i) => (
-              <tr key={i}>
+            {sorted.map((r) => (
+              <tr key={r.user_email ?? r.key ?? '-'}>
                 <td>{r.user_email ?? r.key ?? '-'}</td>
                 <td className="num">{r.request_count.toLocaleString()}</td>
                 <td className="num">{r.input_tokens.toLocaleString()}</td>
