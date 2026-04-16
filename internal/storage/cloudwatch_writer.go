@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -16,8 +17,9 @@ import (
 )
 
 const (
-	flushMaxEvents = 500
-	flushInterval  = 5 * time.Second
+	flushMaxEvents   = 500
+	flushInterval    = 5 * time.Second
+	bufferMaxPerGroup = 10000 // これを超えたら古い方から捨てる
 )
 
 // ローカル JSONL を本番 CloudWatch Logs に差し替えるための Writer。
@@ -110,7 +112,9 @@ func (w *CloudWatchWriter) flushLoop(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			_ = w.Flush(ctx)
+			if err := w.Flush(ctx); err != nil {
+				log.Printf("WARN: background flush: %v", err)
+			}
 		case <-w.done:
 			return
 		case <-ctx.Done():
@@ -131,10 +135,7 @@ func (w *CloudWatchWriter) flushGroup(ctx context.Context, logGroup string) erro
 
 	stream, err := w.ensureStream(ctx, logGroup)
 	if err != nil {
-		// 送信失敗分をバッファに戻す
-		w.mu.Lock()
-		w.bufByGroup[logGroup] = append(buf, w.bufByGroup[logGroup]...)
-		w.mu.Unlock()
+		w.requeue(logGroup, buf)
 		return err
 	}
 
@@ -144,13 +145,23 @@ func (w *CloudWatchWriter) flushGroup(ctx context.Context, logGroup string) erro
 		LogEvents:     buf,
 	})
 	if err != nil {
-		// 送信失敗分をバッファに戻す
-		w.mu.Lock()
-		w.bufByGroup[logGroup] = append(buf, w.bufByGroup[logGroup]...)
-		w.mu.Unlock()
+		w.requeue(logGroup, buf)
 		return fmt.Errorf("put log events: %w", err)
 	}
 	return nil
+}
+
+func (w *CloudWatchWriter) requeue(logGroup string, buf []cwltypes.InputLogEvent) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	merged := append(buf, w.bufByGroup[logGroup]...)
+	if len(merged) > bufferMaxPerGroup {
+		dropped := len(merged) - bufferMaxPerGroup
+		merged = merged[dropped:]
+		log.Printf("WARN: dropped %d oldest event(s) for %s (buffer capped at %d)", dropped, logGroup, bufferMaxPerGroup)
+	}
+	w.bufByGroup[logGroup] = merged
 }
 
 func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (string, error) {

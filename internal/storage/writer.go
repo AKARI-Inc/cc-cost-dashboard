@@ -10,11 +10,9 @@ import (
 	"time"
 )
 
-// Writer は 1 件のイベントを指定の logGroup に書き込む抽象。
-// ローカル開発では FileWriter（JSONL 追記）、
-// 本番 / LocalStack では CloudWatchWriter（PutLogEvents）を使う。
 type Writer interface {
 	AppendEvent(ctx context.Context, logGroup string, event any) error
+	Close(ctx context.Context) error
 }
 
 // ---------- FileWriter ----------
@@ -64,6 +62,8 @@ func (w *FileWriter) AppendEvent(_ context.Context, logGroup string, event any) 
 
 	return nil
 }
+
+func (w *FileWriter) Close(_ context.Context) error { return nil }
 
 // ---------- 後方互換エイリアス ----------
 

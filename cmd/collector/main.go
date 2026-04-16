@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/narumina/cc-cost-dashboard/internal/collector"
@@ -101,6 +103,25 @@ func main() {
 		port = "4318"
 	}
 
+	srv := &http.Server{Addr: ":" + port, Handler: mux}
+
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+		<-sig
+		log.Println("shutting down...")
+
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		srv.Shutdown(shutdownCtx)
+		if err := writer.Close(shutdownCtx); err != nil {
+			log.Printf("ERROR: writer close: %v", err)
+		}
+	}()
+
 	log.Printf("Collector listening on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, mux))
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }
