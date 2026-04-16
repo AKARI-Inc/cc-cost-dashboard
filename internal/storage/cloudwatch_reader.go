@@ -39,7 +39,7 @@ func NewCloudWatchReader(ctx context.Context) (*CloudWatchReader, error) {
 }
 
 func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error) {
-	logGroup := "/otel/claude-code"
+	logGroup := LogGroupOtel
 	var events []model.OtelEvent
 
 	var nextToken *string

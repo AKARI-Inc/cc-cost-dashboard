@@ -59,7 +59,7 @@ func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 
 // パイプラインイベントを CloudWatch Logs に永続化するためのメソッド。
 func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, event any) error {
-	logGroupName := normalizeLogGroup(logGroup)
+	logGroupName := resolveLogGroup(logGroup)
 
 	data, err := json.Marshal(event)
 	if err != nil {
@@ -204,9 +204,3 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 	return stream, nil
 }
 
-func normalizeLogGroup(group string) string {
-	if group == "otel" {
-		return "/otel/claude-code"
-	}
-	return group
-}

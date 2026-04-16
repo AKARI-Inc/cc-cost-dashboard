@@ -59,7 +59,3 @@ func (w *FileWriter) AppendEvent(_ context.Context, logGroup string, event any) 
 
 func (w *FileWriter) Close(_ context.Context) error { return nil }
 
-// テスト後方互換のためのパッケージレベル関数。新規コードは Writer interface を使う。
-func AppendEvent(dataDir string, logGroup string, event any) error {
-	return NewFileWriter(dataDir).AppendEvent(context.Background(), logGroup, event)
-}

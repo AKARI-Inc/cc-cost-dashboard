@@ -147,7 +147,113 @@ func TestExtractEvents_ToolDecision(t *testing.T) {
 	}
 }
 
-// テスト用属性を組み立てるためのヘルパー関数群。
+// 実際の Claude Code テレメトリは Body にイベント名を入れる。
+func TestExtractEvents_BodyEventName(t *testing.T) {
+	req := &collogspb.ExportLogsServiceRequest{
+		ResourceLogs: []*logspb.ResourceLogs{
+			{
+				ScopeLogs: []*logspb.ScopeLogs{
+					{
+						LogRecords: []*logspb.LogRecord{
+							{
+								TimeUnixNano: 1700000000000000000,
+								Body: &commonpb.AnyValue{
+									Value: &commonpb.AnyValue_StringValue{StringValue: "claude_code.api_request"},
+								},
+								Attributes: []*commonpb.KeyValue{
+									strKV("model", "claude-sonnet-4-20250514"),
+									intKV("input_tokens", 200),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	events := ExtractEvents(req)
+	if len(events) != 1 {
+		t.Fatalf("expected 1 event, got %d", len(events))
+	}
+	ev := events[0]
+	if ev.EventName != "claude_code.api_request" {
+		t.Errorf("event_name = %q, want %q", ev.EventName, "claude_code.api_request")
+	}
+	if ev.Model != "claude-sonnet-4-20250514" {
+		t.Errorf("model = %q", ev.Model)
+	}
+	if ev.InputTokens != 200 {
+		t.Errorf("input_tokens = %d, want 200", ev.InputTokens)
+	}
+}
+
+// event.name 属性にプレフィクスなし（"api_request"）で入った場合、"claude_code." が補完される。
+func TestExtractEvents_PrefixCompletion(t *testing.T) {
+	req := &collogspb.ExportLogsServiceRequest{
+		ResourceLogs: []*logspb.ResourceLogs{
+			{
+				ScopeLogs: []*logspb.ScopeLogs{
+					{
+						LogRecords: []*logspb.LogRecord{
+							{
+								Attributes: []*commonpb.KeyValue{
+									strKV("event.name", "api_request"),
+									strKV("model", "claude-sonnet-4-20250514"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	events := ExtractEvents(req)
+	if len(events) != 1 {
+		t.Fatalf("expected 1 event, got %d", len(events))
+	}
+	if events[0].EventName != "claude_code.api_request" {
+		t.Errorf("event_name = %q, want %q", events[0].EventName, "claude_code.api_request")
+	}
+}
+
+// Body にイベント名があり、event.name 属性にも別の値がある場合、Body が優先される。
+func TestExtractEvents_BodyTakesPrecedenceOverAttr(t *testing.T) {
+	req := &collogspb.ExportLogsServiceRequest{
+		ResourceLogs: []*logspb.ResourceLogs{
+			{
+				ScopeLogs: []*logspb.ScopeLogs{
+					{
+						LogRecords: []*logspb.LogRecord{
+							{
+								Body: &commonpb.AnyValue{
+									Value: &commonpb.AnyValue_StringValue{StringValue: "claude_code.user_prompt"},
+								},
+								Attributes: []*commonpb.KeyValue{
+									strKV("event.name", "user_prompt"),
+									intKV("prompt_length", 99),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	events := ExtractEvents(req)
+	if len(events) != 1 {
+		t.Fatalf("expected 1 event, got %d", len(events))
+	}
+	if events[0].EventName != "claude_code.user_prompt" {
+		t.Errorf("event_name = %q, want %q", events[0].EventName, "claude_code.user_prompt")
+	}
+	if events[0].CharCount != 99 {
+		t.Errorf("char_count = %d, want 99", events[0].CharCount)
+	}
+}
+
 
 func strKV(key, val string) *commonpb.KeyValue {
 	return &commonpb.KeyValue{

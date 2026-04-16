@@ -27,14 +27,6 @@ func NewFileReader(dataDir string) *FileReader {
 }
 
 func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
-	return readOtelEventsFromDir(r.DataDir, from, to)
-}
-
-func ReadOtelEvents(dataDir string, from, to time.Time) ([]model.OtelEvent, error) {
-	return readOtelEventsFromDir(dataDir, from, to)
-}
-
-func readOtelEventsFromDir(dataDir string, from, to time.Time) ([]model.OtelEvent, error) {
 	var events []model.OtelEvent
 
 	for d := truncateToDay(from); !d.After(truncateToDay(to)); d = d.AddDate(0, 0, 1) {
@@ -77,6 +69,7 @@ func readLines(filename string) ([][]byte, error) {
 
 	var lines [][]byte
 	scanner := bufio.NewScanner(f)
+	scanner.Buffer(make([]byte, 0, 64*1024), 1<<20) // RawAttributes が大きい行に対応
 	for scanner.Scan() {
 		b := scanner.Bytes()
 		if len(b) == 0 {
