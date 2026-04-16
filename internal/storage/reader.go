@@ -2,6 +2,7 @@ package storage
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -12,11 +13,28 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/model"
 )
 
-// ReadOtelEvents は otel ログ グループ配下の JSONL ファイルから、
-// [from, to] の範囲（両端含む）に該当するすべての OtelEvent を読み込む。
-// 存在しないファイルは無言でスキップし、パースに失敗した行もスキップする。
-// 戻り値のスライスはタイムスタンプ昇順でソートされる。
+type Reader interface {
+	ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error)
+}
+
+// ローカル JSONL からイベントを読み取るための Reader。
+type FileReader struct {
+	DataDir string
+}
+
+func NewFileReader(dataDir string) *FileReader {
+	return &FileReader{DataDir: dataDir}
+}
+
+func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
+	return readOtelEventsFromDir(r.DataDir, from, to)
+}
+
 func ReadOtelEvents(dataDir string, from, to time.Time) ([]model.OtelEvent, error) {
+	return readOtelEventsFromDir(dataDir, from, to)
+}
+
+func readOtelEventsFromDir(dataDir string, from, to time.Time) ([]model.OtelEvent, error) {
 	var events []model.OtelEvent
 
 	for d := truncateToDay(from); !d.After(truncateToDay(to)); d = d.AddDate(0, 0, 1) {
@@ -24,7 +42,7 @@ func ReadOtelEvents(dataDir string, from, to time.Time) ([]model.OtelEvent, erro
 
 		lines, err := readLines(filename)
 		if err != nil {
-			continue // ファイルが存在しない、あるいはオープンできない場合
+			continue
 		}
 
 		for _, line := range lines {
@@ -42,15 +60,11 @@ func ReadOtelEvents(dataDir string, from, to time.Time) ([]model.OtelEvent, erro
 	return events, nil
 }
 
-// truncateToDay は t を UTC におけるその日の 00:00 に丸めて返す。
 func truncateToDay(t time.Time) time.Time {
 	y, m, d := t.UTC().Date()
 	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 }
 
-// readLines はファイルから空行以外のすべての行を読み込む。
-// ファイルを開けない場合はエラーを返す。ファイルが存在しない場合の
-// os.ErrNotExist は想定内のケース。
 func readLines(filename string) ([][]byte, error) {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -68,7 +82,6 @@ func readLines(filename string) ([][]byte, error) {
 		if len(b) == 0 {
 			continue
 		}
-		// scanner はバッファを使い回すためバイト列をコピーしておく。
 		line := make([]byte, len(b))
 		copy(line, b)
 		lines = append(lines, line)

@@ -24,6 +24,8 @@ func main() {
 		dataDir = "data"
 	}
 
+	saveRaw := os.Getenv("SAVE_RAW") == "true"
+
 	writer, backend, err := storage.NewWriter(ctx, dataDir)
 	if err != nil {
 		log.Fatalf("init storage writer: %v", err)
@@ -33,7 +35,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /v1/logs", func(w http.ResponseWriter, r *http.Request) {
-		body, err := io.ReadAll(r.Body)
+		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 10<<20))
 		if err != nil {
 			log.Printf("ERROR: failed to read request body: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
@@ -41,14 +43,16 @@ func main() {
 			return
 		}
 
-		rawDir := filepath.Join(dataDir, "logs", "otel", "raw")
-		if err := os.MkdirAll(rawDir, 0o755); err != nil {
-			log.Printf("ERROR: failed to create raw dir: %v", err)
-		} else {
-			ts := time.Now().UTC().Format("20060102T150405.000000000")
-			rawPath := filepath.Join(rawDir, fmt.Sprintf("%s.bin", ts))
-			if err := os.WriteFile(rawPath, body, 0o644); err != nil {
-				log.Printf("ERROR: failed to write raw payload: %v", err)
+		if saveRaw {
+			rawDir := filepath.Join(dataDir, "logs", "otel", "raw")
+			if err := os.MkdirAll(rawDir, 0o755); err != nil {
+				log.Printf("ERROR: failed to create raw dir: %v", err)
+			} else {
+				ts := time.Now().UTC().Format("20060102T150405.000000000")
+				rawPath := filepath.Join(rawDir, fmt.Sprintf("%s.bin", ts))
+				if err := os.WriteFile(rawPath, body, 0o644); err != nil {
+					log.Printf("ERROR: failed to write raw payload: %v", err)
+				}
 			}
 		}
 

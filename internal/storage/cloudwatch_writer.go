@@ -155,7 +155,10 @@ func (w *CloudWatchWriter) requeue(logGroup string, buf []cwltypes.InputLogEvent
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	merged := append(buf, w.bufByGroup[logGroup]...)
+	pending := w.bufByGroup[logGroup]
+	merged := make([]cwltypes.InputLogEvent, 0, len(buf)+len(pending))
+	merged = append(merged, buf...)
+	merged = append(merged, pending...)
 	if len(merged) > bufferMaxPerGroup {
 		dropped := len(merged) - bufferMaxPerGroup
 		merged = merged[dropped:]
@@ -166,11 +169,11 @@ func (w *CloudWatchWriter) requeue(logGroup string, buf []cwltypes.InputLogEvent
 
 func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (string, error) {
 	w.mu.Lock()
-	defer w.mu.Unlock()
-
 	if s, ok := w.streamByGroup[logGroup]; ok {
+		w.mu.Unlock()
 		return s, nil
 	}
+	w.mu.Unlock()
 
 	host, _ := os.Hostname()
 	if host == "" {
@@ -178,6 +181,7 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 	}
 	stream := fmt.Sprintf("%s-%d", host, time.Now().Unix())
 
+	// ロック外でネットワーク呼び出し
 	_, err := w.client.CreateLogStream(ctx, &cloudwatchlogs.CreateLogStreamInput{
 		LogGroupName:  aws.String(logGroup),
 		LogStreamName: aws.String(stream),
@@ -189,7 +193,14 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 		}
 	}
 
+	// double-check: 別ゴルーチンが先に登録していたらそちらを使う
+	w.mu.Lock()
+	if s, ok := w.streamByGroup[logGroup]; ok {
+		w.mu.Unlock()
+		return s, nil
+	}
 	w.streamByGroup[logGroup] = stream
+	w.mu.Unlock()
 	return stream, nil
 }
 

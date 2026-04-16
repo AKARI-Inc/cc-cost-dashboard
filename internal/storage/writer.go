@@ -15,21 +15,15 @@ type Writer interface {
 	Close(ctx context.Context) error
 }
 
-// ---------- FileWriter ----------
-
-// FileWriter は {DataDir}/logs/{logGroup}/YYYY-MM-DD.jsonl に 1 行として追記する。
-// ローカル開発のデフォルト実装。JSONL ファイルは jq や cat で直接デバッグできる。
+// ローカル開発で JSONL ファイルにイベントを追記するための Writer。
 type FileWriter struct {
 	DataDir string
 }
 
-// NewFileWriter はローカルファイルベースの Writer を生成する。
 func NewFileWriter(dataDir string) *FileWriter {
 	return &FileWriter{DataDir: dataDir}
 }
 
-// AppendEvent は event を JSON にマーシャルし当日分の JSONL に追記する。
-// syscall.Flock でファイルロックを取り、同時書き込みから保護する。
 func (w *FileWriter) AppendEvent(_ context.Context, logGroup string, event any) error {
 	now := time.Now().UTC()
 	dir := filepath.Join(w.DataDir, "logs", logGroup)
@@ -65,11 +59,7 @@ func (w *FileWriter) AppendEvent(_ context.Context, logGroup string, event any) 
 
 func (w *FileWriter) Close(_ context.Context) error { return nil }
 
-// ---------- 後方互換エイリアス ----------
-
-// AppendEvent はパッケージレベルの旧インタフェース。
-// 既存コードとテストを壊さないために FileWriter を介して実装する。
-// 新規コードは Writer インタフェースを使うこと。
+// テスト後方互換のためのパッケージレベル関数。新規コードは Writer interface を使う。
 func AppendEvent(dataDir string, logGroup string, event any) error {
 	return NewFileWriter(dataDir).AppendEvent(context.Background(), logGroup, event)
 }
