@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -14,20 +15,15 @@ import (
 	cwltypes "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
 )
 
-// CloudWatchWriter は CloudWatch Logs にイベントを PutLogEvents で書き込む。
-// LocalStack と本番 AWS の両方で動作する（AWS_ENDPOINT_URL で切り替え）。
-//
-// 本番では logGroup 名は "/otel/claude-code" や "/claude-ai/usage" のような
-// スラッシュ始まりのパスに揃える。
+// ローカル JSONL を本番 CloudWatch Logs に差し替えるための Writer。
 type CloudWatchWriter struct {
 	client *cloudwatchlogs.Client
 
-	mu           sync.Mutex
-	streamByGroup map[string]string // logGroup -> logStream (1 プロセス 1 stream でバッチ効率化)
+	mu            sync.Mutex
+	streamByGroup map[string]string
 }
 
-// NewCloudWatchWriter は AWS SDK の設定を読んで CloudWatchWriter を生成する。
-// AWS_ENDPOINT_URL が設定されていれば LocalStack を指すようになる。
+// CloudWatch Logs クライアントを構築するためのコンストラクタ。
 func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -47,9 +43,7 @@ func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	}, nil
 }
 
-// AppendEvent は event を JSON 化して PutLogEvents で CloudWatch Logs に送信する。
-// logGroup は "/otel/claude-code" のようなフルパス名を使う。
-// logStream は 1 プロセス 1 本で使い回す（ホスト名 + プロセス起動時刻）。
+// パイプラインイベントを JSON 化して CloudWatch Logs に永続化するためのメソッド。
 func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, event any) error {
 	logGroupName := normalizeLogGroup(logGroup)
 
@@ -77,8 +71,6 @@ func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, eve
 	return nil
 }
 
-// ensureStream は logGroup ごとに 1 本 logStream を確保する。
-// 既に作成済みの場合はキャッシュから返す。
 func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (string, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -98,9 +90,8 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 		LogStreamName: aws.String(stream),
 	})
 	if err != nil {
-		// 既存 stream はエラーとしない
 		var existsErr *cwltypes.ResourceAlreadyExistsException
-		if !errorAs(err, &existsErr) {
+		if !errors.As(err, &existsErr) {
 			return "", fmt.Errorf("create log stream %s/%s: %w", logGroup, stream, err)
 		}
 	}
@@ -109,8 +100,6 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 	return stream, nil
 }
 
-// normalizeLogGroup は "otel" のような短縮名を "/otel/claude-code" にマップする。
-// 既にスラッシュ始まりならそのまま返す（柔軟性を保つ）。
 func normalizeLogGroup(group string) string {
 	if group == "otel" {
 		return "/otel/claude-code"
@@ -118,20 +107,3 @@ func normalizeLogGroup(group string) string {
 	return group
 }
 
-// errorAs は errors.As の薄いラッパー（循環依存を避けるため別ファイルに分けない）。
-func errorAs(err error, target any) bool {
-	for err != nil {
-		if t, ok := target.(**cwltypes.ResourceAlreadyExistsException); ok {
-			if e, ok := err.(*cwltypes.ResourceAlreadyExistsException); ok {
-				*t = e
-				return true
-			}
-		}
-		u, ok := err.(interface{ Unwrap() error })
-		if !ok {
-			return false
-		}
-		err = u.Unwrap()
-	}
-	return false
-}
