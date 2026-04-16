@@ -241,26 +241,6 @@ th {
   margin-top: 16px;
 }
 
-/* Drop zone */
-.drop-zone {
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
-  padding: 32px;
-  text-align: center;
-  color: var(--color-text-muted);
-  transition: border-color 0.2s;
-  margin-bottom: 12px;
-}
-
-.drop-zone-active {
-  border-color: var(--color-primary);
-  background: rgba(108, 140, 255, 0.05);
-}
-
-.drop-zone input[type='file'] {
-  margin-top: 8px;
-}
-
 /* Filter row */
 .filter-row {
   margin-bottom: 16px;

@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/narumina/cc-cost-dashboard/internal/collector"
@@ -22,20 +24,18 @@ func main() {
 		dataDir = "data"
 	}
 
-	// STORAGE=file (default) または cloudwatch で切り替え可能。
-	// cloudwatch は LocalStack（AWS_ENDPOINT_URL=http://localstack:4566）と
-	// 本番 AWS の両方をカバーする。
-	writer, err := storage.NewWriter(ctx, dataDir)
+	saveRaw := os.Getenv("SAVE_RAW") == "true"
+
+	writer, backend, err := storage.NewWriter(ctx, dataDir)
 	if err != nil {
 		log.Fatalf("init storage writer: %v", err)
 	}
-	log.Printf("Storage backend: %s", os.Getenv("STORAGE"))
+	log.Printf("Storage backend: %s", backend)
 
 	mux := http.NewServeMux()
 
-	// メインエンドポイント: OTel の protobuf ログを受信する
 	mux.HandleFunc("POST /v1/logs", func(w http.ResponseWriter, r *http.Request) {
-		body, err := io.ReadAll(r.Body)
+		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 10<<20))
 		if err != nil {
 			log.Printf("ERROR: failed to read request body: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
@@ -43,19 +43,19 @@ func main() {
 			return
 		}
 
-		// デバッグ用に生ペイロードを保存する
-		rawDir := filepath.Join(dataDir, "logs", "otel", "raw")
-		if err := os.MkdirAll(rawDir, 0o755); err != nil {
-			log.Printf("ERROR: failed to create raw dir: %v", err)
-		} else {
-			ts := time.Now().UTC().Format("20060102T150405.000000000")
-			rawPath := filepath.Join(rawDir, fmt.Sprintf("%s.bin", ts))
-			if err := os.WriteFile(rawPath, body, 0o644); err != nil {
-				log.Printf("ERROR: failed to write raw payload: %v", err)
+		if saveRaw {
+			rawDir := filepath.Join(dataDir, "logs", "otel", "raw")
+			if err := os.MkdirAll(rawDir, 0o755); err != nil {
+				log.Printf("ERROR: failed to create raw dir: %v", err)
+			} else {
+				ts := time.Now().UTC().Format("20060102T150405.000000000")
+				rawPath := filepath.Join(rawDir, fmt.Sprintf("%s.bin", ts))
+				if err := os.WriteFile(rawPath, body, 0o644); err != nil {
+					log.Printf("ERROR: failed to write raw payload: %v", err)
+				}
 			}
 		}
 
-		// protobuf をデコードする
 		decoded, err := collector.DecodeLogs(body)
 		if err != nil {
 			log.Printf("ERROR: failed to decode logs: %v", err)
@@ -64,11 +64,9 @@ func main() {
 			return
 		}
 
-		// イベントを抽出する
 		events := collector.ExtractEvents(decoded)
 		log.Printf("Received %d event(s)", len(events))
 
-		// 各イベントをストレージに書き込む
 		var writeErrors int
 		for _, event := range events {
 			if err := writer.AppendEvent(r.Context(), "otel", event); err != nil {
@@ -76,15 +74,21 @@ func main() {
 				writeErrors++
 			}
 		}
-		if writeErrors > 0 {
-			log.Printf("WARN: %d/%d event(s) failed to write", writeErrors, len(events))
-		}
 
-		w.WriteHeader(http.StatusOK)
+		switch {
+		case writeErrors == 0:
+			w.WriteHeader(http.StatusOK)
+		case writeErrors < len(events):
+			log.Printf("WARN: %d/%d event(s) failed to write", writeErrors, len(events))
+			w.WriteHeader(http.StatusOK)
+		default:
+			// 全件失敗 → 500 で OTel SDK にリトライさせる
+			log.Printf("ERROR: all %d event(s) failed to write", len(events))
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		w.Write([]byte(`{}`))
 	})
 
-	// traces と metrics は受理のみ行い内容は無視する
 	mux.HandleFunc("POST /v1/traces", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{}`))
@@ -94,7 +98,6 @@ func main() {
 		w.Write([]byte(`{}`))
 	})
 
-	// ヘルスチェック
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
@@ -104,6 +107,25 @@ func main() {
 		port = "4318"
 	}
 
+	srv := &http.Server{Addr: ":" + port, Handler: mux}
+
+	go func() {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+		<-sig
+		log.Println("shutting down...")
+
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		srv.Shutdown(shutdownCtx)
+		if err := writer.Close(shutdownCtx); err != nil {
+			log.Printf("ERROR: writer close: %v", err)
+		}
+	}()
+
 	log.Printf("Collector listening on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, mux))
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }

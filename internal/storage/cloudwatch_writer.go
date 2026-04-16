@@ -3,7 +3,9 @@ package storage
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -14,20 +16,24 @@ import (
 	cwltypes "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
 )
 
-// CloudWatchWriter は CloudWatch Logs にイベントを PutLogEvents で書き込む。
-// LocalStack と本番 AWS の両方で動作する（AWS_ENDPOINT_URL で切り替え）。
-//
-// 本番では logGroup 名は "/otel/claude-code" や "/claude-ai/usage" のような
-// スラッシュ始まりのパスに揃える。
+const (
+	flushMaxEvents   = 500
+	flushInterval    = 5 * time.Second
+	bufferMaxPerGroup = 10000 // これを超えたら古い方から捨てる
+)
+
+// ローカル JSONL を本番 CloudWatch Logs に差し替えるための Writer。
 type CloudWatchWriter struct {
 	client *cloudwatchlogs.Client
 
-	mu           sync.Mutex
-	streamByGroup map[string]string // logGroup -> logStream (1 プロセス 1 stream でバッチ効率化)
+	mu            sync.Mutex
+	streamByGroup map[string]string
+	bufByGroup    map[string][]cwltypes.InputLogEvent
+
+	stopOnce sync.Once
+	done     chan struct{}
 }
 
-// NewCloudWatchWriter は AWS SDK の設定を読んで CloudWatchWriter を生成する。
-// AWS_ENDPOINT_URL が設定されていれば LocalStack を指すようになる。
 func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
@@ -41,51 +47,133 @@ func NewCloudWatchWriter(ctx context.Context) (*CloudWatchWriter, error) {
 		})
 	}
 
-	return &CloudWatchWriter{
+	w := &CloudWatchWriter{
 		client:        cloudwatchlogs.NewFromConfig(cfg, opts...),
 		streamByGroup: make(map[string]string),
-	}, nil
+		bufByGroup:    make(map[string][]cwltypes.InputLogEvent),
+		done:          make(chan struct{}),
+	}
+	go w.flushLoop(ctx)
+	return w, nil
 }
 
-// AppendEvent は event を JSON 化して PutLogEvents で CloudWatch Logs に送信する。
-// logGroup は "/otel/claude-code" のようなフルパス名を使う。
-// logStream は 1 プロセス 1 本で使い回す（ホスト名 + プロセス起動時刻）。
+// パイプラインイベントを CloudWatch Logs に永続化するためのメソッド。
 func (w *CloudWatchWriter) AppendEvent(ctx context.Context, logGroup string, event any) error {
-	logGroupName := normalizeLogGroup(logGroup)
-
-	stream, err := w.ensureStream(ctx, logGroupName)
-	if err != nil {
-		return err
-	}
+	logGroupName := resolveLogGroup(logGroup)
 
 	data, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("marshal event: %w", err)
 	}
 
+	entry := cwltypes.InputLogEvent{
+		Message:   aws.String(string(data)),
+		Timestamp: aws.Int64(time.Now().UnixMilli()),
+	}
+
+	w.mu.Lock()
+	w.bufByGroup[logGroupName] = append(w.bufByGroup[logGroupName], entry)
+	shouldFlush := len(w.bufByGroup[logGroupName]) >= flushMaxEvents
+	w.mu.Unlock()
+
+	if shouldFlush {
+		return w.flushGroup(ctx, logGroupName)
+	}
+	return nil
+}
+
+// graceful shutdown 時にバッファを確実に送りきるためのメソッド。
+func (w *CloudWatchWriter) Flush(ctx context.Context) error {
+	w.mu.Lock()
+	groups := make([]string, 0, len(w.bufByGroup))
+	for g := range w.bufByGroup {
+		groups = append(groups, g)
+	}
+	w.mu.Unlock()
+
+	var firstErr error
+	for _, g := range groups {
+		if err := w.flushGroup(ctx, g); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
+}
+
+func (w *CloudWatchWriter) Close(ctx context.Context) error {
+	w.stopOnce.Do(func() { close(w.done) })
+	return w.Flush(ctx)
+}
+
+func (w *CloudWatchWriter) flushLoop(ctx context.Context) {
+	ticker := time.NewTicker(flushInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			if err := w.Flush(ctx); err != nil {
+				log.Printf("WARN: background flush: %v", err)
+			}
+		case <-w.done:
+			return
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func (w *CloudWatchWriter) flushGroup(ctx context.Context, logGroup string) error {
+	w.mu.Lock()
+	buf := w.bufByGroup[logGroup]
+	if len(buf) == 0 {
+		w.mu.Unlock()
+		return nil
+	}
+	w.bufByGroup[logGroup] = nil
+	w.mu.Unlock()
+
+	stream, err := w.ensureStream(ctx, logGroup)
+	if err != nil {
+		w.requeue(logGroup, buf)
+		return err
+	}
+
 	_, err = w.client.PutLogEvents(ctx, &cloudwatchlogs.PutLogEventsInput{
-		LogGroupName:  aws.String(logGroupName),
+		LogGroupName:  aws.String(logGroup),
 		LogStreamName: aws.String(stream),
-		LogEvents: []cwltypes.InputLogEvent{{
-			Message:   aws.String(string(data)),
-			Timestamp: aws.Int64(time.Now().UnixMilli()),
-		}},
+		LogEvents:     buf,
 	})
 	if err != nil {
+		w.requeue(logGroup, buf)
 		return fmt.Errorf("put log events: %w", err)
 	}
 	return nil
 }
 
-// ensureStream は logGroup ごとに 1 本 logStream を確保する。
-// 既に作成済みの場合はキャッシュから返す。
-func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (string, error) {
+func (w *CloudWatchWriter) requeue(logGroup string, buf []cwltypes.InputLogEvent) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
+	pending := w.bufByGroup[logGroup]
+	merged := make([]cwltypes.InputLogEvent, 0, len(buf)+len(pending))
+	merged = append(merged, buf...)
+	merged = append(merged, pending...)
+	if len(merged) > bufferMaxPerGroup {
+		dropped := len(merged) - bufferMaxPerGroup
+		merged = merged[dropped:]
+		log.Printf("WARN: dropped %d oldest event(s) for %s (buffer capped at %d)", dropped, logGroup, bufferMaxPerGroup)
+	}
+	w.bufByGroup[logGroup] = merged
+}
+
+func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (string, error) {
+	w.mu.Lock()
 	if s, ok := w.streamByGroup[logGroup]; ok {
+		w.mu.Unlock()
 		return s, nil
 	}
+	w.mu.Unlock()
 
 	host, _ := os.Hostname()
 	if host == "" {
@@ -93,45 +181,26 @@ func (w *CloudWatchWriter) ensureStream(ctx context.Context, logGroup string) (s
 	}
 	stream := fmt.Sprintf("%s-%d", host, time.Now().Unix())
 
+	// ロック外でネットワーク呼び出し
 	_, err := w.client.CreateLogStream(ctx, &cloudwatchlogs.CreateLogStreamInput{
 		LogGroupName:  aws.String(logGroup),
 		LogStreamName: aws.String(stream),
 	})
 	if err != nil {
-		// 既存 stream はエラーとしない
 		var existsErr *cwltypes.ResourceAlreadyExistsException
-		if !errorAs(err, &existsErr) {
+		if !errors.As(err, &existsErr) {
 			return "", fmt.Errorf("create log stream %s/%s: %w", logGroup, stream, err)
 		}
 	}
 
+	// double-check: 別ゴルーチンが先に登録していたらそちらを使う
+	w.mu.Lock()
+	if s, ok := w.streamByGroup[logGroup]; ok {
+		w.mu.Unlock()
+		return s, nil
+	}
 	w.streamByGroup[logGroup] = stream
+	w.mu.Unlock()
 	return stream, nil
 }
 
-// normalizeLogGroup は "otel" のような短縮名を "/otel/claude-code" にマップする。
-// 既にスラッシュ始まりならそのまま返す（柔軟性を保つ）。
-func normalizeLogGroup(group string) string {
-	if group == "otel" {
-		return "/otel/claude-code"
-	}
-	return group
-}
-
-// errorAs は errors.As の薄いラッパー（循環依存を避けるため別ファイルに分けない）。
-func errorAs(err error, target any) bool {
-	for err != nil {
-		if t, ok := target.(**cwltypes.ResourceAlreadyExistsException); ok {
-			if e, ok := err.(*cwltypes.ResourceAlreadyExistsException); ok {
-				*t = e
-				return true
-			}
-		}
-		u, ok := err.(interface{ Unwrap() error })
-		if !ok {
-			return false
-		}
-		err = u.Unwrap()
-	}
-	return false
-}
