@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -10,8 +11,6 @@ import (
 	"github.com/narumina/cc-cost-dashboard/internal/model"
 )
 
-// writeJSONLFile は、イベントのスライスを指定パスへ JSONL として書き込む
-// テスト用ヘルパー。必要に応じて親ディレクトリを作成する。
 func writeJSONLFile(t *testing.T, path string, events []any) {
 	t.Helper()
 
@@ -35,7 +34,7 @@ func writeJSONLFile(t *testing.T, path string, events []any) {
 	}
 }
 
-func TestReadOtelEvents_AcrossMultipleDates(t *testing.T) {
+func TestFileReader_ReadOtelEvents_AcrossMultipleDates(t *testing.T) {
 	dataDir := t.TempDir()
 
 	day1Events := []any{
@@ -49,10 +48,11 @@ func TestReadOtelEvents_AcrossMultipleDates(t *testing.T) {
 	writeJSONLFile(t, filepath.Join(dataDir, "logs", "otel", "2025-06-01.jsonl"), day1Events)
 	writeJSONLFile(t, filepath.Join(dataDir, "logs", "otel", "2025-06-02.jsonl"), day2Events)
 
+	reader := NewFileReader(dataDir)
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
 	to := time.Date(2025, 6, 2, 23, 59, 59, 0, time.UTC)
 
-	events, err := ReadOtelEvents(dataDir, from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}
@@ -61,7 +61,6 @@ func TestReadOtelEvents_AcrossMultipleDates(t *testing.T) {
 		t.Fatalf("expected 3 events, got %d", len(events))
 	}
 
-	// タイムスタンプ昇順でソートされていることを検証する。
 	for i := 1; i < len(events); i++ {
 		if events[i].Timestamp < events[i-1].Timestamp {
 			t.Errorf("events not sorted: events[%d].Timestamp=%q < events[%d].Timestamp=%q",
@@ -70,19 +69,19 @@ func TestReadOtelEvents_AcrossMultipleDates(t *testing.T) {
 	}
 }
 
-func TestReadOtelEvents_SkipsMissingDates(t *testing.T) {
+func TestFileReader_ReadOtelEvents_SkipsMissingDates(t *testing.T) {
 	dataDir := t.TempDir()
 
-	// 1 日目のデータのみ書き込み、2 日目のファイルは存在しない状態にする。
 	day1Events := []any{
 		model.OtelEvent{Timestamp: "2025-06-01T10:00:00Z", EventName: "test"},
 	}
 	writeJSONLFile(t, filepath.Join(dataDir, "logs", "otel", "2025-06-01.jsonl"), day1Events)
 
+	reader := NewFileReader(dataDir)
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
-	to := time.Date(2025, 6, 3, 0, 0, 0, 0, time.UTC) // 3 日間にまたがるが存在するのは 1 日のみ
+	to := time.Date(2025, 6, 3, 0, 0, 0, 0, time.UTC)
 
-	events, err := ReadOtelEvents(dataDir, from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}
@@ -92,7 +91,7 @@ func TestReadOtelEvents_SkipsMissingDates(t *testing.T) {
 	}
 }
 
-func TestReadOtelEvents_SkipsMalformedJSON(t *testing.T) {
+func TestFileReader_ReadOtelEvents_SkipsMalformedJSON(t *testing.T) {
 	dataDir := t.TempDir()
 
 	dir := filepath.Join(dataDir, "logs", "otel")
@@ -100,7 +99,6 @@ func TestReadOtelEvents_SkipsMalformedJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// 有効な JSON 行と無効な行が混在するファイルを書き込む。
 	content := `{"timestamp":"2025-06-01T10:00:00Z","event_name":"test","cost_usd":0.01}
 this is not valid json
 {"timestamp":"2025-06-01T11:00:00Z","event_name":"test","cost_usd":0.02}
@@ -110,10 +108,11 @@ this is not valid json
 		t.Fatal(err)
 	}
 
+	reader := NewFileReader(dataDir)
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
 	to := time.Date(2025, 6, 1, 23, 59, 59, 0, time.UTC)
 
-	events, err := ReadOtelEvents(dataDir, from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}
@@ -122,4 +121,3 @@ this is not valid json
 		t.Fatalf("expected 2 valid events (skipping malformed lines), got %d", len(events))
 	}
 }
-

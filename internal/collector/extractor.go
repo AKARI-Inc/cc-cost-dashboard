@@ -10,18 +10,7 @@ import (
 	commonpb "go.opentelemetry.io/proto/otlp/common/v1"
 )
 
-// ExtractEvents は ExportLogsServiceRequest を OtelEvent のスライスに変換する。
-//
-// 方針: よく使われる属性は型付きカラムに昇格させて集計を高速化しつつ、
-// 全属性を RawAttributes にマージすることで、再デコードやコード変更なしに
-// UI が任意のフィールドを参照できるようにする。
-//
-// 実際の Claude Code テレメトリの特徴（2026-04 時点で確認）:
-//   - イベント名は logRecord.body.stringValue に入る（例: "claude_code.api_request"）。
-//     属性 "event.name" にはプレフィクスなし（例: "api_request"）でも入る
-//   - セッションキーは "session.id"（ドット区切り）
-//   - 数値フィールド（input_tokens, cost_usd, duration_ms）は stringValue として到着する
-//   - プロンプト文字数は "prompt_length" に入る
+// OTel ExportLogsServiceRequest を集計用の OtelEvent に変換するための関数。
 func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 	if req == nil {
 		return nil
@@ -30,7 +19,6 @@ func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 	var events []model.OtelEvent
 
 	for _, rl := range req.ResourceLogs {
-		// ResourceLogs ごとに一度だけリソース属性をまとめて取得する。
 		resAttrs := map[string]*commonpb.AnyValue{}
 		if rl.Resource != nil {
 			resAttrs = attrMap(rl.Resource.Attributes)
@@ -40,9 +28,6 @@ func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 			for _, lr := range sl.LogRecords {
 				recAttrs := attrMap(lr.Attributes)
 
-				// イベント名: body（"claude_code.api_request"）を優先し、
-				// 無い場合は "event.name" 属性（"api_request"）にフォールバックして
-				// 標準プレフィクスを前置して正規化する。
 				eventName := ""
 				if lr.Body != nil {
 					eventName = lr.Body.GetStringValue()
@@ -57,7 +42,6 @@ func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 					continue
 				}
 
-				// resource 属性と log record 属性を JSON として扱いやすい単一の map にマージする。
 				raw := make(map[string]any, len(resAttrs)+len(recAttrs))
 				for k, v := range resAttrs {
 					raw[k] = anyValueToGo(v)
@@ -66,10 +50,8 @@ func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 					raw[k] = anyValueToGo(v)
 				}
 
-				// user.email はどちらのスコープにも出現しうる。record スコープを優先する。
 				userEmail := firstNonEmpty(strAttr(recAttrs, "user.email"), strAttr(resAttrs, "user.email"))
 
-				// タイムスタンプ: OTel の timeUnixNano を優先し、なければ event.timestamp を使う。
 				ts := nanoToISO(lr.TimeUnixNano)
 				if ts == "" {
 					ts = strAttr(recAttrs, "event.timestamp")
@@ -139,7 +121,7 @@ func strAttr(m map[string]*commonpb.AnyValue, key string) string {
 	return ""
 }
 
-// numAttr は、整数フィールドが stringValue として届く Claude Code の慣習に対応する。
+// Claude Code は数値を stringValue で送るため string → int のパースを含む。
 func numAttr(m map[string]*commonpb.AnyValue, key string) int {
 	v, ok := m[key]
 	if !ok {
@@ -181,7 +163,6 @@ func numAttrFloat(m map[string]*commonpb.AnyValue, key string) float64 {
 	return 0
 }
 
-// anyValueToGo は OTel の AnyValue を JSON 互換の素朴な Go の値に変換する。
 func anyValueToGo(v *commonpb.AnyValue) any {
 	if v == nil {
 		return nil
