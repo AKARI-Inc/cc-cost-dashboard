@@ -2,7 +2,7 @@ name: Deploy Lambda (dev)
 
 on:
   push:
-    branches: [main, wip-demo-dash-boad, feat/05-ci-cd] # TODO: wip-demo-dash-boad は検証後に削除
+    branches: [main, refactor/drop-api-lambda-static-dashboard]
     paths:
       - "cmd/**"
       - "lambda/**"
