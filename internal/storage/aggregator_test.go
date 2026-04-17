@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 func TestAggregateByDay_GroupsAndSumsCorrectly(t *testing.T) {
