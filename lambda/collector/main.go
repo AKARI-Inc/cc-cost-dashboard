@@ -7,8 +7,8 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/narumina/cc-cost-dashboard/internal/collector"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/collector"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 var writer storage.Writer

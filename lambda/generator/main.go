@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/narumina/cc-cost-dashboard/internal/model"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 const (
