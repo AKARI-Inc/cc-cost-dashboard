@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/narumina/cc-cost-dashboard/internal/api"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/api"
 )
 
 func main() {

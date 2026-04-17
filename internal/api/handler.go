@@ -10,23 +10,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 // EventReader は OTel イベントを読み取る抽象。
 // ローカルでは FileReader (JSONL)、本番では CloudWatchReader を使う。
 type EventReader interface {
 	ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error)
-}
-
-// fileReader は既存の storage.ReadOtelEvents をラップする。
-type fileReader struct {
-	dataDir string
-}
-
-func (r *fileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
-	return storage.ReadOtelEvents(r.dataDir, from, to)
 }
 
 // Handler はコストダッシュボード API の HTTP ハンドラを提供する。
@@ -39,7 +30,7 @@ func (h *Handler) reader() EventReader {
 	if h.Reader != nil {
 		return h.Reader
 	}
-	return &fileReader{dataDir: h.DataDir}
+	return storage.NewFileReader(h.DataDir)
 }
 
 // Register は全ルートを指定された ServeMux に登録する。
