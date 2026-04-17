@@ -57,12 +57,37 @@ func init() {
 // Bucket は (date, key) でグループ化した 1 行のメトリクス。
 // frontend は date で範囲フィルタ、key で再集計する。
 type Bucket struct {
-	Date         string  `json:"date"`
-	Key          string  `json:"key"`
-	TotalCostUSD float64 `json:"total_cost_usd"`
-	InputTokens  int     `json:"input_tokens"`
-	OutputTokens int     `json:"output_tokens"`
-	RequestCount int     `json:"request_count"`
+	Date                string  `json:"date"`
+	Key                 string  `json:"key"`
+	TotalCostUSD        float64 `json:"total_cost_usd"`
+	InputTokens         int     `json:"input_tokens"`
+	OutputTokens        int     `json:"output_tokens"`
+	CacheReadTokens     int     `json:"cache_read_tokens"`
+	CacheCreationTokens int     `json:"cache_creation_tokens"`
+	RequestCount        int     `json:"request_count"`
+}
+
+// UserModelBucket は (date, user_email, model) 単位の明細。
+// ユーザー詳細のモデル別内訳に使う。
+type UserModelBucket struct {
+	Date                string  `json:"date"`
+	UserEmail           string  `json:"user_email"`
+	Model               string  `json:"model"`
+	TotalCostUSD        float64 `json:"total_cost_usd"`
+	InputTokens         int     `json:"input_tokens"`
+	OutputTokens        int     `json:"output_tokens"`
+	CacheReadTokens     int     `json:"cache_read_tokens"`
+	CacheCreationTokens int     `json:"cache_creation_tokens"`
+	RequestCount        int     `json:"request_count"`
+}
+
+// UserToolBucket は (date, user_email, tool_name) 単位の明細。
+// tool_decision / tool_result イベントのみが対象。
+type UserToolBucket struct {
+	Date         string `json:"date"`
+	UserEmail    string `json:"user_email"`
+	ToolName     string `json:"tool_name"`
+	RequestCount int    `json:"request_count"`
 }
 
 func handler(ctx context.Context) error {
@@ -89,11 +114,13 @@ func handler(ctx context.Context) error {
 	}
 
 	summaries := map[string]any{
-		"data/summary/per-day-per-model.json":    wrap(bucketize(events, func(e model.OtelEvent) string { return e.Model }), "model"),
-		"data/summary/per-day-per-user.json":     wrap(bucketize(events, func(e model.OtelEvent) string { return e.UserEmail }), "user"),
-		"data/summary/per-day-per-terminal.json": wrap(bucketize(events, func(e model.OtelEvent) string { return e.TerminalType }), "terminal"),
-		"data/summary/per-day-per-version.json":  wrap(bucketize(events, func(e model.OtelEvent) string { return e.ServiceVersion }), "version"),
-		"data/summary/per-day-per-speed.json":    wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
+		"data/summary/per-day-per-model.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Model }), "model"),
+		"data/summary/per-day-per-user.json":       wrap(bucketize(events, func(e model.OtelEvent) string { return e.UserEmail }), "user"),
+		"data/summary/per-day-per-terminal.json":   wrap(bucketize(events, func(e model.OtelEvent) string { return e.TerminalType }), "terminal"),
+		"data/summary/per-day-per-version.json":    wrap(bucketize(events, func(e model.OtelEvent) string { return e.ServiceVersion }), "version"),
+		"data/summary/per-day-per-speed.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
+		"data/summary/per-day-per-user-model.json": wrap(bucketizeUserModel(events), "user-model"),
+		"data/summary/per-day-per-user-tool.json":  wrap(bucketizeUserTool(events), "user-tool"),
 	}
 
 	for key, data := range summaries {
@@ -153,6 +180,8 @@ func bucketize(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []B
 		b.TotalCostUSD += ev.CostUSD
 		b.InputTokens += ev.InputTokens
 		b.OutputTokens += ev.OutputTokens
+		b.CacheReadTokens += ev.CacheReadTokens
+		b.CacheCreationTokens += ev.CacheCreationTokens
 		b.RequestCount++
 	}
 
@@ -165,6 +194,95 @@ func bucketize(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []B
 			return result[i].Date < result[j].Date
 		}
 		return result[i].Key < result[j].Key
+	})
+	return result
+}
+
+// bucketizeUserModel は api_request イベントを (date, user, model) で集計する。
+func bucketizeUserModel(events []model.OtelEvent) []UserModelBucket {
+	type k struct{ date, user, mdl string }
+	m := make(map[k]*UserModelBucket)
+
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		mdl := ev.Model
+		if mdl == "" {
+			mdl = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, mdl: mdl}
+		b, ok := m[key]
+		if !ok {
+			b = &UserModelBucket{Date: key.date, UserEmail: user, Model: mdl}
+			m[key] = b
+		}
+		b.TotalCostUSD += ev.CostUSD
+		b.InputTokens += ev.InputTokens
+		b.OutputTokens += ev.OutputTokens
+		b.CacheReadTokens += ev.CacheReadTokens
+		b.CacheCreationTokens += ev.CacheCreationTokens
+		b.RequestCount++
+	}
+
+	result := make([]UserModelBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].Model < result[j].Model
+	})
+	return result
+}
+
+// bucketizeUserTool は tool_decision / tool_result イベントを (date, user, tool) で集計する。
+func bucketizeUserTool(events []model.OtelEvent) []UserToolBucket {
+	type k struct{ date, user, tool string }
+	m := make(map[k]*UserToolBucket)
+
+	for _, ev := range events {
+		if ev.EventName != "claude_code.tool_decision" && ev.EventName != "claude_code.tool_result" {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		tool := ev.ToolName
+		if tool == "" {
+			tool = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, tool: tool}
+		b, ok := m[key]
+		if !ok {
+			b = &UserToolBucket{Date: key.date, UserEmail: user, ToolName: tool}
+			m[key] = b
+		}
+		b.RequestCount++
+	}
+
+	result := make([]UserToolBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].ToolName < result[j].ToolName
 	})
 	return result
 }

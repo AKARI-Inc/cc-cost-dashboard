@@ -8,6 +8,8 @@ export type UsageRow = {
   total_cost_usd: number;
   input_tokens: number;
   output_tokens: number;
+  cache_read_tokens: number;
+  cache_creation_tokens: number;
   request_count: number;
 };
 
@@ -23,6 +25,8 @@ type Bucket = {
   total_cost_usd: number;
   input_tokens: number;
   output_tokens: number;
+  cache_read_tokens?: number;
+  cache_creation_tokens?: number;
   request_count: number;
 };
 
@@ -44,6 +48,8 @@ function toUsageRows(buckets: Bucket[], groupBy: string): UsageRow[] {
         existing.total_cost_usd += b.total_cost_usd;
         existing.input_tokens += b.input_tokens;
         existing.output_tokens += b.output_tokens;
+        existing.cache_read_tokens += b.cache_read_tokens ?? 0;
+        existing.cache_creation_tokens += b.cache_creation_tokens ?? 0;
         existing.request_count += b.request_count;
       } else {
         byDate.set(b.date, {
@@ -51,6 +57,8 @@ function toUsageRows(buckets: Bucket[], groupBy: string): UsageRow[] {
           total_cost_usd: b.total_cost_usd,
           input_tokens: b.input_tokens,
           output_tokens: b.output_tokens,
+          cache_read_tokens: b.cache_read_tokens ?? 0,
+          cache_creation_tokens: b.cache_creation_tokens ?? 0,
           request_count: b.request_count,
         });
       }
@@ -65,6 +73,8 @@ function toUsageRows(buckets: Bucket[], groupBy: string): UsageRow[] {
       total_cost_usd: b.total_cost_usd,
       input_tokens: b.input_tokens,
       output_tokens: b.output_tokens,
+      cache_read_tokens: b.cache_read_tokens ?? 0,
+      cache_creation_tokens: b.cache_creation_tokens ?? 0,
       request_count: b.request_count,
     };
     if (groupBy === 'model') row.model = b.key;
@@ -89,6 +99,8 @@ function aggregateByKey(rows: UsageRow[], groupBy: string): UsageRow[] {
       existing.total_cost_usd += r.total_cost_usd;
       existing.input_tokens += r.input_tokens;
       existing.output_tokens += r.output_tokens;
+      existing.cache_read_tokens += r.cache_read_tokens;
+      existing.cache_creation_tokens += r.cache_creation_tokens;
       existing.request_count += r.request_count;
     } else {
       byKey.set(k, { ...r });
