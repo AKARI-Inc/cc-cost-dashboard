@@ -90,6 +90,29 @@ type UserToolBucket struct {
 	RequestCount int    `json:"request_count"`
 }
 
+// UserSkillBucket は (date, user_email, skill_name) 単位の明細。
+// skill_activated イベントが対象。skill_source / plugin_name は代表値 (最初に出たもの)。
+type UserSkillBucket struct {
+	Date        string `json:"date"`
+	UserEmail   string `json:"user_email"`
+	SkillName   string `json:"skill_name"`
+	SkillSource string `json:"skill_source,omitempty"`
+	PluginName  string `json:"plugin_name,omitempty"`
+	UseCount    int    `json:"use_count"`
+}
+
+// UserSessionBucket は (date, user_email, session_id) 単位の明細。
+// セッション統計 (ユニーク数、1セッションあたり平均) に使う。
+type UserSessionBucket struct {
+	Date         string  `json:"date"`
+	UserEmail    string  `json:"user_email"`
+	SessionID    string  `json:"session_id"`
+	TotalCostUSD float64 `json:"total_cost_usd"`
+	InputTokens  int     `json:"input_tokens"`
+	OutputTokens int     `json:"output_tokens"`
+	RequestCount int     `json:"request_count"`
+}
+
 func handler(ctx context.Context) error {
 	now := time.Now().UTC()
 	from := now.AddDate(0, 0, -lookbackDays)
@@ -121,6 +144,8 @@ func handler(ctx context.Context) error {
 		"data/summary/per-day-per-speed.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
 		"data/summary/per-day-per-user-model.json": wrap(bucketizeUserModel(events), "user-model"),
 		"data/summary/per-day-per-user-tool.json":  wrap(bucketizeUserTool(events), "user-tool"),
+		"data/summary/per-day-per-user-skill.json":   wrap(bucketizeUserSkill(events), "user-skill"),
+		"data/summary/per-day-per-user-session.json": wrap(bucketizeUserSession(events), "user-session"),
 	}
 
 	for key, data := range summaries {
@@ -283,6 +308,99 @@ func bucketizeUserTool(events []model.OtelEvent) []UserToolBucket {
 			return result[i].UserEmail < result[j].UserEmail
 		}
 		return result[i].ToolName < result[j].ToolName
+	})
+	return result
+}
+
+// bucketizeUserSkill は skill_activated イベントを (date, user, skill) で集計する。
+func bucketizeUserSkill(events []model.OtelEvent) []UserSkillBucket {
+	type k struct{ date, user, skill string }
+	m := make(map[k]*UserSkillBucket)
+
+	for _, ev := range events {
+		if ev.EventName != "claude_code.skill_activated" {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		skill := ev.SkillName
+		if skill == "" {
+			skill = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, skill: skill}
+		b, ok := m[key]
+		if !ok {
+			b = &UserSkillBucket{
+				Date:        key.date,
+				UserEmail:   user,
+				SkillName:   skill,
+				SkillSource: ev.SkillSource,
+				PluginName:  ev.PluginName,
+			}
+			m[key] = b
+		}
+		b.UseCount++
+	}
+
+	result := make([]UserSkillBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].SkillName < result[j].SkillName
+	})
+	return result
+}
+
+// bucketizeUserSession は api_request イベントを (date, user, session_id) で集計する。
+// session_id が空のイベントは除外する (集計上 "1セッション" と数えられないため)。
+func bucketizeUserSession(events []model.OtelEvent) []UserSessionBucket {
+	type k struct{ date, user, sess string }
+	m := make(map[k]*UserSessionBucket)
+
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		if ev.SessionID == "" {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, sess: ev.SessionID}
+		b, ok := m[key]
+		if !ok {
+			b = &UserSessionBucket{Date: key.date, UserEmail: user, SessionID: ev.SessionID}
+			m[key] = b
+		}
+		b.TotalCostUSD += ev.CostUSD
+		b.InputTokens += ev.InputTokens
+		b.OutputTokens += ev.OutputTokens
+		b.RequestCount++
+	}
+
+	result := make([]UserSessionBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].SessionID < result[j].SessionID
 	})
 	return result
 }
