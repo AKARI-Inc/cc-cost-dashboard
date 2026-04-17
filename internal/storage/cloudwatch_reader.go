@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 // ローカル JSONL を本番 CloudWatch Logs に差し替えるための Reader。

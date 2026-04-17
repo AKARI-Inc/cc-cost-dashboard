@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 func writeJSONLFile(t *testing.T, path string, events []any) {

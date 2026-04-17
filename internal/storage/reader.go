@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 // ReadOptions はサーバーサイドのフィルタリングとリミットを制御する。
