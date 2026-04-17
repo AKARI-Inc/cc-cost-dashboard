@@ -5,7 +5,7 @@ type Props = { row: UsageRow; from: string; to: string };
 
 export function UserDetail({ row, from, to }: Props) {
   const email = row.user_email ?? row.key ?? '(unknown)';
-  const { models, tools, skills, skillSources, sessions, loading, error } = useUserDetail({
+  const { models, tools, skills, sessions, loading, error } = useUserDetail({
     userEmail: email,
     from,
     to,
@@ -133,32 +133,6 @@ export function UserDetail({ row, from, to }: Props) {
               </table>
             )}
           </section>
-
-          {skillSources.length > 0 && (
-            <section className="detail-section">
-              <h4>Skill ソース別内訳</h4>
-              <div className="source-grid">
-                {skillSources.map((s) => {
-                  const pct = totalSkillCalls > 0
-                    ? (s.use_count / totalSkillCalls) * 100
-                    : 0;
-                  return (
-                    <div key={s.source} className="source-card">
-                      <div className="source-name">{s.source}</div>
-                      <div className="source-stats">
-                        <span className="source-count">{s.use_count.toLocaleString()}</span>
-                        <span className="source-pct">{pct.toFixed(1)}%</span>
-                      </div>
-                      <div className="source-sub">{s.skill_count} 種</div>
-                      <div className="bar-track">
-                        <div className="bar-fill" style={{ width: `${pct}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          )}
 
           <section className="detail-section">
             <h4>

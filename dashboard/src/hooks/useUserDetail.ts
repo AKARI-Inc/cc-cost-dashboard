@@ -60,12 +60,6 @@ export type SkillBreakdownRow = {
   use_count: number;
 };
 
-export type SkillSourceRow = {
-  source: string;
-  skill_count: number;
-  use_count: number;
-};
-
 export type SessionStats = {
   session_count: number;
   avg_requests: number;
@@ -78,7 +72,6 @@ type DetailResult = {
   models: ModelBreakdownRow[];
   tools: ToolBreakdownRow[];
   skills: SkillBreakdownRow[];
-  skillSources: SkillSourceRow[];
   sessions: SessionStats;
   loading: boolean;
   error: string | null;
@@ -163,7 +156,6 @@ export function useUserDetail(params: {
         models: [],
         tools: [],
         skills: [],
-        skillSources: [],
         sessions: EMPTY_SESSIONS,
         loading: true,
         error: null,
@@ -174,7 +166,6 @@ export function useUserDetail(params: {
         models: [],
         tools: [],
         skills: [],
-        skillSources: [],
         sessions: EMPTY_SESSIONS,
         loading: false,
         error: cache.error,
@@ -252,21 +243,6 @@ export function useUserDetail(params: {
       (a, b) => b.use_count - a.use_count,
     );
 
-    const sourceMap = new Map<string, SkillSourceRow>();
-    for (const s of skills) {
-      const src = s.skill_source ?? '(unknown)';
-      const cur = sourceMap.get(src);
-      if (cur) {
-        cur.skill_count += 1;
-        cur.use_count += s.use_count;
-      } else {
-        sourceMap.set(src, { source: src, skill_count: 1, use_count: s.use_count });
-      }
-    }
-    const skillSources = Array.from(sourceMap.values()).sort(
-      (a, b) => b.use_count - a.use_count,
-    );
-
     const sessionKeys = new Set<string>();
     const sessionCostByKey = new Map<string, { cost: number; reqs: number }>();
     for (const b of cache.sessions ?? []) {
@@ -301,6 +277,6 @@ export function useUserDetail(params: {
       total_requests: totalReqs,
     };
 
-    return { models, tools, skills, skillSources, sessions, loading: false, error: null };
+    return { models, tools, skills, sessions, loading: false, error: null };
   }, [params.userEmail, params.from, params.to]);
 }
