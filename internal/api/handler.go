@@ -20,15 +20,6 @@ type EventReader interface {
 	ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error)
 }
 
-// fileReader は既存の storage.ReadOtelEvents をラップする。
-type fileReader struct {
-	dataDir string
-}
-
-func (r *fileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
-	return storage.ReadOtelEvents(r.dataDir, from, to)
-}
-
 // Handler はコストダッシュボード API の HTTP ハンドラを提供する。
 type Handler struct {
 	DataDir string
@@ -39,7 +30,7 @@ func (h *Handler) reader() EventReader {
 	if h.Reader != nil {
 		return h.Reader
 	}
-	return &fileReader{dataDir: h.DataDir}
+	return storage.NewFileReader(h.DataDir)
 }
 
 // Register は全ルートを指定された ServeMux に登録する。
