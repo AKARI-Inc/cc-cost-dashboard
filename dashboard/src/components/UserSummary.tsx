@@ -6,7 +6,16 @@ type Props = { data: UsageRow[]; from: string; to: string };
 
 export function UserSummary({ data, from, to }: Props) {
   const sorted = [...data].sort((a, b) => b.total_cost_usd - a.total_cost_usd);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+
+  const toggle = (label: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
 
   return (
     <div className="card">
@@ -26,7 +35,7 @@ export function UserSummary({ data, from, to }: Props) {
           <tbody>
             {sorted.map((r) => {
               const label = r.user_email ?? r.key ?? '-';
-              const isOpen = expanded === label;
+              const isOpen = expanded.has(label);
               return (
                 <Fragment key={label}>
                   <tr>
@@ -38,7 +47,7 @@ export function UserSummary({ data, from, to }: Props) {
                     <td>
                       <button
                         className="btn-detail"
-                        onClick={() => setExpanded(isOpen ? null : label)}
+                        onClick={() => toggle(label)}
                         aria-expanded={isOpen}
                       >
                         {isOpen ? '閉じる' : '▸ 詳細'}

@@ -20,7 +20,6 @@ export function UserDetail({ row, from, to }: Props) {
     : 0;
 
   const totalToolCalls = tools.reduce((sum, t) => sum + t.request_count, 0);
-  const topTools = tools.slice(0, 5);
 
   return (
     <div className="user-detail">
@@ -101,39 +100,48 @@ export function UserDetail({ row, from, to }: Props) {
           </section>
 
           <section className="detail-section">
-            <h4>ツール利用 Top 5 {totalToolCalls > 0 && <span className="muted">(全 {totalToolCalls.toLocaleString()} 回)</span>}</h4>
+            <h4>
+              ツール利用{' '}
+              {tools.length > 0 && (
+                <span className="muted">
+                  ({tools.length.toLocaleString()} 種 / 全 {totalToolCalls.toLocaleString()} 回)
+                </span>
+              )}
+            </h4>
             {tools.length === 0 ? (
               <p className="info">ツール利用データなし</p>
             ) : (
-              <table className="detail-table">
-                <thead>
-                  <tr>
-                    <th>ツール</th>
-                    <th className="num">回数</th>
-                    <th className="num">割合</th>
-                    <th className="bar-col">分布</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topTools.map((t) => {
-                    const pct = totalToolCalls > 0
-                      ? (t.request_count / totalToolCalls) * 100
-                      : 0;
-                    return (
-                      <tr key={t.tool_name}>
-                        <td>{t.tool_name}</td>
-                        <td className="num">{t.request_count.toLocaleString()}</td>
-                        <td className="num">{pct.toFixed(1)}%</td>
-                        <td className="bar-col">
-                          <div className="bar-track">
-                            <div className="bar-fill" style={{ width: `${pct}%` }} />
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="tool-scroll">
+                <table className="detail-table tool-table">
+                  <thead>
+                    <tr>
+                      <th>ツール</th>
+                      <th className="num">回数</th>
+                      <th className="num">割合</th>
+                      <th className="bar-col">分布</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tools.map((t) => {
+                      const pct = totalToolCalls > 0
+                        ? (t.request_count / totalToolCalls) * 100
+                        : 0;
+                      return (
+                        <tr key={t.tool_name}>
+                          <td>{t.tool_name}</td>
+                          <td className="num">{t.request_count.toLocaleString()}</td>
+                          <td className="num">{pct.toFixed(1)}%</td>
+                          <td className="bar-col">
+                            <div className="bar-track">
+                              <div className="bar-fill" style={{ width: `${pct}%` }} />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         </>
