@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 func TestFileWriter_WritesValidJSONL(t *testing.T) {
