@@ -9,6 +9,7 @@ on:
       - "internal/**"
       - "go.mod"
       - "go.sum"
+      - ".github/workflows/deploy_lambda.yml"
   workflow_dispatch:
 
 permissions:
