@@ -3,7 +3,7 @@ package storage
 import (
 	"sort"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 // ダッシュボードの日別コスト推移チャートを描画するための集計。
