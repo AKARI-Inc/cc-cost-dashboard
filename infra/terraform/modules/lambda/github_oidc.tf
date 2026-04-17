@@ -64,7 +64,6 @@ resource "aws_iam_role_policy" "github_actions_ecr" {
         ]
         Resource = [
           aws_ecr_repository.collector.arn,
-          aws_ecr_repository.api.arn,
           aws_ecr_repository.generator.arn
         ]
       }
@@ -87,7 +86,6 @@ resource "aws_iam_role_policy" "github_actions_lambda" {
       ]
       Resource = [
         aws_lambda_function.collector.arn,
-        aws_lambda_function.api.arn,
         aws_lambda_function.generator.arn
       ]
     }]
