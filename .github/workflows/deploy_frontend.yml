@@ -2,9 +2,10 @@ name: Deploy Frontend (dev)
 
 on:
   push:
-    branches: [main, wip-demo-dash-boad, feat/05-ci-cd] # TODO: wip-demo-dash-boad は検証後に削除
+    branches: [main, refactor/drop-api-lambda-static-dashboard]
     paths:
       - "dashboard/**"
+      - ".github/workflows/deploy_frontend.yml"
   workflow_dispatch:
 
 permissions:

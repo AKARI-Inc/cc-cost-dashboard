@@ -20,7 +20,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# CloudWatch Logs 書き込み / 読み取り権限（Collector: PutLogEvents, API: Logs Insights）
+# CloudWatch Logs 書き込み / 読み取り権限（Collector: PutLogEvents, Generator: FilterLogEvents）
 resource "aws_iam_policy" "lambda_cloudwatch_logs" {
   name = "${var.project_name}-lambda-cwl-policy"
 

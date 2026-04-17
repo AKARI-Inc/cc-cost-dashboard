@@ -287,3 +287,121 @@ th {
 .recharts-tooltip-item {
   color: var(--color-text) !important;
 }
+
+/* User detail expansion */
+.btn-detail {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-detail:hover {
+  background: var(--color-bg);
+  border-color: var(--color-primary);
+}
+
+.detail-row > td {
+  background: var(--color-bg);
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.user-detail {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-section h4 {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-section h4 .muted {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-left: 6px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.detail-grid > div {
+  background: var(--color-surface);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+
+.detail-grid dt {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.detail-grid dd {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.detail-table {
+  font-size: 0.8rem;
+}
+
+.detail-table th,
+.detail-table td {
+  padding: 6px 10px;
+}
+
+.bar-col {
+  width: 30%;
+  min-width: 120px;
+}
+
+.bar-track {
+  background: var(--color-border);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  background: var(--color-primary);
+  height: 100%;
+  transition: width 0.2s;
+}
+
+.tool-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.tool-scroll .tool-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  z-index: 1;
+}
+
+.tool-scroll .tool-table tbody tr:last-child td {
+  border-bottom: none;
+}

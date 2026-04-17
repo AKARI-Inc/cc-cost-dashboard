@@ -52,7 +52,7 @@ func TestFileReader_ReadOtelEvents_AcrossMultipleDates(t *testing.T) {
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
 	to := time.Date(2025, 6, 2, 23, 59, 59, 0, time.UTC)
 
-	events, err := reader.ReadOtelEvents(context.Background(), from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to, nil)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}
@@ -81,7 +81,7 @@ func TestFileReader_ReadOtelEvents_SkipsMissingDates(t *testing.T) {
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
 	to := time.Date(2025, 6, 3, 0, 0, 0, 0, time.UTC)
 
-	events, err := reader.ReadOtelEvents(context.Background(), from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to, nil)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}
@@ -112,7 +112,7 @@ this is not valid json
 	from := time.Date(2025, 6, 1, 0, 0, 0, 0, time.UTC)
 	to := time.Date(2025, 6, 1, 23, 59, 59, 0, time.UTC)
 
-	events, err := reader.ReadOtelEvents(context.Background(), from, to)
+	events, err := reader.ReadOtelEvents(context.Background(), from, to, nil)
 	if err != nil {
 		t.Fatalf("ReadOtelEvents returned error: %v", err)
 	}

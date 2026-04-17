@@ -2,13 +2,14 @@ name: Deploy Lambda (dev)
 
 on:
   push:
-    branches: [main, wip-demo-dash-boad, feat/05-ci-cd] # TODO: wip-demo-dash-boad は検証後に削除
+    branches: [main, refactor/drop-api-lambda-static-dashboard]
     paths:
       - "cmd/**"
       - "lambda/**"
       - "internal/**"
       - "go.mod"
       - "go.sum"
+      - ".github/workflows/deploy_lambda.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,9 +33,6 @@ jobs:
           - name: collector
             dockerfile: lambda/collector/Dockerfile
             ecr_repo: cc-cost-dashboard-dev/collector
-          - name: api
-            dockerfile: lambda/api/Dockerfile
-            ecr_repo: cc-cost-dashboard-dev/api
           - name: generator
             dockerfile: lambda/generator/Dockerfile
             ecr_repo: cc-cost-dashboard-dev/generator
@@ -79,8 +77,6 @@ jobs:
         function:
           - name: cc-cost-dashboard-dev-collector
             ecr_repo: cc-cost-dashboard-dev/collector
-          - name: cc-cost-dashboard-dev-api
-            ecr_repo: cc-cost-dashboard-dev/api
           - name: cc-cost-dashboard-dev-generator
             ecr_repo: cc-cost-dashboard-dev/generator
     steps:

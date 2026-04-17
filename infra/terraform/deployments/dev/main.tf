@@ -21,7 +21,6 @@ module "lambda" {
   ]
 
   collector_image_uri = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.project_name}/collector:latest"
-  api_image_uri       = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.project_name}/api:latest"
   generator_image_uri = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.project_name}/generator:latest"
 
   lambda_memory_size = 256
@@ -42,10 +41,6 @@ output "api_gateway_url" {
 output "collector_endpoint" {
   description = "OTEL_EXPORTER_OTLP_ENDPOINT に設定する URL"
   value       = module.lambda.collector_endpoint
-}
-
-output "api_endpoint" {
-  value = module.lambda.api_endpoint
 }
 
 output "cloudfront_url" {
@@ -69,6 +64,3 @@ output "collector_ecr_repository_url" {
   value = module.lambda.collector_ecr_repository_url
 }
 
-output "api_ecr_repository_url" {
-  value = module.lambda.api_ecr_repository_url
-}

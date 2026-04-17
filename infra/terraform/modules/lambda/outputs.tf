@@ -8,27 +8,13 @@ output "collector_endpoint" {
   value       = aws_apigatewayv2_stage.default.invoke_url
 }
 
-output "api_endpoint" {
-  description = "API エンドポイント (/api/... にアクセス)"
-  value       = "${aws_apigatewayv2_stage.default.invoke_url}/api"
-}
-
 output "collector_ecr_repository_url" {
   description = "Collector ECR リポジトリ URL"
   value       = aws_ecr_repository.collector.repository_url
 }
 
-output "api_ecr_repository_url" {
-  description = "API ECR リポジトリ URL"
-  value       = aws_ecr_repository.api.repository_url
-}
-
 output "collector_function_name" {
   value = aws_lambda_function.collector.function_name
-}
-
-output "api_function_name" {
-  value = aws_lambda_function.api.function_name
 }
 
 output "cloudfront_domain_name" {

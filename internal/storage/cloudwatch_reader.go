@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -38,7 +39,7 @@ func NewCloudWatchReader(ctx context.Context) (*CloudWatchReader, error) {
 	}, nil
 }
 
-func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error) {
+func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Time, opts *ReadOptions) ([]model.OtelEvent, error) {
 	logGroup := LogGroupOtel
 	var events []model.OtelEvent
 
@@ -49,6 +50,10 @@ func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Tim
 			StartTime:    aws.Int64(from.UnixMilli()),
 			EndTime:      aws.Int64(to.UnixMilli()),
 			NextToken:    nextToken,
+		}
+
+		if fp := buildFilterPattern(opts); fp != "" {
+			input.FilterPattern = aws.String(fp)
 		}
 
 		out, err := r.client.FilterLogEvents(ctx, input)
@@ -72,11 +77,37 @@ func (r *CloudWatchReader) ReadOtelEvents(ctx context.Context, from, to time.Tim
 		if nextToken == nil {
 			break
 		}
+		if opts != nil && opts.Limit > 0 && len(events) >= opts.Limit {
+			break
+		}
 	}
 
 	sort.Slice(events, func(i, j int) bool {
 		return events[i].Timestamp < events[j].Timestamp
 	})
 
+	if opts != nil && opts.Limit > 0 && len(events) > opts.Limit {
+		events = events[len(events)-opts.Limit:]
+	}
+
 	return events, nil
+}
+
+// buildFilterPattern は CloudWatch Logs の JSON フィルタパターンを組み立てる。
+// https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
+func buildFilterPattern(opts *ReadOptions) string {
+	if opts == nil {
+		return ""
+	}
+	var clauses []string
+	if opts.EventName != "" {
+		clauses = append(clauses, fmt.Sprintf(`$.event_name = %q`, opts.EventName))
+	}
+	if opts.UserEmail != "" {
+		clauses = append(clauses, fmt.Sprintf(`$.user_email = %q`, opts.UserEmail))
+	}
+	if len(clauses) == 0 {
+		return ""
+	}
+	return "{ " + strings.Join(clauses, " && ") + " }"
 }

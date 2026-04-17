@@ -13,8 +13,16 @@ import (
 	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
+// ReadOptions はサーバーサイドのフィルタリングとリミットを制御する。
+// nil を渡した場合はフィルタなし・リミットなしとして扱う。
+type ReadOptions struct {
+	EventName string
+	UserEmail string
+	Limit     int // 0 = 制限なし
+}
+
 type Reader interface {
-	ReadOtelEvents(ctx context.Context, from, to time.Time) ([]model.OtelEvent, error)
+	ReadOtelEvents(ctx context.Context, from, to time.Time, opts *ReadOptions) ([]model.OtelEvent, error)
 }
 
 // ローカル JSONL からイベントを読み取るための Reader。
@@ -26,7 +34,7 @@ func NewFileReader(dataDir string) *FileReader {
 	return &FileReader{DataDir: dataDir}
 }
 
-func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]model.OtelEvent, error) {
+func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time, opts *ReadOptions) ([]model.OtelEvent, error) {
 	var events []model.OtelEvent
 
 	for d := truncateToDay(from); !d.After(truncateToDay(to)); d = d.AddDate(0, 0, 1) {
@@ -40,6 +48,14 @@ func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]mo
 		for _, line := range lines {
 			var ev model.OtelEvent
 			if json.Unmarshal(line, &ev) == nil {
+				if opts != nil {
+					if opts.EventName != "" && ev.EventName != opts.EventName {
+						continue
+					}
+					if opts.UserEmail != "" && ev.UserEmail != opts.UserEmail {
+						continue
+					}
+				}
 				events = append(events, ev)
 			}
 		}
@@ -48,6 +64,10 @@ func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]mo
 	sort.Slice(events, func(i, j int) bool {
 		return events[i].Timestamp < events[j].Timestamp
 	})
+
+	if opts != nil && opts.Limit > 0 && len(events) > opts.Limit {
+		events = events[len(events)-opts.Limit:]
+	}
 
 	return events, nil
 }

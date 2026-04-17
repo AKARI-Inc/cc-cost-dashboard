@@ -1,16 +1,5 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 
-function useDebouncedValue<T>(value: T, delayMs: number): T {
-  const [debounced, setDebounced] = useState(value);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
-  useEffect(() => {
-    timer.current = setTimeout(() => setDebounced(value), delayMs);
-    return () => clearTimeout(timer.current);
-  }, [value, delayMs]);
-  return debounced;
-}
-
-// UTC タイムスタンプを JST (Asia/Tokyo) 表示に変換
 function toJST(ts: string): string {
   if (!ts) return '';
   const d = new Date(ts);
@@ -33,7 +22,16 @@ type RawEvent = {
   user_email: string;
   model: string;
   cost_usd: number;
-  raw_attributes: Record<string, unknown>;
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_tokens: number;
+  cache_creation_tokens: number;
+  duration_ms: number;
+  speed: string;
+  session_id: string;
+  terminal_type: string;
+  service_version: string;
+  tool_name: string;
 };
 
 type Props = {
@@ -47,7 +45,8 @@ const ORDER_OPTIONS = [
 ];
 
 export function RawEventsTable({ from, to }: Props) {
-  const [events, setEvents] = useState<RawEvent[]>([]);
+  const [allEvents, setAllEvents] = useState<RawEvent[]>([]);
+  const [generated, setGenerated] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eventName, setEventName] = useState('');
@@ -56,31 +55,21 @@ export function RawEventsTable({ from, to }: Props) {
   const [limit, setLimit] = useState(500);
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  const debouncedEventName = useDebouncedValue(eventName, 400);
-  const debouncedUserEmail = useDebouncedValue(userEmail, 400);
-
+  // S3 の静的 JSON を1回だけ fetch
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    const params = new URLSearchParams({
-      from,
-      to,
-      limit: String(limit),
-      order,
-    });
-    if (debouncedEventName) params.set('eventName', debouncedEventName);
-    if (debouncedUserEmail) params.set('userEmail', debouncedUserEmail);
-
-    fetch(`/api/claude-code/events?${params}`)
+    fetch('/data/events/recent.json')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((json) => {
         if (!cancelled) {
-          setEvents(json.data ?? []);
+          setAllEvents(json.data ?? []);
+          setGenerated(json.generated ?? '');
           setLoading(false);
         }
       })
@@ -92,7 +81,37 @@ export function RawEventsTable({ from, to }: Props) {
       });
 
     return () => { cancelled = true; };
-  }, [from, to, debouncedEventName, debouncedUserEmail, order, limit]);
+  }, []);
+
+  // クライアントサイドのフィルタ・ソート・リミット
+  const events = useMemo(() => {
+    let filtered = allEvents;
+
+    // 日付範囲フィルタ
+    if (from) {
+      filtered = filtered.filter((ev) => ev.timestamp >= from);
+    }
+    if (to) {
+      const toExclusive = to + 'T23:59:59Z';
+      filtered = filtered.filter((ev) => ev.timestamp <= toExclusive);
+    }
+
+    if (eventName) {
+      const lower = eventName.toLowerCase();
+      filtered = filtered.filter((ev) => ev.event_name?.toLowerCase().includes(lower));
+    }
+    if (userEmail) {
+      const lower = userEmail.toLowerCase();
+      filtered = filtered.filter((ev) => ev.user_email?.toLowerCase().includes(lower));
+    }
+
+    // ソート (allEvents は既に desc 順で来る)
+    if (order === 'asc') {
+      filtered = [...filtered].reverse();
+    }
+
+    return filtered.slice(0, limit);
+  }, [allEvents, from, to, eventName, userEmail, order, limit]);
 
   return (
     <div className="card">
@@ -141,7 +160,8 @@ export function RawEventsTable({ from, to }: Props) {
       {!loading && !error && (
         <>
           <p className="info" style={{ marginTop: 8 }}>
-            表示中: {events.length} 件 ({order === 'desc' ? '新しい順' : '古い順'})
+            表示中: {events.length} 件 / 全 {allEvents.length} 件
+            {generated && <span style={{ marginLeft: 12, opacity: 0.6 }}>更新: {toJST(generated)}</span>}
           </p>
           <div className="table-wrap">
             <table>
@@ -173,7 +193,18 @@ export function RawEventsTable({ from, to }: Props) {
                     {expanded === i && (
                       <tr>
                         <td colSpan={6}>
-                          <pre className="json-detail">{JSON.stringify(ev.raw_attributes, null, 2)}</pre>
+                          <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 16px', padding: '8px', fontSize: '0.85em' }}>
+                            {ev.input_tokens > 0 && <span><strong>input_tokens:</strong> {ev.input_tokens.toLocaleString()}</span>}
+                            {ev.output_tokens > 0 && <span><strong>output_tokens:</strong> {ev.output_tokens.toLocaleString()}</span>}
+                            {ev.cache_read_tokens > 0 && <span><strong>cache_read:</strong> {ev.cache_read_tokens.toLocaleString()}</span>}
+                            {ev.cache_creation_tokens > 0 && <span><strong>cache_creation:</strong> {ev.cache_creation_tokens.toLocaleString()}</span>}
+                            {ev.duration_ms > 0 && <span><strong>duration:</strong> {ev.duration_ms.toLocaleString()}ms</span>}
+                            {ev.speed && <span><strong>speed:</strong> {ev.speed}</span>}
+                            {ev.session_id && <span><strong>session:</strong> {ev.session_id}</span>}
+                            {ev.terminal_type && <span><strong>terminal:</strong> {ev.terminal_type}</span>}
+                            {ev.service_version && <span><strong>version:</strong> {ev.service_version}</span>}
+                            {ev.tool_name && <span><strong>tool:</strong> {ev.tool_name}</span>}
+                          </div>
                         </td>
                       </tr>
                     )}

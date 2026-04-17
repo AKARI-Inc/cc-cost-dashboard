@@ -75,7 +75,7 @@ function ClaudeCodeView({
       {activeGroupData.error && <p className="error">エラー: {activeGroupData.error}</p>}
 
       {activeGroupData.data && groupBy === 'model' && <ModelBreakdown data={activeGroupData.data} />}
-      {activeGroupData.data && groupBy === 'user' && <UserSummary data={activeGroupData.data} />}
+      {activeGroupData.data && groupBy === 'user' && <UserSummary data={activeGroupData.data} from={from} to={to} />}
       {activeGroupData.data && groupBy === 'day' && (
         <div className="card">
           <h3>日別詳細</h3>
