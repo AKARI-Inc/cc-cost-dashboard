@@ -1,5 +1,15 @@
 package model
 
+const APIRequestEvent = "claude_code.api_request"
+
+// ExtractDate は "2006-01-02T..." 形式のタイムスタンプから日付部分を返す。
+func ExtractDate(ts string) string {
+	if len(ts) >= 10 {
+		return ts[:10]
+	}
+	return ts
+}
+
 // OTel テレメトリから抽出した 1 件のイベント。頻出フィールドは型付きカラムに昇格済み。
 type OtelEvent struct {
 	Timestamp string `json:"timestamp"`

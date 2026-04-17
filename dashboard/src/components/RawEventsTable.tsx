@@ -1,4 +1,14 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => {
+    timer.current = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(timer.current);
+  }, [value, delayMs]);
+  return debounced;
+}
 
 // UTC タイムスタンプを JST (Asia/Tokyo) 表示に変換
 function toJST(ts: string): string {
@@ -46,6 +56,9 @@ export function RawEventsTable({ from, to }: Props) {
   const [limit, setLimit] = useState(500);
   const [expanded, setExpanded] = useState<number | null>(null);
 
+  const debouncedEventName = useDebouncedValue(eventName, 400);
+  const debouncedUserEmail = useDebouncedValue(userEmail, 400);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -57,8 +70,8 @@ export function RawEventsTable({ from, to }: Props) {
       limit: String(limit),
       order,
     });
-    if (eventName) params.set('eventName', eventName);
-    if (userEmail) params.set('userEmail', userEmail);
+    if (debouncedEventName) params.set('eventName', debouncedEventName);
+    if (debouncedUserEmail) params.set('userEmail', debouncedUserEmail);
 
     fetch(`/api/claude-code/events?${params}`)
       .then((res) => {
@@ -79,7 +92,7 @@ export function RawEventsTable({ from, to }: Props) {
       });
 
     return () => { cancelled = true; };
-  }, [from, to, eventName, userEmail, order, limit]);
+  }, [from, to, debouncedEventName, debouncedUserEmail, order, limit]);
 
   return (
     <div className="card">
