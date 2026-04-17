@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 type Reader interface {
@@ -30,7 +30,7 @@ func (r *FileReader) ReadOtelEvents(_ context.Context, from, to time.Time) ([]mo
 	var events []model.OtelEvent
 
 	for d := truncateToDay(from); !d.After(truncateToDay(to)); d = d.AddDate(0, 0, 1) {
-		filename := filepath.Join(dataDir, "logs", "otel", d.Format("2006-01-02")+".jsonl")
+		filename := filepath.Join(r.DataDir, "logs", "otel", d.Format("2006-01-02")+".jsonl")
 
 		lines, err := readLines(filename)
 		if err != nil {
