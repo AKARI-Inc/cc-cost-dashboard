@@ -32,9 +32,6 @@ jobs:
           - name: collector
             dockerfile: lambda/collector/Dockerfile
             ecr_repo: cc-cost-dashboard-dev/collector
-          - name: api
-            dockerfile: lambda/api/Dockerfile
-            ecr_repo: cc-cost-dashboard-dev/api
           - name: generator
             dockerfile: lambda/generator/Dockerfile
             ecr_repo: cc-cost-dashboard-dev/generator
@@ -79,8 +76,6 @@ jobs:
         function:
           - name: cc-cost-dashboard-dev-collector
             ecr_repo: cc-cost-dashboard-dev/collector
-          - name: cc-cost-dashboard-dev-api
-            ecr_repo: cc-cost-dashboard-dev/api
           - name: cc-cost-dashboard-dev-generator
             ecr_repo: cc-cost-dashboard-dev/generator
     steps:

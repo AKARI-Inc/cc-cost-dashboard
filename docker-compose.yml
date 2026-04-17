@@ -70,23 +70,6 @@ services:
     depends_on:
       - localstack
 
-  api:
-    profiles: ["full"]
-    build:
-      context: .
-      dockerfile: cmd/api/Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./data:/data
-    environment:
-      - DATA_DIR=/data
-      - STORAGE=${STORAGE:-file}
-      - AWS_ENDPOINT_URL=http://localstack:4566
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - AWS_DEFAULT_REGION=ap-northeast-1
-
   # Phase 3 で実装予定
   processor:
     profiles: ["full"]
@@ -110,5 +93,3 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5174:5173"
-    depends_on:
-      - api

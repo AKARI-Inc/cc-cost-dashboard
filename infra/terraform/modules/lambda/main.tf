@@ -15,16 +15,6 @@ resource "aws_ecr_repository" "collector" {
   }
 }
 
-resource "aws_ecr_repository" "api" {
-  name                 = "${var.project_name}/api"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
-
-  image_scanning_configuration {
-    scan_on_push = false
-  }
-}
-
 resource "aws_ecr_repository" "generator" {
   name                 = "${var.project_name}/generator"
   image_tag_mutability = "MUTABLE"
@@ -47,11 +37,6 @@ resource "aws_cloudwatch_log_group" "otel_logs" {
 # Lambda 実行ログ
 resource "aws_cloudwatch_log_group" "collector_lambda_logs" {
   name              = "/aws/lambda/${var.project_name}-collector"
-  retention_in_days = 14
-}
-
-resource "aws_cloudwatch_log_group" "api_lambda_logs" {
-  name              = "/aws/lambda/${var.project_name}-api"
   retention_in_days = 14
 }
 
@@ -78,29 +63,6 @@ resource "aws_lambda_function" "collector" {
 
   depends_on = [
     aws_cloudwatch_log_group.collector_lambda_logs,
-  ]
-}
-
-resource "aws_lambda_function" "api" {
-  function_name = "${var.project_name}-api"
-  role          = aws_iam_role.lambda_role.arn
-
-  package_type  = "Image"
-  image_uri     = var.api_image_uri
-  architectures = ["arm64"]
-
-  timeout     = var.lambda_timeout
-  memory_size = var.lambda_memory_size
-
-  environment {
-    variables = {
-      STORAGE  = "cloudwatch"
-      DATA_DIR = "/tmp/data"
-    }
-  }
-
-  depends_on = [
-    aws_cloudwatch_log_group.api_lambda_logs,
   ]
 }
 
@@ -176,29 +138,6 @@ resource "aws_lambda_permission" "apigw_collector" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.collector.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
-}
-
-# --- API integration ---
-
-resource "aws_apigatewayv2_integration" "api" {
-  api_id                 = aws_apigatewayv2_api.main.id
-  integration_type       = "AWS_PROXY"
-  integration_uri        = aws_lambda_function.api.invoke_arn
-  payload_format_version = "2.0"
-}
-
-resource "aws_apigatewayv2_route" "api_proxy" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /api/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.api.id}"
-}
-
-resource "aws_lambda_permission" "apigw_api" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
 }

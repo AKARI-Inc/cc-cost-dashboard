@@ -22,6 +22,9 @@ const (
 	// 集計対象の遡及日数。Frontend は client-side で再フィルタするので
 	// 最大の検索期間 (1 年) をカバー。
 	lookbackDays = 365
+
+	// Raw Events の出力上限。ペイロードサイズを抑える。
+	maxRawEvents = 10000
 )
 
 var (
@@ -68,7 +71,7 @@ func handler(ctx context.Context) error {
 
 	log.Printf("Generating dashboard data: %s → %s (%d days)", from.Format("2006-01-02"), now.Format("2006-01-02"), lookbackDays)
 
-	events, err := reader.ReadOtelEvents(ctx, from, now)
+	events, err := reader.ReadOtelEvents(ctx, from, now, nil)
 	if err != nil {
 		return fmt.Errorf("read otel events: %w", err)
 	}
@@ -101,7 +104,24 @@ func handler(ctx context.Context) error {
 		log.Printf("Wrote s3://%s/%s", bucket, key)
 	}
 
-	log.Printf("Dashboard generation complete: %d events → %d summaries", len(events), len(summaries))
+	// Raw Events を S3 に書き出し (フロントエンドで直接配信)
+	slim := slimEvents(events, maxRawEvents)
+	eventsPayload := map[string]any{
+		"data": slim,
+		"meta": map[string]any{
+			"from":  from.Format("2006-01-02"),
+			"to":    now.Format("2006-01-02"),
+			"count": len(slim),
+		},
+		"generated": now.Format(time.RFC3339),
+	}
+	if err := putJSON(ctx, "data/events/recent.json", eventsPayload); err != nil {
+		log.Printf("ERROR: failed to write events: %v", err)
+		return err
+	}
+	log.Printf("Wrote s3://%s/data/events/recent.json (%d events)", bucket, len(slim))
+
+	log.Printf("Dashboard generation complete: %d events → %d summaries + events", len(events), len(summaries))
 	return nil
 }
 
@@ -147,6 +167,26 @@ func bucketize(events []model.OtelEvent, keyFn func(model.OtelEvent) string) []B
 		return result[i].Key < result[j].Key
 	})
 	return result
+}
+
+// slimEvents は raw_attributes を除外し、新しい順で上限を適用する。
+func slimEvents(events []model.OtelEvent, limit int) []model.OtelEvent {
+	out := make([]model.OtelEvent, len(events))
+	copy(out, events)
+
+	for i := range out {
+		out[i].RawAttributes = nil
+	}
+
+	// 新しい順 (timestamp desc)
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Timestamp > out[j].Timestamp
+	})
+
+	if limit > 0 && len(out) > limit {
+		out = out[:limit]
+	}
+	return out
 }
 
 func putJSON(ctx context.Context, key string, data any) error {

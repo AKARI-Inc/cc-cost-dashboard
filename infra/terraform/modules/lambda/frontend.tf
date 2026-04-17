@@ -75,28 +75,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     max_ttl     = 31536000
   }
 
-  # /api/* → API Gateway
-  ordered_cache_behavior {
-    path_pattern           = "/api/*"
-    target_origin_id       = "apigw"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-    cached_methods         = ["GET", "HEAD"]
-
-    forwarded_values {
-      query_string = true
-      headers      = ["Origin", "Access-Control-Request-Headers", "Access-Control-Request-Method"]
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl     = 0
-    default_ttl = 0
-    max_ttl     = 0
-  }
-
-  # /v1/* → API Gateway (OTel)
+  # /v1/* → API Gateway (OTel Collector)
   ordered_cache_behavior {
     path_pattern           = "/v1/*"
     target_origin_id       = "apigw"

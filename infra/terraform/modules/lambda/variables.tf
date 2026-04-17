@@ -14,11 +14,6 @@ variable "collector_image_uri" {
   type        = string
 }
 
-variable "api_image_uri" {
-  description = "API Lambda のコンテナイメージ URI"
-  type        = string
-}
-
 variable "lambda_memory_size" {
   description = "Lambda 関数のメモリサイズ (MB)"
   type        = number
