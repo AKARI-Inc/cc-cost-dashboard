@@ -18,32 +18,12 @@ services:
       timeout: 3s
       retries: 10
 
-  # MinIO: S3 互換オブジェクトストレージ
-  minio:
-    image: minio/minio:latest
-    ports:
-      - "9002:9000"
-      - "9003:9001"
-    environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
-    command: server /data --console-address ":9001"
-    volumes:
-      - ./data/minio:/data
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  # LocalStack / MinIO の初期化（Log Groups とバケット作成）
+  # LocalStack の初期化（Log Groups 作成）
   init:
     image: amazon/aws-cli:latest
     depends_on:
       localstack:
         condition: service_healthy
-      minio:
-        condition: service_started
     entrypoint: ["/bin/sh", "/scripts/init.sh"]
     environment:
       - AWS_ACCESS_KEY_ID=test
@@ -82,9 +62,6 @@ services:
       - ./data:/data
     environment:
       - DATA_DIR=/data
-      - S3_ENDPOINT=http://minio:9000
-      - S3_ACCESS_KEY=minioadmin
-      - S3_SECRET_KEY=minioadmin
 
   dashboard:
     profiles: ["full"]

@@ -1,4 +1,4 @@
-.PHONY: dev down test mock-seed mock-reset build push ecr-login tf-init tf-plan tf-apply tf-ecr-only
+.PHONY: dev down test mock-seed mock-reset fetch-data build push ecr-login tf-init tf-plan tf-apply tf-ecr-only
 
 # ──── 設定 ────
 AWS_PROFILE   ?= squad-ep-internal
@@ -26,6 +26,10 @@ mock-seed:  ## モックデータ生成
 mock-reset:  ## データリセット + モック再生成
 	rm -rf data/logs data/uploads
 	$(MAKE) mock-seed
+
+fetch-data:  ## S3 から summary/events JSON をローカルに取り込む
+	AWS_PROFILE=$(AWS_PROFILE) AWS_REGION=$(AWS_REGION) \
+		bash scripts/fetch_s3_data.sh
 
 # ──── Lambda コンテナイメージ ────
 
