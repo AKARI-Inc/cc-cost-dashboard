@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
 )
 
 // 100 万トークンあたりのモデル料金（入力 / 出力）。

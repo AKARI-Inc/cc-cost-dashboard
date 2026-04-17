@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/collector"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/collector"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 func main() {

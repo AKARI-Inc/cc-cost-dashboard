@@ -1,4 +1,4 @@
-module github.com/narumina/cc-cost-dashboard
+module github.com/AKARI-Inc/cc-cost-dashboard
 
 go 1.24.13
 
