@@ -325,7 +325,10 @@ func bucketizeUserSkill(events []model.OtelEvent) []UserSkillBucket {
 		if user == "" {
 			user = "(unknown)"
 		}
-		skill := ev.SkillName
+		// 旧 collector 時代のイベントは typed フィールド未設定のため raw_attributes から救う。
+		skill := firstNonEmpty(ev.SkillName, rawStr(ev.RawAttributes, "skill.name"))
+		source := firstNonEmpty(ev.SkillSource, rawStr(ev.RawAttributes, "skill.source"))
+		plugin := firstNonEmpty(ev.PluginName, rawStr(ev.RawAttributes, "plugin.name"))
 		if skill == "" {
 			skill = "(unknown)"
 		}
@@ -336,8 +339,8 @@ func bucketizeUserSkill(events []model.OtelEvent) []UserSkillBucket {
 				Date:        key.date,
 				UserEmail:   user,
 				SkillName:   skill,
-				SkillSource: ev.SkillSource,
-				PluginName:  ev.PluginName,
+				SkillSource: source,
+				PluginName:  plugin,
 			}
 			m[key] = b
 		}
@@ -403,6 +406,25 @@ func bucketizeUserSession(events []model.OtelEvent) []UserSessionBucket {
 		return result[i].SessionID < result[j].SessionID
 	})
 	return result
+}
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+func rawStr(m map[string]any, key string) string {
+	if m == nil {
+		return ""
+	}
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
 }
 
 // slimEvents は raw_attributes を除外し、新しい順で上限を適用する。
