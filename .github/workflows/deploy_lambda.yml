@@ -2,7 +2,7 @@ name: Deploy Lambda (dev)
 
 on:
   push:
-    branches: [main, refactor/drop-api-lambda-static-dashboard]
+    branches: [main, refactor/drop-api-lambda-static-dashboard, update-skill-detail]
     paths:
       - "cmd/**"
       - "lambda/**"
