@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/narumina/cc-cost-dashboard/internal/model"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 // EventReader は OTel イベントを読み取る抽象。

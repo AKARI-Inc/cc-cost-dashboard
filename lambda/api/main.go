@@ -8,8 +8,8 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
-	"github.com/narumina/cc-cost-dashboard/internal/api"
-	"github.com/narumina/cc-cost-dashboard/internal/storage"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/api"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 func main() {
