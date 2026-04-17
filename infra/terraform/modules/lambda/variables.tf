@@ -54,3 +54,9 @@ variable "waf_allowed_ips" {
   type        = list(string)
   default     = []
 }
+
+variable "custom_domain" {
+  description = "ダッシュボードのカスタムドメイン (dx-akari.com のサブドメイン)"
+  type        = string
+  default     = "akari-cc-insights-dashboard.dx-akari.com"
+}

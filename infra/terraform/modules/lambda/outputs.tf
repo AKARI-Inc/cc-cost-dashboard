@@ -36,3 +36,18 @@ output "github_actions_role_arn" {
   description = "GitHub Actions OIDC ロール ARN"
   value       = aws_iam_role.github_actions.arn
 }
+
+output "custom_domain" {
+  description = "ダッシュボードのカスタムドメイン (Phase 2 で CloudFront に紐付ける)"
+  value       = var.custom_domain
+}
+
+output "custom_domain_nameservers" {
+  description = "カスタムドメインの NS レコード (親ドメイン dx-akari.com 側に委譲するために使う)"
+  value       = aws_route53_zone.custom.name_servers
+}
+
+output "custom_domain_hosted_zone_id" {
+  description = "カスタムドメインの Route53 Hosted Zone ID"
+  value       = aws_route53_zone.custom.zone_id
+}

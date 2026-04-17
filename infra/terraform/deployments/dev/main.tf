@@ -64,3 +64,17 @@ output "collector_ecr_repository_url" {
   value = module.lambda.collector_ecr_repository_url
 }
 
+output "custom_domain" {
+  value = module.lambda.custom_domain
+}
+
+output "custom_domain_nameservers" {
+  description = "親ドメイン (dx-akari.com) に委譲する NS レコード"
+  value       = module.lambda.custom_domain_nameservers
+}
+
+output "dashboard_url" {
+  description = "ダッシュボード URL (カスタムドメイン)"
+  value       = "https://${module.lambda.custom_domain}"
+}
+

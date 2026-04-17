@@ -33,6 +33,8 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   comment             = "${var.project_name} dashboard"
 
+  aliases = [var.custom_domain]
+
   # WAF: 許可 IP 以外を 403 で拒否（waf_allowed_ips 設定時のみ）
   web_acl_id = length(var.waf_allowed_ips) > 0 ? aws_wafv2_web_acl.main[0].arn : null
 
@@ -115,7 +117,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.custom.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
 
