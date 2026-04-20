@@ -336,6 +336,25 @@ th {
   gap: 20px;
 }
 
+.detail-top-row {
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 1.1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.detail-top-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .detail-top-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .detail-section h4 {
   font-size: 0.85rem;
   color: var(--color-text-muted);
