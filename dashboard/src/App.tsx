@@ -3,6 +3,7 @@ import { useUsageData } from './hooks/useUsageData';
 import { DateRangeFilter } from './components/DateRangeFilter';
 import { SummaryCards } from './components/SummaryCards';
 import { CostChart } from './components/CostChart';
+import { CostEfficiency } from './components/CostEfficiency';
 import { ModelBreakdown } from './components/ModelBreakdown';
 import { UserSummary } from './components/UserSummary';
 import { GroupByTabs } from './components/GroupByTabs';
@@ -68,6 +69,7 @@ function ClaudeCodeView({
       {dayData.error && <p className="error">エラー: {dayData.error}</p>}
       {dayData.data && <SummaryCards data={dayData.data} />}
       {dayData.data && <CostChart data={dayData.data} />}
+      <CostEfficiency from={from} to={to} />
 
       <GroupByTabs value={groupBy} onChange={onGroupByChange} />
 

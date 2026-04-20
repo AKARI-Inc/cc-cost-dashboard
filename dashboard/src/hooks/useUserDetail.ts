@@ -19,6 +19,15 @@ type UserToolBucket = {
   request_count: number;
 };
 
+type UserTerminalBucket = {
+  date: string;
+  user_email: string;
+  terminal_type: string;
+  os_type?: string;
+  request_count: number;
+  total_cost_usd: number;
+};
+
 export type ModelBreakdownRow = {
   model: string;
   total_cost_usd: number;
@@ -34,9 +43,17 @@ export type ToolBreakdownRow = {
   request_count: number;
 };
 
+export type TerminalBreakdownRow = {
+  terminal_type: string;
+  os_type?: string;
+  request_count: number;
+  total_cost_usd: number;
+};
+
 type DetailResult = {
   models: ModelBreakdownRow[];
   tools: ToolBreakdownRow[];
+  terminals: TerminalBreakdownRow[];
   loading: boolean;
   error: string | null;
 };
@@ -44,6 +61,7 @@ type DetailResult = {
 type Cache = {
   models?: UserModelBucket[];
   tools?: UserToolBucket[];
+  terminals?: UserTerminalBucket[];
   error?: string;
   loading: boolean;
 };
@@ -61,19 +79,21 @@ function ensureLoaded() {
   cache.loading = true;
   notify();
 
+  const load = (path: string) =>
+    fetch(path).then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    });
+
   Promise.all([
-    fetch('/data/summary/per-day-per-user-model.json').then((r) => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    }),
-    fetch('/data/summary/per-day-per-user-tool.json').then((r) => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    }),
+    load('/data/summary/per-day-per-user-model.json'),
+    load('/data/summary/per-day-per-user-tool.json'),
+    load('/data/summary/per-day-per-user-terminal.json').catch(() => ({ data: [] })),
   ])
-    .then(([m, t]) => {
+    .then(([m, t, tm]) => {
       cache.models = m.data ?? [];
       cache.tools = t.data ?? [];
+      cache.terminals = tm.data ?? [];
       cache.loading = false;
       notify();
     })
@@ -102,10 +122,10 @@ export function useUserDetail(params: {
 
   return useMemo(() => {
     if (cache.loading || (!cache.models && !cache.error)) {
-      return { models: [], tools: [], loading: true, error: null };
+      return { models: [], tools: [], terminals: [], loading: true, error: null };
     }
     if (cache.error) {
-      return { models: [], tools: [], loading: false, error: cache.error };
+      return { models: [], tools: [], terminals: [], loading: false, error: cache.error };
     }
 
     const inRange = (d: string) => d >= params.from && d <= params.to;
@@ -151,13 +171,34 @@ export function useUserDetail(params: {
       }
     }
 
+    const termMap = new Map<string, TerminalBreakdownRow>();
+    for (const b of cache.terminals ?? []) {
+      if (!inRange(b.date) || !matchUser(b.user_email)) continue;
+      const key = `${b.terminal_type}::${b.os_type ?? ''}`;
+      const cur = termMap.get(key);
+      if (cur) {
+        cur.request_count += b.request_count;
+        cur.total_cost_usd += b.total_cost_usd;
+      } else {
+        termMap.set(key, {
+          terminal_type: b.terminal_type,
+          os_type: b.os_type,
+          request_count: b.request_count,
+          total_cost_usd: b.total_cost_usd,
+        });
+      }
+    }
+
     const models = Array.from(modelMap.values()).sort(
       (a, b) => b.total_cost_usd - a.total_cost_usd,
     );
     const tools = Array.from(toolMap.values()).sort(
       (a, b) => b.request_count - a.request_count,
     );
+    const terminals = Array.from(termMap.values()).sort(
+      (a, b) => b.request_count - a.request_count,
+    );
 
-    return { models, tools, loading: false, error: null };
+    return { models, tools, terminals, loading: false, error: null };
   }, [params.userEmail, params.from, params.to]);
 }

@@ -90,6 +90,17 @@ type UserToolBucket struct {
 	RequestCount int    `json:"request_count"`
 }
 
+// UserTerminalBucket は (date, user_email, terminal_type, os_type) 単位の明細。
+// ユーザーが普段どの環境で使っているかの内訳に使う。
+type UserTerminalBucket struct {
+	Date         string  `json:"date"`
+	UserEmail    string  `json:"user_email"`
+	TerminalType string  `json:"terminal_type"`
+	OSType       string  `json:"os_type,omitempty"`
+	RequestCount int     `json:"request_count"`
+	TotalCostUSD float64 `json:"total_cost_usd"`
+}
+
 func handler(ctx context.Context) error {
 	now := time.Now().UTC()
 	from := now.AddDate(0, 0, -lookbackDays)
@@ -119,8 +130,9 @@ func handler(ctx context.Context) error {
 		"data/summary/per-day-per-terminal.json":   wrap(bucketize(events, func(e model.OtelEvent) string { return e.TerminalType }), "terminal"),
 		"data/summary/per-day-per-version.json":    wrap(bucketize(events, func(e model.OtelEvent) string { return e.ServiceVersion }), "version"),
 		"data/summary/per-day-per-speed.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
-		"data/summary/per-day-per-user-model.json": wrap(bucketizeUserModel(events), "user-model"),
-		"data/summary/per-day-per-user-tool.json":  wrap(bucketizeUserTool(events), "user-tool"),
+		"data/summary/per-day-per-user-model.json":    wrap(bucketizeUserModel(events), "user-model"),
+		"data/summary/per-day-per-user-tool.json":     wrap(bucketizeUserTool(events), "user-tool"),
+		"data/summary/per-day-per-user-terminal.json": wrap(bucketizeUserTerminal(events), "user-terminal"),
 	}
 
 	for key, data := range summaries {
@@ -283,6 +295,52 @@ func bucketizeUserTool(events []model.OtelEvent) []UserToolBucket {
 			return result[i].UserEmail < result[j].UserEmail
 		}
 		return result[i].ToolName < result[j].ToolName
+	})
+	return result
+}
+
+// bucketizeUserTerminal は api_request イベントを (date, user, terminal, os) で集計する。
+func bucketizeUserTerminal(events []model.OtelEvent) []UserTerminalBucket {
+	type k struct{ date, user, term, os string }
+	m := make(map[k]*UserTerminalBucket)
+
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		term := ev.TerminalType
+		if term == "" {
+			term = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, term: term, os: ev.OSType}
+		b, ok := m[key]
+		if !ok {
+			b = &UserTerminalBucket{Date: key.date, UserEmail: user, TerminalType: term, OSType: ev.OSType}
+			m[key] = b
+		}
+		b.RequestCount++
+		b.TotalCostUSD += ev.CostUSD
+	}
+
+	result := make([]UserTerminalBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		if result[i].TerminalType != result[j].TerminalType {
+			return result[i].TerminalType < result[j].TerminalType
+		}
+		return result[i].OSType < result[j].OSType
 	})
 	return result
 }
