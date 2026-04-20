@@ -42,11 +42,6 @@ type OtelEvent struct {
 
 	ToolName string `json:"tool_name,omitempty"`
 
-	// skill_activated イベント専用。
-	SkillName   string `json:"skill_name,omitempty"`
-	SkillSource string `json:"skill_source,omitempty"`
-	PluginName  string `json:"plugin_name,omitempty"`
-
 	EventSequence int `json:"event_sequence,omitempty"`
 
 	// 型付きカラムに昇格していないフィールドも UI で参照できるようにするためのダンプ。

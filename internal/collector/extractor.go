@@ -96,10 +96,6 @@ func ExtractEvents(req *collogspb.ExportLogsServiceRequest) []model.OtelEvent {
 					if eventName == "claude_code.tool_result" {
 						ev.DurationMs = numAttr(recAttrs, "duration_ms")
 					}
-				case "claude_code.skill_activated":
-					ev.SkillName = strAttr(recAttrs, "skill.name")
-					ev.SkillSource = strAttr(recAttrs, "skill.source")
-					ev.PluginName = strAttr(recAttrs, "plugin.name")
 				}
 
 				events = append(events, ev)

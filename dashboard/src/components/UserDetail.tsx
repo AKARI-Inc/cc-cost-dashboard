@@ -5,7 +5,7 @@ type Props = { row: UsageRow; from: string; to: string };
 
 export function UserDetail({ row, from, to }: Props) {
   const email = row.user_email ?? row.key ?? '(unknown)';
-  const { models, tools, skills, sessions, loading, error } = useUserDetail({
+  const { models, tools, loading, error } = useUserDetail({
     userEmail: email,
     from,
     to,
@@ -20,7 +20,6 @@ export function UserDetail({ row, from, to }: Props) {
     : 0;
 
   const totalToolCalls = tools.reduce((sum, t) => sum + t.request_count, 0);
-  const totalSkillCalls = skills.reduce((sum, s) => sum + s.use_count, 0);
 
   return (
     <div className="user-detail">
@@ -50,40 +49,6 @@ export function UserDetail({ row, from, to }: Props) {
                 ? Math.round(
                     (row.input_tokens + row.output_tokens) / row.request_count,
                   ).toLocaleString()
-                : '-'}
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className="detail-section">
-        <h4>セッション統計</h4>
-        <dl className="detail-grid">
-          <div>
-            <dt>ユニークセッション数</dt>
-            <dd>{sessions.session_count.toLocaleString()}</dd>
-          </div>
-          <div>
-            <dt>1セッション平均リクエスト</dt>
-            <dd>
-              {sessions.session_count > 0
-                ? sessions.avg_requests.toFixed(1)
-                : '-'}
-            </dd>
-          </div>
-          <div>
-            <dt>1セッション平均コスト</dt>
-            <dd>
-              {sessions.session_count > 0
-                ? `$${sessions.avg_cost_usd.toFixed(4)}`
-                : '-'}
-            </dd>
-          </div>
-          <div>
-            <dt>最大コスト/セッション</dt>
-            <dd>
-              {sessions.session_count > 0
-                ? `$${sessions.max_cost_usd.toFixed(4)}`
                 : '-'}
             </dd>
           </div>
@@ -131,57 +96,6 @@ export function UserDetail({ row, from, to }: Props) {
                   })}
                 </tbody>
               </table>
-            )}
-          </section>
-
-          <section className="detail-section">
-            <h4>
-              Skill 利用{' '}
-              {skills.length > 0 && (
-                <span className="muted">
-                  ({skills.length.toLocaleString()} 種 / 全 {totalSkillCalls.toLocaleString()} 回)
-                </span>
-              )}
-            </h4>
-            {skills.length === 0 ? (
-              <p className="info">Skill 起動データなし</p>
-            ) : (
-              <div className="tool-scroll">
-                <table className="detail-table tool-table">
-                  <thead>
-                    <tr>
-                      <th>Skill</th>
-                      <th>ソース</th>
-                      <th className="num">回数</th>
-                      <th className="num">割合</th>
-                      <th className="bar-col">分布</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {skills.map((s) => {
-                      const pct = totalSkillCalls > 0
-                        ? (s.use_count / totalSkillCalls) * 100
-                        : 0;
-                      const src = s.plugin_name
-                        ? `${s.skill_source ?? '-'} / ${s.plugin_name}`
-                        : s.skill_source ?? '-';
-                      return (
-                        <tr key={s.skill_name}>
-                          <td>{s.skill_name}</td>
-                          <td className="muted">{src}</td>
-                          <td className="num">{s.use_count.toLocaleString()}</td>
-                          <td className="num">{pct.toFixed(1)}%</td>
-                          <td className="bar-col">
-                            <div className="bar-track">
-                              <div className="bar-fill" style={{ width: `${pct}%` }} />
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
             )}
           </section>
 

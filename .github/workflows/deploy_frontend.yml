@@ -2,7 +2,7 @@ name: Deploy Frontend (dev)
 
 on:
   push:
-    branches: [main, refactor/drop-api-lambda-static-dashboard, update-skill-detail]
+    branches: [main, refactor/drop-api-lambda-static-dashboard]
     paths:
       - "dashboard/**"
       - ".github/workflows/deploy_frontend.yml"

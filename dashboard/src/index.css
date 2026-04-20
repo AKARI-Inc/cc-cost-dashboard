@@ -160,15 +160,11 @@ body {
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  grid-auto-rows: 1fr;
   gap: 16px;
   margin-bottom: 24px;
 }
 
 .summary-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   text-align: center;
 }
 
@@ -409,4 +405,3 @@ th {
 .tool-scroll .tool-table tbody tr:last-child td {
   border-bottom: none;
 }
-

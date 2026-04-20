@@ -19,25 +19,6 @@ type UserToolBucket = {
   request_count: number;
 };
 
-type UserSkillBucket = {
-  date: string;
-  user_email: string;
-  skill_name: string;
-  skill_source?: string;
-  plugin_name?: string;
-  use_count: number;
-};
-
-type UserSessionBucket = {
-  date: string;
-  user_email: string;
-  session_id: string;
-  total_cost_usd: number;
-  input_tokens: number;
-  output_tokens: number;
-  request_count: number;
-};
-
 export type ModelBreakdownRow = {
   model: string;
   total_cost_usd: number;
@@ -53,26 +34,9 @@ export type ToolBreakdownRow = {
   request_count: number;
 };
 
-export type SkillBreakdownRow = {
-  skill_name: string;
-  skill_source?: string;
-  plugin_name?: string;
-  use_count: number;
-};
-
-export type SessionStats = {
-  session_count: number;
-  avg_requests: number;
-  avg_cost_usd: number;
-  max_cost_usd: number;
-  total_requests: number;
-};
-
 type DetailResult = {
   models: ModelBreakdownRow[];
   tools: ToolBreakdownRow[];
-  skills: SkillBreakdownRow[];
-  sessions: SessionStats;
   loading: boolean;
   error: string | null;
 };
@@ -80,8 +44,6 @@ type DetailResult = {
 type Cache = {
   models?: UserModelBucket[];
   tools?: UserToolBucket[];
-  skills?: UserSkillBucket[];
-  sessions?: UserSessionBucket[];
   error?: string;
   loading: boolean;
 };
@@ -99,23 +61,19 @@ function ensureLoaded() {
   cache.loading = true;
   notify();
 
-  const load = (path: string) =>
-    fetch(path).then((r) => {
+  Promise.all([
+    fetch('/data/summary/per-day-per-user-model.json').then((r) => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return r.json();
-    });
-
-  Promise.all([
-    load('/data/summary/per-day-per-user-model.json'),
-    load('/data/summary/per-day-per-user-tool.json'),
-    load('/data/summary/per-day-per-user-skill.json').catch(() => ({ data: [] })),
-    load('/data/summary/per-day-per-user-session.json').catch(() => ({ data: [] })),
+    }),
+    fetch('/data/summary/per-day-per-user-tool.json').then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    }),
   ])
-    .then(([m, t, s, ss]) => {
+    .then(([m, t]) => {
       cache.models = m.data ?? [];
       cache.tools = t.data ?? [];
-      cache.skills = s.data ?? [];
-      cache.sessions = ss.data ?? [];
       cache.loading = false;
       notify();
     })
@@ -125,14 +83,6 @@ function ensureLoaded() {
       notify();
     });
 }
-
-const EMPTY_SESSIONS: SessionStats = {
-  session_count: 0,
-  avg_requests: 0,
-  avg_cost_usd: 0,
-  max_cost_usd: 0,
-  total_requests: 0,
-};
 
 export function useUserDetail(params: {
   userEmail: string;
@@ -152,24 +102,10 @@ export function useUserDetail(params: {
 
   return useMemo(() => {
     if (cache.loading || (!cache.models && !cache.error)) {
-      return {
-        models: [],
-        tools: [],
-        skills: [],
-        sessions: EMPTY_SESSIONS,
-        loading: true,
-        error: null,
-      };
+      return { models: [], tools: [], loading: true, error: null };
     }
     if (cache.error) {
-      return {
-        models: [],
-        tools: [],
-        skills: [],
-        sessions: EMPTY_SESSIONS,
-        loading: false,
-        error: cache.error,
-      };
+      return { models: [], tools: [], loading: false, error: cache.error };
     }
 
     const inRange = (d: string) => d >= params.from && d <= params.to;
@@ -215,68 +151,13 @@ export function useUserDetail(params: {
       }
     }
 
-    const skillMap = new Map<string, SkillBreakdownRow>();
-    for (const b of cache.skills ?? []) {
-      if (!inRange(b.date) || !matchUser(b.user_email)) continue;
-      const cur = skillMap.get(b.skill_name);
-      if (cur) {
-        cur.use_count += b.use_count;
-        if (!cur.skill_source && b.skill_source) cur.skill_source = b.skill_source;
-        if (!cur.plugin_name && b.plugin_name) cur.plugin_name = b.plugin_name;
-      } else {
-        skillMap.set(b.skill_name, {
-          skill_name: b.skill_name,
-          skill_source: b.skill_source,
-          plugin_name: b.plugin_name,
-          use_count: b.use_count,
-        });
-      }
-    }
-
     const models = Array.from(modelMap.values()).sort(
       (a, b) => b.total_cost_usd - a.total_cost_usd,
     );
     const tools = Array.from(toolMap.values()).sort(
       (a, b) => b.request_count - a.request_count,
     );
-    const skills = Array.from(skillMap.values()).sort(
-      (a, b) => b.use_count - a.use_count,
-    );
 
-    const sessionKeys = new Set<string>();
-    const sessionCostByKey = new Map<string, { cost: number; reqs: number }>();
-    for (const b of cache.sessions ?? []) {
-      if (!inRange(b.date) || !matchUser(b.user_email)) continue;
-      // 同じ session_id が複数日にまたがる場合があるので合算する
-      const cur = sessionCostByKey.get(b.session_id);
-      if (cur) {
-        cur.cost += b.total_cost_usd;
-        cur.reqs += b.request_count;
-      } else {
-        sessionCostByKey.set(b.session_id, {
-          cost: b.total_cost_usd,
-          reqs: b.request_count,
-        });
-      }
-      sessionKeys.add(b.session_id);
-    }
-    const sessionCount = sessionKeys.size;
-    let totalReqs = 0;
-    let totalCost = 0;
-    let maxCost = 0;
-    for (const v of sessionCostByKey.values()) {
-      totalReqs += v.reqs;
-      totalCost += v.cost;
-      if (v.cost > maxCost) maxCost = v.cost;
-    }
-    const sessions: SessionStats = {
-      session_count: sessionCount,
-      avg_requests: sessionCount > 0 ? totalReqs / sessionCount : 0,
-      avg_cost_usd: sessionCount > 0 ? totalCost / sessionCount : 0,
-      max_cost_usd: maxCost,
-      total_requests: totalReqs,
-    };
-
-    return { models, tools, skills, sessions, loading: false, error: null };
+    return { models, tools, loading: false, error: null };
   }, [params.userEmail, params.from, params.to]);
 }
