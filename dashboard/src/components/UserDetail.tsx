@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { UsageRow } from '../hooks/useUsageData';
 import { useUserDetail } from '../hooks/useUserDetail';
 import { StatHexagon } from './StatHexagon';
@@ -12,7 +11,6 @@ export function UserDetail({ row, from, to }: Props) {
     from,
     to,
   });
-  const [page, setPage] = useState<'data' | 'status'>('data');
 
   const inputWithCache = row.input_tokens + row.cache_read_tokens;
   const cacheHitRate = inputWithCache > 0 ? (row.cache_read_tokens / inputWithCache) * 100 : 0;
@@ -24,19 +22,8 @@ export function UserDetail({ row, from, to }: Props) {
 
   return (
     <div className="user-detail">
-      <div className="detail-tabs">
-        <button className={page === 'data' ? 'active' : ''} onClick={() => setPage('data')}>
-          詳細データ
-        </button>
-        <button className={page === 'status' ? 'active' : ''} onClick={() => setPage('status')}>
-          ステータス
-        </button>
-      </div>
-
-      {page === 'status' ? (
-        <StatHexagon row={row} tools={tools} skills={skills} sessions={sessions} />
-      ) : (
-        <>
+      <div className="detail-top-row">
+        <div className="detail-top-stats">
           <section className="detail-section">
             <h4>トークン詳細</h4>
             <dl className="detail-grid">
@@ -90,14 +77,20 @@ export function UserDetail({ row, from, to }: Props) {
               </div>
             </dl>
           </section>
+        </div>
+        <section className="detail-section">
+          <h4>ステータス</h4>
+          <StatHexagon row={row} tools={tools} skills={skills} sessions={sessions} />
+        </section>
+      </div>
 
-          {loading && <p className="info">詳細データ読み込み中...</p>}
-          {error && <p className="error">詳細データ取得失敗: {error}</p>}
+      {loading && <p className="info">詳細データ読み込み中...</p>}
+      {error && <p className="error">詳細データ取得失敗: {error}</p>}
 
-          {!loading && !error && (
-            <>
-              <section className="detail-section">
-                <h4>モデル別内訳</h4>
+      {!loading && !error && (
+        <>
+          <section className="detail-section">
+            <h4>モデル別内訳</h4>
                 {models.length === 0 ? (
                   <p className="info">データなし</p>
                 ) : (
@@ -261,9 +254,7 @@ export function UserDetail({ row, from, to }: Props) {
                     </table>
                   </div>
                 )}
-              </section>
-            </>
-          )}
+          </section>
         </>
       )}
     </div>
