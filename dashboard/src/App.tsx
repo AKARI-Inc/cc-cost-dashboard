@@ -6,6 +6,7 @@ import { CostChart } from './components/CostChart';
 import { CostEfficiency } from './components/CostEfficiency';
 import { ModelBreakdown } from './components/ModelBreakdown';
 import { UserSummary } from './components/UserSummary';
+import { UserPlanROI } from './components/UserPlanROI';
 import { GroupByTabs } from './components/GroupByTabs';
 import { RawEventsTable } from './components/RawEventsTable';
 import { DataTable } from './components/DataTable';
@@ -73,7 +74,7 @@ function ClaudeCodeView({
     from,
     to,
     groupBy,
-    enabled: groupBy !== 'day' && groupBy !== 'model',
+    enabled: !['day', 'model', 'plan', 'cost'].includes(groupBy),
   });
   const activeGroupData =
     groupBy === 'day' ? dayData : groupBy === 'model' ? modelData : otherGroupData;
@@ -84,7 +85,6 @@ function ClaudeCodeView({
       {dayData.error && <p className="error">エラー: {dayData.error}</p>}
       {dayData.data && <SummaryCards data={dayData.data} />}
       {dayData.data && <CostChart data={dayData.data} />}
-      <CostEfficiency data={modelData.data} />
 
       <GroupByTabs value={groupBy} onChange={onGroupByChange} />
 
@@ -109,6 +109,8 @@ function ClaudeCodeView({
           <DataTable data={activeGroupData.data} labelKey="key" />
         </div>
       )}
+      {groupBy === 'cost' && <CostEfficiency data={modelData.data} />}
+      {groupBy === 'plan' && <UserPlanROI />}
     </div>
   );
 }

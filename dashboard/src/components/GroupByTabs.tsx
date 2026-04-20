@@ -10,6 +10,8 @@ const tabs = [
   { key: 'terminal', label: 'Terminal' },
   { key: 'version', label: 'Version' },
   { key: 'speed', label: 'Speed' },
+  { key: 'cost', label: 'Cost' },
+  { key: 'plan', label: 'Plan' },
 ];
 
 export function GroupByTabs({ value, onChange }: Props) {
