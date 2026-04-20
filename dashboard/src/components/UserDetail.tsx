@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import type { UsageRow } from '../hooks/useUsageData';
 import { useUserDetail } from '../hooks/useUserDetail';
+import { StatHexagon } from './StatHexagon';
 
 type Props = { row: UsageRow; from: string; to: string };
 
@@ -10,6 +12,7 @@ export function UserDetail({ row, from, to }: Props) {
     from,
     to,
   });
+  const [page, setPage] = useState<'data' | 'status'>('data');
 
   const inputWithCache = row.input_tokens + row.cache_read_tokens;
   const cacheHitRate = inputWithCache > 0
@@ -25,6 +28,25 @@ export function UserDetail({ row, from, to }: Props) {
 
   return (
     <div className="user-detail">
+      <div className="detail-tabs">
+        <button
+          className={page === 'data' ? 'active' : ''}
+          onClick={() => setPage('data')}
+        >
+          詳細データ
+        </button>
+        <button
+          className={page === 'status' ? 'active' : ''}
+          onClick={() => setPage('status')}
+        >
+          ステータス
+        </button>
+      </div>
+
+      {page === 'status' ? (
+        <StatHexagon row={row} tools={tools} skills={skills} sessions={sessions} />
+      ) : (
+        <>
       <section className="detail-section">
         <h4>トークン詳細</h4>
         <dl className="detail-grid">
@@ -263,6 +285,8 @@ export function UserDetail({ row, from, to }: Props) {
               </div>
             )}
           </section>
+        </>
+      )}
         </>
       )}
     </div>
