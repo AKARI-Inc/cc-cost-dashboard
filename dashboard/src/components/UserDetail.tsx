@@ -5,7 +5,7 @@ type Props = { row: UsageRow; from: string; to: string };
 
 export function UserDetail({ row, from, to }: Props) {
   const email = row.user_email ?? row.key ?? '(unknown)';
-  const { models, tools, skills, sessions, loading, error } = useUserDetail({
+  const { models, tools, terminals, skills, sessions, loading, error } = useUserDetail({
     userEmail: email,
     from,
     to,
@@ -20,6 +20,7 @@ export function UserDetail({ row, from, to }: Props) {
     : 0;
 
   const totalToolCalls = tools.reduce((sum, t) => sum + t.request_count, 0);
+  const totalTerminalReqs = terminals.reduce((sum, t) => sum + t.request_count, 0);
   const totalSkillCalls = skills.reduce((sum, s) => sum + s.use_count, 0);
 
   return (
@@ -133,6 +134,38 @@ export function UserDetail({ row, from, to }: Props) {
               </table>
             )}
           </section>
+
+          {terminals.length > 0 && (
+            <section className="detail-section">
+              <h4>
+                環境 (ターミナル / OS){' '}
+                <span className="muted">({terminals.length.toLocaleString()} 種)</span>
+              </h4>
+              <div className="source-grid">
+                {terminals.map((t) => {
+                  const pct = totalTerminalReqs > 0
+                    ? (t.request_count / totalTerminalReqs) * 100
+                    : 0;
+                  const label = t.os_type
+                    ? `${t.terminal_type} / ${t.os_type}`
+                    : t.terminal_type;
+                  return (
+                    <div key={label} className="source-card">
+                      <div className="source-name">{label}</div>
+                      <div className="source-stats">
+                        <span className="source-count">{t.request_count.toLocaleString()}</span>
+                        <span className="source-pct">{pct.toFixed(1)}%</span>
+                      </div>
+                      <div className="source-sub">${t.total_cost_usd.toFixed(4)}</div>
+                      <div className="bar-track">
+                        <div className="bar-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           <section className="detail-section">
             <h4>

@@ -19,6 +19,15 @@ type UserToolBucket = {
   request_count: number;
 };
 
+type UserTerminalBucket = {
+  date: string;
+  user_email: string;
+  terminal_type: string;
+  os_type?: string;
+  request_count: number;
+  total_cost_usd: number;
+};
+
 type UserSkillBucket = {
   date: string;
   user_email: string;
@@ -53,6 +62,13 @@ export type ToolBreakdownRow = {
   request_count: number;
 };
 
+export type TerminalBreakdownRow = {
+  terminal_type: string;
+  os_type?: string;
+  request_count: number;
+  total_cost_usd: number;
+};
+
 export type SkillBreakdownRow = {
   skill_name: string;
   skill_source?: string;
@@ -71,6 +87,7 @@ export type SessionStats = {
 type DetailResult = {
   models: ModelBreakdownRow[];
   tools: ToolBreakdownRow[];
+  terminals: TerminalBreakdownRow[];
   skills: SkillBreakdownRow[];
   sessions: SessionStats;
   loading: boolean;
@@ -80,6 +97,7 @@ type DetailResult = {
 type Cache = {
   models?: UserModelBucket[];
   tools?: UserToolBucket[];
+  terminals?: UserTerminalBucket[];
   skills?: UserSkillBucket[];
   sessions?: UserSessionBucket[];
   error?: string;
@@ -92,6 +110,14 @@ const listeners = new Set<() => void>();
 function notify() {
   for (const fn of listeners) fn();
 }
+
+const EMPTY_SESSIONS: SessionStats = {
+  session_count: 0,
+  avg_requests: 0,
+  avg_cost_usd: 0,
+  max_cost_usd: 0,
+  total_requests: 0,
+};
 
 function ensureLoaded() {
   if (cache.models && cache.tools) return;
@@ -108,13 +134,15 @@ function ensureLoaded() {
   Promise.all([
     load('/data/summary/per-day-per-user-model.json'),
     load('/data/summary/per-day-per-user-tool.json'),
+    load('/data/summary/per-day-per-user-terminal.json').catch(() => ({ data: [] })),
     load('/data/summary/per-day-per-user-skill.json').catch(() => ({ data: [] })),
     load('/data/summary/per-day-per-user-session.json').catch(() => ({ data: [] })),
   ])
-    .then(([m, t, s, ss]) => {
+    .then(([m, t, tm, sk, ss]) => {
       cache.models = m.data ?? [];
       cache.tools = t.data ?? [];
-      cache.skills = s.data ?? [];
+      cache.terminals = tm.data ?? [];
+      cache.skills = sk.data ?? [];
       cache.sessions = ss.data ?? [];
       cache.loading = false;
       notify();
@@ -125,14 +153,6 @@ function ensureLoaded() {
       notify();
     });
 }
-
-const EMPTY_SESSIONS: SessionStats = {
-  session_count: 0,
-  avg_requests: 0,
-  avg_cost_usd: 0,
-  max_cost_usd: 0,
-  total_requests: 0,
-};
 
 export function useUserDetail(params: {
   userEmail: string;
@@ -155,6 +175,7 @@ export function useUserDetail(params: {
       return {
         models: [],
         tools: [],
+        terminals: [],
         skills: [],
         sessions: EMPTY_SESSIONS,
         loading: true,
@@ -165,6 +186,7 @@ export function useUserDetail(params: {
       return {
         models: [],
         tools: [],
+        terminals: [],
         skills: [],
         sessions: EMPTY_SESSIONS,
         loading: false,
@@ -215,6 +237,24 @@ export function useUserDetail(params: {
       }
     }
 
+    const termMap = new Map<string, TerminalBreakdownRow>();
+    for (const b of cache.terminals ?? []) {
+      if (!inRange(b.date) || !matchUser(b.user_email)) continue;
+      const key = `${b.terminal_type}::${b.os_type ?? ''}`;
+      const cur = termMap.get(key);
+      if (cur) {
+        cur.request_count += b.request_count;
+        cur.total_cost_usd += b.total_cost_usd;
+      } else {
+        termMap.set(key, {
+          terminal_type: b.terminal_type,
+          os_type: b.os_type,
+          request_count: b.request_count,
+          total_cost_usd: b.total_cost_usd,
+        });
+      }
+    }
+
     const skillMap = new Map<string, SkillBreakdownRow>();
     for (const b of cache.skills ?? []) {
       if (!inRange(b.date) || !matchUser(b.user_email)) continue;
@@ -233,17 +273,6 @@ export function useUserDetail(params: {
       }
     }
 
-    const models = Array.from(modelMap.values()).sort(
-      (a, b) => b.total_cost_usd - a.total_cost_usd,
-    );
-    const tools = Array.from(toolMap.values()).sort(
-      (a, b) => b.request_count - a.request_count,
-    );
-    const skills = Array.from(skillMap.values()).sort(
-      (a, b) => b.use_count - a.use_count,
-    );
-
-    const sessionKeys = new Set<string>();
     const sessionCostByKey = new Map<string, { cost: number; reqs: number }>();
     for (const b of cache.sessions ?? []) {
       if (!inRange(b.date) || !matchUser(b.user_email)) continue;
@@ -258,9 +287,8 @@ export function useUserDetail(params: {
           reqs: b.request_count,
         });
       }
-      sessionKeys.add(b.session_id);
     }
-    const sessionCount = sessionKeys.size;
+    const sessionCount = sessionCostByKey.size;
     let totalReqs = 0;
     let totalCost = 0;
     let maxCost = 0;
@@ -277,6 +305,19 @@ export function useUserDetail(params: {
       total_requests: totalReqs,
     };
 
-    return { models, tools, skills, sessions, loading: false, error: null };
+    const models = Array.from(modelMap.values()).sort(
+      (a, b) => b.total_cost_usd - a.total_cost_usd,
+    );
+    const tools = Array.from(toolMap.values()).sort(
+      (a, b) => b.request_count - a.request_count,
+    );
+    const terminals = Array.from(termMap.values()).sort(
+      (a, b) => b.request_count - a.request_count,
+    );
+    const skills = Array.from(skillMap.values()).sort(
+      (a, b) => b.use_count - a.use_count,
+    );
+
+    return { models, tools, terminals, skills, sessions, loading: false, error: null };
   }, [params.userEmail, params.from, params.to]);
 }
