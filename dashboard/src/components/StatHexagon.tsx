@@ -1,8 +1,4 @@
-import type {
-  SessionStats,
-  SkillBreakdownRow,
-  ToolBreakdownRow,
-} from '../hooks/useUserDetail';
+import type { SessionStats, SkillBreakdownRow, ToolBreakdownRow } from '../hooks/useUserDetail';
 import type { UsageRow } from '../hooks/useUsageData';
 
 type Props = {
@@ -23,7 +19,17 @@ const THRESHOLDS: Record<string, Bracket> = {
   skillRate: { A: 0.005, B: 0.002, C: 0.001, D: 0.0001 },
 };
 
-function gradeOf(value: number, t: Bracket): string {
+type Grade = 'A' | 'B' | 'C' | 'D' | 'E';
+
+const GRADE_RADIUS: Record<Grade, number> = {
+  A: 1.0,
+  B: 0.8,
+  C: 0.6,
+  D: 0.4,
+  E: 0.2,
+};
+
+function gradeOf(value: number, t: Bracket): Grade {
   if (value >= t.A) return 'A';
   if (value >= t.B) return 'B';
   if (value >= t.C) return 'C';
@@ -31,14 +37,9 @@ function gradeOf(value: number, t: Bracket): string {
   return 'E';
 }
 
-function scoreFor(value: number, t: Bracket): number {
-  return Math.max(0, Math.min(1, value / t.A));
-}
-
 export function StatHexagon({ row, tools, skills, sessions }: Props) {
   const totalTokens = row.input_tokens + row.output_tokens;
-  const totalInputLike =
-    row.input_tokens + row.cache_read_tokens + row.cache_creation_tokens;
+  const totalInputLike = row.input_tokens + row.cache_read_tokens + row.cache_creation_tokens;
   const totalToolCalls = tools.reduce((s, t) => s + t.request_count, 0);
   const totalSkillCalls = skills.reduce((s, x) => s + x.use_count, 0);
 
@@ -104,9 +105,11 @@ export function StatHexagon({ row, tools, skills, sessions }: Props) {
       .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`)
       .join(' ') + ' Z';
 
+  const radiusAt = (i: number) => GRADE_RADIUS[gradeOf(stats[i].value, stats[i].threshold)];
+
   const dataPath =
     stats
-      .map((s, i) => pointAt(i, Math.max(0.03, scoreFor(s.value, s.threshold))))
+      .map((_, i) => pointAt(i, radiusAt(i)))
       .map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`)
       .join(' ') + ' Z';
 
@@ -118,13 +121,11 @@ export function StatHexagon({ row, tools, skills, sessions }: Props) {
         ))}
         {stats.map((_, i) => {
           const [x, y] = pointAt(i, 1);
-          return (
-            <line key={i} x1={cx} y1={cy} x2={x} y2={y} className="hex-axis" />
-          );
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} className="hex-axis" />;
         })}
         <path d={dataPath} className="hex-data" />
-        {stats.map((s, i) => {
-          const [px, py] = pointAt(i, Math.max(0.03, scoreFor(s.value, s.threshold)));
+        {stats.map((_, i) => {
+          const [px, py] = pointAt(i, radiusAt(i));
           return <circle key={i} cx={px} cy={py} r={4.5} className="hex-dot" />;
         })}
         {stats.map((s, i) => {

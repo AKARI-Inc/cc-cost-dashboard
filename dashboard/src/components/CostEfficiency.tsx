@@ -1,12 +1,8 @@
-import { useUsageData } from '../hooks/useUsageData';
+import type { UsageRow } from '../hooks/useUsageData';
 
-type Props = { from: string; to: string };
+type Props = { data: UsageRow[] | null };
 
-export function CostEfficiency({ from, to }: Props) {
-  const { data, loading, error } = useUsageData({ from, to, groupBy: 'model' });
-
-  if (loading) return null;
-  if (error) return null;
+export function CostEfficiency({ data }: Props) {
   if (!data || data.length === 0) return null;
 
   const rows = [...data].sort((a, b) => b.total_cost_usd - a.total_cost_usd);
@@ -61,10 +57,13 @@ export function CostEfficiency({ from, to }: Props) {
           <tbody>
             {rows.map((r) => {
               const model = r.model ?? r.key ?? '-';
-              const total = r.input_tokens + r.output_tokens + r.cache_read_tokens + r.cache_creation_tokens;
+              const total =
+                r.input_tokens + r.output_tokens + r.cache_read_tokens + r.cache_creation_tokens;
               const avg = r.request_count > 0 ? r.total_cost_usd / r.request_count : 0;
-              const per1MIn = r.input_tokens > 0 ? (r.total_cost_usd / r.input_tokens) * 1_000_000 : 0;
-              const per1MOut = r.output_tokens > 0 ? (r.total_cost_usd / r.output_tokens) * 1_000_000 : 0;
+              const per1MIn =
+                r.input_tokens > 0 ? (r.total_cost_usd / r.input_tokens) * 1_000_000 : 0;
+              const per1MOut =
+                r.output_tokens > 0 ? (r.total_cost_usd / r.output_tokens) * 1_000_000 : 0;
               const per1MAll = total > 0 ? (r.total_cost_usd / total) * 1_000_000 : 0;
               const share = totalCost > 0 ? (r.total_cost_usd / totalCost) * 100 : 0;
               return (

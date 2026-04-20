@@ -120,7 +120,9 @@ const EMPTY_SESSIONS: SessionStats = {
 };
 
 function ensureLoaded() {
-  if (cache.models && cache.tools) return;
+  if (cache.models && cache.tools && cache.terminals && cache.skills && cache.sessions) {
+    return;
+  }
   if (cache.loading) return;
   cache.loading = true;
   notify();
@@ -196,8 +198,7 @@ export function useUserDetail(params: {
 
     const inRange = (d: string) => d >= params.from && d <= params.to;
     const matchUser = (email: string) =>
-      email === params.userEmail ||
-      (params.userEmail === '(unknown)' && !email);
+      email === params.userEmail || (params.userEmail === '(unknown)' && !email);
 
     const modelMap = new Map<string, ModelBreakdownRow>();
     for (const b of cache.models ?? []) {
@@ -308,15 +309,11 @@ export function useUserDetail(params: {
     const models = Array.from(modelMap.values()).sort(
       (a, b) => b.total_cost_usd - a.total_cost_usd,
     );
-    const tools = Array.from(toolMap.values()).sort(
-      (a, b) => b.request_count - a.request_count,
-    );
+    const tools = Array.from(toolMap.values()).sort((a, b) => b.request_count - a.request_count);
     const terminals = Array.from(termMap.values()).sort(
       (a, b) => b.request_count - a.request_count,
     );
-    const skills = Array.from(skillMap.values()).sort(
-      (a, b) => b.use_count - a.use_count,
-    );
+    const skills = Array.from(skillMap.values()).sort((a, b) => b.use_count - a.use_count);
 
     return { models, tools, terminals, skills, sessions, loading: false, error: null };
   }, [params.userEmail, params.from, params.to]);

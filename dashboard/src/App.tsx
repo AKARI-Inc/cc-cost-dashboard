@@ -32,10 +32,12 @@ export function App() {
       </header>
 
       <nav className="main-tabs">
-        {([
-          ['claude-code', 'Claude Code'],
-          ['raw-events', 'Raw Events'],
-        ] as [Tab, string][]).map(([key, label]) => (
+        {(
+          [
+            ['claude-code', 'Claude Code'],
+            ['raw-events', 'Raw Events'],
+          ] as [Tab, string][]
+        ).map(([key, label]) => (
           <button
             key={key}
             className={`btn ${tab === key ? 'btn-active' : ''}`}
@@ -55,13 +57,26 @@ export function App() {
 }
 
 function ClaudeCodeView({
-  from, to, groupBy, onGroupByChange,
+  from,
+  to,
+  groupBy,
+  onGroupByChange,
 }: {
-  from: string; to: string; groupBy: string; onGroupByChange: (v: string) => void;
+  from: string;
+  to: string;
+  groupBy: string;
+  onGroupByChange: (v: string) => void;
 }) {
   const dayData = useUsageData({ from, to, groupBy: 'day' });
-  const groupData = useUsageData({ from, to, groupBy, enabled: groupBy !== 'day' });
-  const activeGroupData = groupBy === 'day' ? dayData : groupData;
+  const modelData = useUsageData({ from, to, groupBy: 'model' });
+  const otherGroupData = useUsageData({
+    from,
+    to,
+    groupBy,
+    enabled: groupBy !== 'day' && groupBy !== 'model',
+  });
+  const activeGroupData =
+    groupBy === 'day' ? dayData : groupBy === 'model' ? modelData : otherGroupData;
 
   return (
     <div>
@@ -69,15 +84,19 @@ function ClaudeCodeView({
       {dayData.error && <p className="error">エラー: {dayData.error}</p>}
       {dayData.data && <SummaryCards data={dayData.data} />}
       {dayData.data && <CostChart data={dayData.data} />}
-      <CostEfficiency from={from} to={to} />
+      <CostEfficiency data={modelData.data} />
 
       <GroupByTabs value={groupBy} onChange={onGroupByChange} />
 
       {activeGroupData.loading && <p className="info">読み込み中...</p>}
       {activeGroupData.error && <p className="error">エラー: {activeGroupData.error}</p>}
 
-      {activeGroupData.data && groupBy === 'model' && <ModelBreakdown data={activeGroupData.data} />}
-      {activeGroupData.data && groupBy === 'user' && <UserSummary data={activeGroupData.data} from={from} to={to} />}
+      {activeGroupData.data && groupBy === 'model' && (
+        <ModelBreakdown data={activeGroupData.data} />
+      )}
+      {activeGroupData.data && groupBy === 'user' && (
+        <UserSummary data={activeGroupData.data} from={from} to={to} />
+      )}
       {activeGroupData.data && groupBy === 'day' && (
         <div className="card">
           <h3>日別詳細</h3>
