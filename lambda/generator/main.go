@@ -299,52 +299,6 @@ func bucketizeUserTool(events []model.OtelEvent) []UserToolBucket {
 	return result
 }
 
-// bucketizeUserTerminal は api_request イベントを (date, user, terminal, os) で集計する。
-func bucketizeUserTerminal(events []model.OtelEvent) []UserTerminalBucket {
-	type k struct{ date, user, term, os string }
-	m := make(map[k]*UserTerminalBucket)
-
-	for _, ev := range events {
-		if ev.EventName != model.APIRequestEvent {
-			continue
-		}
-		user := ev.UserEmail
-		if user == "" {
-			user = "(unknown)"
-		}
-		term := ev.TerminalType
-		if term == "" {
-			term = "(unknown)"
-		}
-		key := k{date: model.ExtractDate(ev.Timestamp), user: user, term: term, os: ev.OSType}
-		b, ok := m[key]
-		if !ok {
-			b = &UserTerminalBucket{Date: key.date, UserEmail: user, TerminalType: term, OSType: ev.OSType}
-			m[key] = b
-		}
-		b.RequestCount++
-		b.TotalCostUSD += ev.CostUSD
-	}
-
-	result := make([]UserTerminalBucket, 0, len(m))
-	for _, b := range m {
-		result = append(result, *b)
-	}
-	sort.Slice(result, func(i, j int) bool {
-		if result[i].Date != result[j].Date {
-			return result[i].Date < result[j].Date
-		}
-		if result[i].UserEmail != result[j].UserEmail {
-			return result[i].UserEmail < result[j].UserEmail
-		}
-		if result[i].TerminalType != result[j].TerminalType {
-			return result[i].TerminalType < result[j].TerminalType
-		}
-		return result[i].OSType < result[j].OSType
-	})
-	return result
-}
-
 // slimEvents は raw_attributes を除外し、新しい順で上限を適用する。
 func slimEvents(events []model.OtelEvent, limit int) []model.OtelEvent {
 	out := make([]model.OtelEvent, len(events))
