@@ -341,10 +341,14 @@ func bucketizeUserTerminal(events []model.OtelEvent) []UserTerminalBucket {
 		if term == "" {
 			term = "(unknown)"
 		}
-		key := k{date: model.ExtractDate(ev.Timestamp), user: user, term: term, os: ev.OSType}
+		os := ev.OSType
+		if os == "" {
+			os = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, term: term, os: os}
 		b, ok := m[key]
 		if !ok {
-			b = &UserTerminalBucket{Date: key.date, UserEmail: user, TerminalType: term, OSType: ev.OSType}
+			b = &UserTerminalBucket{Date: key.date, UserEmail: user, TerminalType: term, OSType: os}
 			m[key] = b
 		}
 		b.RequestCount++
