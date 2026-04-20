@@ -101,6 +101,29 @@ type UserTerminalBucket struct {
 	TotalCostUSD float64 `json:"total_cost_usd"`
 }
 
+// UserSkillBucket は (date, user_email, skill_name) 単位の明細。
+// skill_activated イベントが対象。skill_source / plugin_name は代表値 (最初に出たもの)。
+type UserSkillBucket struct {
+	Date        string `json:"date"`
+	UserEmail   string `json:"user_email"`
+	SkillName   string `json:"skill_name"`
+	SkillSource string `json:"skill_source,omitempty"`
+	PluginName  string `json:"plugin_name,omitempty"`
+	UseCount    int    `json:"use_count"`
+}
+
+// UserSessionBucket は (date, user_email, session_id) 単位の明細。
+// セッション統計 (ユニーク数、1セッションあたり平均) に使う。
+type UserSessionBucket struct {
+	Date         string  `json:"date"`
+	UserEmail    string  `json:"user_email"`
+	SessionID    string  `json:"session_id"`
+	TotalCostUSD float64 `json:"total_cost_usd"`
+	InputTokens  int     `json:"input_tokens"`
+	OutputTokens int     `json:"output_tokens"`
+	RequestCount int     `json:"request_count"`
+}
+
 func handler(ctx context.Context) error {
 	now := time.Now().UTC()
 	from := now.AddDate(0, 0, -lookbackDays)
@@ -133,6 +156,8 @@ func handler(ctx context.Context) error {
 		"data/summary/per-day-per-user-model.json":    wrap(bucketizeUserModel(events), "user-model"),
 		"data/summary/per-day-per-user-tool.json":     wrap(bucketizeUserTool(events), "user-tool"),
 		"data/summary/per-day-per-user-terminal.json": wrap(bucketizeUserTerminal(events), "user-terminal"),
+		"data/summary/per-day-per-user-skill.json":    wrap(bucketizeUserSkill(events), "user-skill"),
+		"data/summary/per-day-per-user-session.json":  wrap(bucketizeUserSession(events), "user-session"),
 	}
 
 	for key, data := range summaries {
@@ -297,6 +322,167 @@ func bucketizeUserTool(events []model.OtelEvent) []UserToolBucket {
 		return result[i].ToolName < result[j].ToolName
 	})
 	return result
+}
+
+// bucketizeUserTerminal は api_request イベントを (date, user, terminal, os) で集計する。
+func bucketizeUserTerminal(events []model.OtelEvent) []UserTerminalBucket {
+	type k struct{ date, user, term, os string }
+	m := make(map[k]*UserTerminalBucket)
+
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		term := ev.TerminalType
+		if term == "" {
+			term = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, term: term, os: ev.OSType}
+		b, ok := m[key]
+		if !ok {
+			b = &UserTerminalBucket{Date: key.date, UserEmail: user, TerminalType: term, OSType: ev.OSType}
+			m[key] = b
+		}
+		b.RequestCount++
+		b.TotalCostUSD += ev.CostUSD
+	}
+
+	result := make([]UserTerminalBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		if result[i].TerminalType != result[j].TerminalType {
+			return result[i].TerminalType < result[j].TerminalType
+		}
+		return result[i].OSType < result[j].OSType
+	})
+	return result
+}
+
+// bucketizeUserSkill は skill_activated イベントを (date, user, skill) で集計する。
+func bucketizeUserSkill(events []model.OtelEvent) []UserSkillBucket {
+	type k struct{ date, user, skill string }
+	m := make(map[k]*UserSkillBucket)
+
+	for _, ev := range events {
+		if ev.EventName != "claude_code.skill_activated" {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		// 旧 collector 時代のイベントは typed フィールド未設定のため raw_attributes から救う。
+		skill := firstNonEmpty(ev.SkillName, rawStr(ev.RawAttributes, "skill.name"))
+		source := firstNonEmpty(ev.SkillSource, rawStr(ev.RawAttributes, "skill.source"))
+		plugin := firstNonEmpty(ev.PluginName, rawStr(ev.RawAttributes, "plugin.name"))
+		if skill == "" {
+			skill = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, skill: skill}
+		b, ok := m[key]
+		if !ok {
+			b = &UserSkillBucket{
+				Date:        key.date,
+				UserEmail:   user,
+				SkillName:   skill,
+				SkillSource: source,
+				PluginName:  plugin,
+			}
+			m[key] = b
+		}
+		b.UseCount++
+	}
+
+	result := make([]UserSkillBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].SkillName < result[j].SkillName
+	})
+	return result
+}
+
+// bucketizeUserSession は api_request イベントを (date, user, session_id) で集計する。
+// session_id が空のイベントは除外する (集計上 "1セッション" と数えられないため)。
+func bucketizeUserSession(events []model.OtelEvent) []UserSessionBucket {
+	type k struct{ date, user, sess string }
+	m := make(map[k]*UserSessionBucket)
+
+	for _, ev := range events {
+		if ev.EventName != model.APIRequestEvent {
+			continue
+		}
+		if ev.SessionID == "" {
+			continue
+		}
+		user := ev.UserEmail
+		if user == "" {
+			user = "(unknown)"
+		}
+		key := k{date: model.ExtractDate(ev.Timestamp), user: user, sess: ev.SessionID}
+		b, ok := m[key]
+		if !ok {
+			b = &UserSessionBucket{Date: key.date, UserEmail: user, SessionID: ev.SessionID}
+			m[key] = b
+		}
+		b.TotalCostUSD += ev.CostUSD
+		b.InputTokens += ev.InputTokens
+		b.OutputTokens += ev.OutputTokens
+		b.RequestCount++
+	}
+
+	result := make([]UserSessionBucket, 0, len(m))
+	for _, b := range m {
+		result = append(result, *b)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		if result[i].Date != result[j].Date {
+			return result[i].Date < result[j].Date
+		}
+		if result[i].UserEmail != result[j].UserEmail {
+			return result[i].UserEmail < result[j].UserEmail
+		}
+		return result[i].SessionID < result[j].SessionID
+	})
+	return result
+}
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+func rawStr(m map[string]any, key string) string {
+	if m == nil {
+		return ""
+	}
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
 }
 
 // slimEvents は raw_attributes を除外し、新しい順で上限を適用する。
