@@ -161,10 +161,10 @@ export function useUserDetail(params: {
   from: string;
   to: string;
 }): DetailResult {
-  const [, tick] = useState(0);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const listener = () => tick((n) => n + 1);
+    const listener = () => setTick((n) => n + 1);
     listeners.add(listener);
     ensureLoaded();
     return () => {

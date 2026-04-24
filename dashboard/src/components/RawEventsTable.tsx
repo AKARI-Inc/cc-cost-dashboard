@@ -193,18 +193,9 @@ export function RawEventsTable({ from, to }: Props) {
                     {expanded === i && (
                       <tr>
                         <td colSpan={6}>
-                          <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 16px', padding: '8px', fontSize: '0.85em' }}>
-                            {ev.input_tokens > 0 && <span><strong>input_tokens:</strong> {ev.input_tokens.toLocaleString()}</span>}
-                            {ev.output_tokens > 0 && <span><strong>output_tokens:</strong> {ev.output_tokens.toLocaleString()}</span>}
-                            {ev.cache_read_tokens > 0 && <span><strong>cache_read:</strong> {ev.cache_read_tokens.toLocaleString()}</span>}
-                            {ev.cache_creation_tokens > 0 && <span><strong>cache_creation:</strong> {ev.cache_creation_tokens.toLocaleString()}</span>}
-                            {ev.duration_ms > 0 && <span><strong>duration:</strong> {ev.duration_ms.toLocaleString()}ms</span>}
-                            {ev.speed && <span><strong>speed:</strong> {ev.speed}</span>}
-                            {ev.session_id && <span><strong>session:</strong> {ev.session_id}</span>}
-                            {ev.terminal_type && <span><strong>terminal:</strong> {ev.terminal_type}</span>}
-                            {ev.service_version && <span><strong>version:</strong> {ev.service_version}</span>}
-                            {ev.tool_name && <span><strong>tool:</strong> {ev.tool_name}</span>}
-                          </div>
+                          <pre className="json-detail">
+                            {JSON.stringify(ev, null, 2)}
+                          </pre>
                         </td>
                       </tr>
                     )}
