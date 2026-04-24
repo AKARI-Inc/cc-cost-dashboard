@@ -161,10 +161,10 @@ export function useUserDetail(params: {
   from: string;
   to: string;
 }): DetailResult {
-  const [, tick] = useState(0);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const listener = () => tick((n) => n + 1);
+    const listener = () => setTick((n) => n + 1);
     listeners.add(listener);
     ensureLoaded();
     return () => {
@@ -316,5 +316,5 @@ export function useUserDetail(params: {
     const skills = Array.from(skillMap.values()).sort((a, b) => b.use_count - a.use_count);
 
     return { models, tools, terminals, skills, sessions, loading: false, error: null };
-  }, [params.userEmail, params.from, params.to]);
+  }, [params.userEmail, params.from, params.to, tick]);
 }
