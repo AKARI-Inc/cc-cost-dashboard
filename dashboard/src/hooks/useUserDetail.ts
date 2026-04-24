@@ -316,5 +316,5 @@ export function useUserDetail(params: {
     const skills = Array.from(skillMap.values()).sort((a, b) => b.use_count - a.use_count);
 
     return { models, tools, terminals, skills, sessions, loading: false, error: null };
-  }, [params.userEmail, params.from, params.to]);
+  }, [params.userEmail, params.from, params.to, tick]);
 }
