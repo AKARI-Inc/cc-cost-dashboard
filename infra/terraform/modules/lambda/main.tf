@@ -31,7 +31,7 @@ resource "aws_ecr_repository" "generator" {
 
 resource "aws_cloudwatch_log_group" "otel_logs" {
   name              = "/otel/claude-code"
-  retention_in_days = 90
+  retention_in_days = 365
 }
 
 # Lambda 実行ログ
@@ -160,8 +160,8 @@ resource "aws_lambda_function" "generator" {
   image_uri     = var.generator_image_uri
   architectures = ["arm64"]
 
-  timeout     = 120
-  memory_size = 512
+  timeout     = 900
+  memory_size = 8192
 
   environment {
     variables = {

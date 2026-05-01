@@ -33,6 +33,8 @@ resource "aws_cloudfront_distribution" "frontend" {
   default_root_object = "index.html"
   comment             = "${var.project_name} dashboard"
 
+  aliases = var.dashboard_aliases
+
   # WAF: 許可 IP 以外を 403 で拒否（waf_allowed_ips 設定時のみ）
   web_acl_id = length(var.waf_allowed_ips) > 0 ? aws_wafv2_web_acl.main[0].arn : null
 
@@ -115,7 +117,10 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn            = var.dashboard_acm_certificate_arn
+    cloudfront_default_certificate = var.dashboard_acm_certificate_arn == "" ? true : false
+    ssl_support_method             = var.dashboard_acm_certificate_arn == "" ? null : "sni-only"
+    minimum_protocol_version       = var.dashboard_acm_certificate_arn == "" ? "TLSv1" : "TLSv1.2_2021"
   }
 }
 

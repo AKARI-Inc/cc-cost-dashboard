@@ -54,3 +54,15 @@ variable "waf_allowed_ips" {
   type        = list(string)
   default     = []
 }
+
+variable "dashboard_aliases" {
+  description = "CloudFront に紐付けるカスタムドメイン (例: [\"akari-cc-insights-dashboard.dx-akari.com\"])"
+  type        = list(string)
+  default     = []
+}
+
+variable "dashboard_acm_certificate_arn" {
+  description = "カスタムドメイン用 ACM 証明書 ARN (us-east-1 必須)。空文字なら CloudFront デフォルト証明書を使う。"
+  type        = string
+  default     = ""
+}

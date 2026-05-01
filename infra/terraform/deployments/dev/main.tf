@@ -28,6 +28,9 @@ module "lambda" {
 
   generator_schedule = "rate(5 minutes)" # TODO: 検証後に rate(1 hour) に変更
 
+  dashboard_aliases             = ["akari-cc-insights-dashboard.dx-akari.com"]
+  dashboard_acm_certificate_arn = "arn:aws:acm:us-east-1:050721760927:certificate/1bd657ee-f4fe-4839-a1c3-50109d2d93e7"
+
   github_repo                 = "AKARI-Inc/cc-cost-dashboard"
   create_github_oidc_provider = true
 }
