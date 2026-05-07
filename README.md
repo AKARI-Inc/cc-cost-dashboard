@@ -119,7 +119,11 @@ Claude Code 側で OTel エンドポイントを向ける（[Claude Code 連携]
 
 ```bash
 cp .env.example .env
-# .env を編集: STORAGE=cloudwatch
+```
+
+`.env` を開いて `STORAGE=file` を `STORAGE=cloudwatch` に書き換えてから起動。
+
+```bash
 make dev
 ```
 
