@@ -15,7 +15,11 @@ dist/
 .env.*
 
 # Data (local storage)
-data/
+# サンプル用に data/logs/otel/*.jsonl はコミットする。それ以外は除外。
+data/localstack/
+data/minio/
+data/uploads/
+data/logs/otel/raw/
 
 # OS
 .DS_Store

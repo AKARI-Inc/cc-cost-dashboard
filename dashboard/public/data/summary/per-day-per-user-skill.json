@@ -1,0 +1,129 @@
+{
+  "data": [
+    {
+      "date": "2026-04-15",
+      "user_email": "user-1@example.com",
+      "skill_name": "create-issues-from-pr-plan",
+      "skill_source": "projectSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "skill_name": "feature-dev:feature-dev",
+      "skill_source": "plugin",
+      "plugin_name": "feature-dev",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "skill_name": "frontend-design",
+      "skill_source": "plugin",
+      "plugin_name": "frontend-design",
+      "use_count": 2
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "skill_name": "claude-md:pr-summary",
+      "skill_source": "plugin",
+      "plugin_name": "claude-md",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "skill_name": "planning-with-files",
+      "skill_source": "projectSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "skill_name": "pr-from-plan",
+      "skill_source": "projectSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "skill_name": "git-hunk",
+      "skill_source": "userSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "skill_name": "frontend-design",
+      "skill_source": "plugin",
+      "plugin_name": "frontend-design",
+      "use_count": 4
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "skill_name": "commit-commands:commit-push-pr",
+      "skill_source": "plugin",
+      "plugin_name": "commit-commands",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "skill_name": "copilot-review",
+      "skill_source": "userSettings",
+      "use_count": 2
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "skill_name": "simplify",
+      "skill_source": "bundled",
+      "use_count": 2
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "skill_name": "create-issues-from-pr-plan",
+      "skill_source": "userSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "skill_name": "review",
+      "skill_source": "builtin",
+      "use_count": 4
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "skill_name": "pr-summary",
+      "skill_source": "plugin",
+      "plugin_name": "claude-md",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "skill_name": "planning-with-files",
+      "skill_source": "projectSettings",
+      "use_count": 1
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "skill_name": "fmt-check",
+      "skill_source": "userSettings",
+      "use_count": 1
+    }
+  ],
+  "eventCount": 50304,
+  "generated": "2026-04-17T09:06:21Z",
+  "meta": {
+    "from": "2025-04-17",
+    "groupBy": "user-skill",
+    "to": "2026-04-17"
+  }
+}
