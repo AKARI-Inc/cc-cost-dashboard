@@ -1,0 +1,371 @@
+{
+  "data": [
+    {
+      "date": "2026-04-14",
+      "key": "rumina.satoi@akariinc.co.jp",
+      "total_cost_usd": 23.458329100000004,
+      "input_tokens": 2132,
+      "output_tokens": 87584,
+      "cache_read_tokens": 28317013,
+      "cache_creation_tokens": 1377328,
+      "request_count": 193
+    },
+    {
+      "date": "2026-04-15",
+      "key": "user-1@example.com",
+      "total_cost_usd": 9.718812299999993,
+      "input_tokens": 120179,
+      "output_tokens": 150282,
+      "cache_read_tokens": 16210882,
+      "cache_creation_tokens": 1130164,
+      "request_count": 227
+    },
+    {
+      "date": "2026-04-15",
+      "key": "user-4@example.com",
+      "total_cost_usd": 11.037603450000004,
+      "input_tokens": 73683,
+      "output_tokens": 74550,
+      "cache_read_tokens": 12717325,
+      "cache_creation_tokens": 730187,
+      "request_count": 195
+    },
+    {
+      "date": "2026-04-15",
+      "key": "user-6@example.com",
+      "total_cost_usd": 14.7276124,
+      "input_tokens": 11523,
+      "output_tokens": 174756,
+      "cache_read_tokens": 14401120,
+      "cache_creation_tokens": 1386800,
+      "request_count": 288
+    },
+    {
+      "date": "2026-04-15",
+      "key": "rumina.satoi@akariinc.co.jp",
+      "total_cost_usd": 146.13738369999982,
+      "input_tokens": 16482,
+      "output_tokens": 688892,
+      "cache_read_tokens": 196488906,
+      "cache_creation_tokens": 5590963,
+      "request_count": 860
+    },
+    {
+      "date": "2026-04-15",
+      "key": "user-10@example.com",
+      "total_cost_usd": 1.9892434000000003,
+      "input_tokens": 4382,
+      "output_tokens": 27447,
+      "cache_read_tokens": 2661364,
+      "cache_creation_tokens": 242520,
+      "request_count": 73
+    },
+    {
+      "date": "2026-04-15",
+      "key": "user-15@example.com",
+      "total_cost_usd": 4.383547250000002,
+      "input_tokens": 918,
+      "output_tokens": 33017,
+      "cache_read_tokens": 4253777,
+      "cache_creation_tokens": 228263,
+      "request_count": 86
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-1@example.com",
+      "total_cost_usd": 40.92648370000003,
+      "input_tokens": 38537,
+      "output_tokens": 678041,
+      "cache_read_tokens": 69922110,
+      "cache_creation_tokens": 2927538,
+      "request_count": 873
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-3@example.com",
+      "total_cost_usd": 2.30233075,
+      "input_tokens": 1668,
+      "output_tokens": 23570,
+      "cache_read_tokens": 1733363,
+      "cache_creation_tokens": 135301,
+      "request_count": 43
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-4@example.com",
+      "total_cost_usd": 46.854917099999994,
+      "input_tokens": 15650,
+      "output_tokens": 406401,
+      "cache_read_tokens": 59168264,
+      "cache_creation_tokens": 2179422,
+      "request_count": 716
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-5@example.com",
+      "total_cost_usd": 1.4740172,
+      "input_tokens": 2529,
+      "output_tokens": 34677,
+      "cache_read_tokens": 3525896,
+      "cache_creation_tokens": 336716,
+      "request_count": 109
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-6@example.com",
+      "total_cost_usd": 102.69092914999999,
+      "input_tokens": 114650,
+      "output_tokens": 735909,
+      "cache_read_tokens": 131253313,
+      "cache_creation_tokens": 4466765,
+      "request_count": 1711
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-7@example.com",
+      "total_cost_usd": 0.46735324999999994,
+      "input_tokens": 1418,
+      "output_tokens": 3896,
+      "cache_read_tokens": 213316,
+      "cache_creation_tokens": 42029,
+      "request_count": 15
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-8@example.com",
+      "total_cost_usd": 9.643736549999995,
+      "input_tokens": 10954,
+      "output_tokens": 84619,
+      "cache_read_tokens": 13277771,
+      "cache_creation_tokens": 812513,
+      "request_count": 253
+    },
+    {
+      "date": "2026-04-16",
+      "key": "rumina.satoi@akariinc.co.jp",
+      "total_cost_usd": 94.97573204999988,
+      "input_tokens": 18398,
+      "output_tokens": 450066,
+      "cache_read_tokens": 129244035,
+      "cache_creation_tokens": 3958087,
+      "request_count": 1023
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-9@example.com",
+      "total_cost_usd": 0.84934325,
+      "input_tokens": 1743,
+      "output_tokens": 15604,
+      "cache_read_tokens": 1460230,
+      "cache_creation_tokens": 181217,
+      "request_count": 46
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-10@example.com",
+      "total_cost_usd": 8.515135500000001,
+      "input_tokens": 2448,
+      "output_tokens": 101142,
+      "cache_read_tokens": 11006909,
+      "cache_creation_tokens": 449404,
+      "request_count": 216
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-11@example.com",
+      "total_cost_usd": 32.49005145000001,
+      "input_tokens": 8422,
+      "output_tokens": 165269,
+      "cache_read_tokens": 47682252,
+      "cache_creation_tokens": 1420475,
+      "request_count": 462
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-12@example.com",
+      "total_cost_usd": 16.200357849999993,
+      "input_tokens": 62340,
+      "output_tokens": 130660,
+      "cache_read_tokens": 18917178,
+      "cache_creation_tokens": 1117381,
+      "request_count": 322
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-13@example.com",
+      "total_cost_usd": 25.280224049999987,
+      "input_tokens": 18518,
+      "output_tokens": 202724,
+      "cache_read_tokens": 33379257,
+      "cache_creation_tokens": 1248463,
+      "request_count": 514
+    },
+    {
+      "date": "2026-04-16",
+      "key": "user-15@example.com",
+      "total_cost_usd": 19.942926249999992,
+      "input_tokens": 8403,
+      "output_tokens": 227192,
+      "cache_read_tokens": 20317622,
+      "cache_creation_tokens": 2085732,
+      "request_count": 348
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-1@example.com",
+      "total_cost_usd": 22.315734300000003,
+      "input_tokens": 21014,
+      "output_tokens": 313018,
+      "cache_read_tokens": 43974702,
+      "cache_creation_tokens": 1610454,
+      "request_count": 481
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-2@example.com",
+      "total_cost_usd": 6.638703499999997,
+      "input_tokens": 5020,
+      "output_tokens": 66350,
+      "cache_read_tokens": 4939695,
+      "cache_creation_tokens": 400552,
+      "request_count": 125
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-3@example.com",
+      "total_cost_usd": 41.39662554999996,
+      "input_tokens": 19682,
+      "output_tokens": 305155,
+      "cache_read_tokens": 54214936,
+      "cache_creation_tokens": 1440303,
+      "request_count": 545
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-4@example.com",
+      "total_cost_usd": 22.410992300000004,
+      "input_tokens": 2591,
+      "output_tokens": 188377,
+      "cache_read_tokens": 24052505,
+      "cache_creation_tokens": 912734,
+      "request_count": 287
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-5@example.com",
+      "total_cost_usd": 20.074359399999985,
+      "input_tokens": 26214,
+      "output_tokens": 408567,
+      "cache_read_tokens": 30891320,
+      "cache_creation_tokens": 1784300,
+      "request_count": 677
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-6@example.com",
+      "total_cost_usd": 21.17925205,
+      "input_tokens": 40731,
+      "output_tokens": 147456,
+      "cache_read_tokens": 24520631,
+      "cache_creation_tokens": 1184503,
+      "request_count": 320
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-7@example.com",
+      "total_cost_usd": 5.154121200000004,
+      "input_tokens": 16736,
+      "output_tokens": 89424,
+      "cache_read_tokens": 14426340,
+      "cache_creation_tokens": 734336,
+      "request_count": 286
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-8@example.com",
+      "total_cost_usd": 2.690278250000001,
+      "input_tokens": 8130,
+      "output_tokens": 30145,
+      "cache_read_tokens": 3209434,
+      "cache_creation_tokens": 573169,
+      "request_count": 81
+    },
+    {
+      "date": "2026-04-17",
+      "key": "rumina.satoi@akariinc.co.jp",
+      "total_cost_usd": 138.63316629999986,
+      "input_tokens": 9333,
+      "output_tokens": 571915,
+      "cache_read_tokens": 216215160,
+      "cache_creation_tokens": 3458370,
+      "request_count": 1052
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-9@example.com",
+      "total_cost_usd": 52.11820350000008,
+      "input_tokens": 31212,
+      "output_tokens": 497928,
+      "cache_read_tokens": 65429702,
+      "cache_creation_tokens": 1821648,
+      "request_count": 777
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-10@example.com",
+      "total_cost_usd": 6.580008649999999,
+      "input_tokens": 3434,
+      "output_tokens": 81391,
+      "cache_read_tokens": 6316815,
+      "cache_creation_tokens": 378309,
+      "request_count": 164
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-11@example.com",
+      "total_cost_usd": 57.08139414999998,
+      "input_tokens": 56102,
+      "output_tokens": 212119,
+      "cache_read_tokens": 86911136,
+      "cache_creation_tokens": 1751335,
+      "request_count": 437
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-12@example.com",
+      "total_cost_usd": 5.739009350000002,
+      "input_tokens": 17818,
+      "output_tokens": 52149,
+      "cache_read_tokens": 6041562,
+      "cache_creation_tokens": 430527,
+      "request_count": 135
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-14@example.com",
+      "total_cost_usd": 21.974716150000013,
+      "input_tokens": 10927,
+      "output_tokens": 193630,
+      "cache_read_tokens": 31459662,
+      "cache_creation_tokens": 697237,
+      "request_count": 534
+    },
+    {
+      "date": "2026-04-17",
+      "key": "user-15@example.com",
+      "total_cost_usd": 26.610257050000016,
+      "input_tokens": 55326,
+      "output_tokens": 196660,
+      "cache_read_tokens": 26777018,
+      "cache_creation_tokens": 2284221,
+      "request_count": 411
+    }
+  ],
+  "eventCount": 50304,
+  "generated": "2026-04-17T09:06:21Z",
+  "meta": {
+    "from": "2025-04-17",
+    "groupBy": "user",
+    "to": "2026-04-17"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "data": [
+    {
+      "date": "2026-04-14",
+      "key": "normal",
+      "total_cost_usd": 23.458329100000004,
+      "input_tokens": 2132,
+      "output_tokens": 87584,
+      "cache_read_tokens": 28317013,
+      "cache_creation_tokens": 1377328,
+      "request_count": 193
+    },
+    {
+      "date": "2026-04-15",
+      "key": "normal",
+      "total_cost_usd": 187.9942025000002,
+      "input_tokens": 227167,
+      "output_tokens": 1148944,
+      "cache_read_tokens": 246733374,
+      "cache_creation_tokens": 9308897,
+      "request_count": 1729
+    },
+    {
+      "date": "2026-04-16",
+      "key": "normal",
+      "total_cost_usd": 402.6135381000005,
+      "input_tokens": 305678,
+      "output_tokens": 3259770,
+      "cache_read_tokens": 541101516,
+      "cache_creation_tokens": 21361043,
+      "request_count": 6651
+    },
+    {
+      "date": "2026-04-17",
+      "key": "normal",
+      "total_cost_usd": 450.5968217000003,
+      "input_tokens": 324270,
+      "output_tokens": 3354284,
+      "cache_read_tokens": 639380618,
+      "cache_creation_tokens": 19461998,
+      "request_count": 6312
+    }
+  ],
+  "eventCount": 50304,
+  "generated": "2026-04-17T09:06:21Z",
+  "meta": {
+    "from": "2025-04-17",
+    "groupBy": "speed",
+    "to": "2026-04-17"
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "data": [
+    {
+      "date": "2026-04-14",
+      "key": "claude-haiku-4-5-20251001",
+      "total_cost_usd": 0.37718434999999995,
+      "input_tokens": 1817,
+      "output_tokens": 10826,
+      "cache_read_tokens": 1995586,
+      "cache_creation_tokens": 97343,
+      "request_count": 51
+    },
+    {
+      "date": "2026-04-14",
+      "key": "claude-opus-4-6",
+      "total_cost_usd": 23.08114475000001,
+      "input_tokens": 315,
+      "output_tokens": 76758,
+      "cache_read_tokens": 26321427,
+      "cache_creation_tokens": 1279985,
+      "request_count": 142
+    },
+    {
+      "date": "2026-04-15",
+      "key": "claude-haiku-4-5-20251001",
+      "total_cost_usd": 4.686088300000001,
+      "input_tokens": 208970,
+      "output_tokens": 121234,
+      "cache_read_tokens": 15498558,
+      "cache_creation_tokens": 1656874,
+      "request_count": 396
+    },
+    {
+      "date": "2026-04-15",
+      "key": "claude-opus-4-6",
+      "total_cost_usd": 170.20270025000002,
+      "input_tokens": 12028,
+      "output_tokens": 867545,
+      "cache_read_tokens": 213053568,
+      "cache_creation_tokens": 6721830,
+      "request_count": 1097
+    },
+    {
+      "date": "2026-04-15",
+      "key": "claude-sonnet-4-6",
+      "total_cost_usd": 13.105413949999994,
+      "input_tokens": 6169,
+      "output_tokens": 160165,
+      "cache_read_tokens": 18181248,
+      "cache_creation_tokens": 930193,
+      "request_count": 236
+    },
+    {
+      "date": "2026-04-16",
+      "key": "claude-haiku-4-5-20251001",
+      "total_cost_usd": 13.617048800000008,
+      "input_tokens": 148475,
+      "output_tokens": 432004,
+      "cache_read_tokens": 52874813,
+      "cache_creation_tokens": 4816858,
+      "request_count": 1283
+    },
+    {
+      "date": "2026-04-16",
+      "key": "claude-opus-4-6",
+      "total_cost_usd": 326.65103600000015,
+      "input_tokens": 108428,
+      "output_tokens": 1973156,
+      "cache_read_tokens": 400830585,
+      "cache_creation_tokens": 12250902,
+      "request_count": 4184
+    },
+    {
+      "date": "2026-04-16",
+      "key": "claude-sonnet-4-6",
+      "total_cost_usd": 62.34545329999998,
+      "input_tokens": 48775,
+      "output_tokens": 854610,
+      "cache_read_tokens": 87396118,
+      "cache_creation_tokens": 4293283,
+      "request_count": 1184
+    },
+    {
+      "date": "2026-04-17",
+      "key": "claude-haiku-4-5-20251001",
+      "total_cost_usd": 11.875049449999995,
+      "input_tokens": 203496,
+      "output_tokens": 333264,
+      "cache_read_tokens": 47365072,
+      "cache_creation_tokens": 4174981,
+      "request_count": 1179
+    },
+    {
+      "date": "2026-04-17",
+      "key": "claude-opus-4-6",
+      "total_cost_usd": 103.30856825000001,
+      "input_tokens": 20659,
+      "output_tokens": 688792,
+      "cache_read_tokens": 129191259,
+      "cache_creation_tokens": 3422375,
+      "request_count": 1446
+    },
+    {
+      "date": "2026-04-17",
+      "key": "claude-opus-4-7",
+      "total_cost_usd": 266.92604725000024,
+      "input_tokens": 44865,
+      "output_tokens": 1480251,
+      "cache_read_tokens": 369627057,
+      "cache_creation_tokens": 7181107,
+      "request_count": 2327
+    },
+    {
+      "date": "2026-04-17",
+      "key": "claude-sonnet-4-6",
+      "total_cost_usd": 68.48715674999998,
+      "input_tokens": 55250,
+      "output_tokens": 851977,
+      "cache_read_tokens": 93197230,
+      "cache_creation_tokens": 4683535,
+      "request_count": 1360
+    }
+  ],
+  "eventCount": 50304,
+  "generated": "2026-04-17T09:06:21Z",
+  "meta": {
+    "from": "2025-04-17",
+    "groupBy": "model",
+    "to": "2026-04-17"
+  }
+}

@@ -1,0 +1,2369 @@
+{
+  "data": [
+    {
+      "date": "2026-04-14",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "0989d292-2728-47b9-9a7c-05d7ed1690cd",
+      "total_cost_usd": 17.093620500000004,
+      "input_tokens": 180,
+      "output_tokens": 44993,
+      "request_count": 92
+    },
+    {
+      "date": "2026-04-14",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "68b82893-0ddd-4deb-a6e5-3eac12628018",
+      "total_cost_usd": 3.55703575,
+      "input_tokens": 24,
+      "output_tokens": 14039,
+      "request_count": 13
+    },
+    {
+      "date": "2026-04-14",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "8645cf72-cfa3-4657-97da-a286d0cb1759",
+      "total_cost_usd": 2.1465607500000004,
+      "input_tokens": 1071,
+      "output_tokens": 15071,
+      "request_count": 35
+    },
+    {
+      "date": "2026-04-14",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "a6293137-47c6-4ac6-a107-d477a3d3fa92",
+      "total_cost_usd": 0.6611121000000004,
+      "input_tokens": 857,
+      "output_tokens": 13481,
+      "request_count": 53
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-1@example.com",
+      "session_id": "81a47168-f11b-4cdb-9ad1-ccf3c8cc5300",
+      "total_cost_usd": 1.7693246999999994,
+      "input_tokens": 117586,
+      "output_tokens": 36590,
+      "request_count": 101
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-1@example.com",
+      "session_id": "e51314a7-6eaf-46bd-8be1-7fa99c6d54b5",
+      "total_cost_usd": 7.9494876,
+      "input_tokens": 2593,
+      "output_tokens": 113692,
+      "request_count": 126
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-4@example.com",
+      "session_id": "2381d8a2-b9ba-4fd7-8406-be551b2f8dd1",
+      "total_cost_usd": 5.340042549999999,
+      "input_tokens": 886,
+      "output_tokens": 17615,
+      "request_count": 62
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-4@example.com",
+      "session_id": "92ec57c6-69b4-4178-a1ed-aa5972ae2697",
+      "total_cost_usd": 0.9424499,
+      "input_tokens": 3112,
+      "output_tokens": 14335,
+      "request_count": 15
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-4@example.com",
+      "session_id": "bd0a4840-c2b0-4150-a009-68b10ab33cec",
+      "total_cost_usd": 2.4767825,
+      "input_tokens": 456,
+      "output_tokens": 21045,
+      "request_count": 63
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-4@example.com",
+      "session_id": "d67255f3-991e-4e2d-89d2-405a4afc9139",
+      "total_cost_usd": 0.19918075000000002,
+      "input_tokens": 987,
+      "output_tokens": 2543,
+      "request_count": 4
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-4@example.com",
+      "session_id": "e9b0101c-9444-476b-a427-c7a125e9c6b6",
+      "total_cost_usd": 2.07914775,
+      "input_tokens": 68242,
+      "output_tokens": 19012,
+      "request_count": 51
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "5a88ee9c-6785-472e-99e4-a0d36120a295",
+      "total_cost_usd": 0.47323125,
+      "input_tokens": 8,
+      "output_tokens": 5059,
+      "request_count": 4
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "5c883061-c713-4410-b180-8ce17dfcf694",
+      "total_cost_usd": 1.9910562499999997,
+      "input_tokens": 131,
+      "output_tokens": 16363,
+      "request_count": 22
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "66815dde-7156-4b09-8fa0-30bfeefd231d",
+      "total_cost_usd": 3.6770680499999986,
+      "input_tokens": 4803,
+      "output_tokens": 48888,
+      "request_count": 101
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "b1129143-95bc-4823-aa18-aab6ac308abe",
+      "total_cost_usd": 2.8950545,
+      "input_tokens": 619,
+      "output_tokens": 28892,
+      "request_count": 27
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "bb4e06aa-fb39-4690-b707-7006dec5b028",
+      "total_cost_usd": 4.537035099999999,
+      "input_tokens": 5484,
+      "output_tokens": 65111,
+      "request_count": 123
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-6@example.com",
+      "session_id": "c4fc4aea-cf70-4dd1-8816-9ff6f934e35e",
+      "total_cost_usd": 1.1541672499999998,
+      "input_tokens": 478,
+      "output_tokens": 10443,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "0989d292-2728-47b9-9a7c-05d7ed1690cd",
+      "total_cost_usd": 51.39665174999999,
+      "input_tokens": 291,
+      "output_tokens": 113187,
+      "request_count": 176
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "1cfb9feb-2b6c-4ec1-9da4-8e9290b918e9",
+      "total_cost_usd": 1.553076,
+      "input_tokens": 401,
+      "output_tokens": 18543,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "4f26624d-c029-45a9-bda0-0b9f6ff4b1d5",
+      "total_cost_usd": 0.6553655,
+      "input_tokens": 899,
+      "output_tokens": 5191,
+      "request_count": 15
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "5c448327-93dc-47af-b3e3-423da781dc36",
+      "total_cost_usd": 32.957057,
+      "input_tokens": 202,
+      "output_tokens": 140326,
+      "request_count": 162
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "7007a3d2-4acd-4c32-9237-98c3b1b73966",
+      "total_cost_usd": 0.8941167499999999,
+      "input_tokens": 420,
+      "output_tokens": 5721,
+      "request_count": 20
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "7dc77bbf-34b0-4348-87c7-193ee9d47ca8",
+      "total_cost_usd": 30.457753749999977,
+      "input_tokens": 3706,
+      "output_tokens": 198883,
+      "request_count": 208
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "8645cf72-cfa3-4657-97da-a286d0cb1759",
+      "total_cost_usd": 3.0036657499999997,
+      "input_tokens": 60,
+      "output_tokens": 13933,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "990eaa22-33e4-4a46-b5ae-da1cc6dfe179",
+      "total_cost_usd": 0.5444396500000002,
+      "input_tokens": 637,
+      "output_tokens": 7056,
+      "request_count": 24
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "be71e6b8-4804-4d62-b27f-b8c794bb5855",
+      "total_cost_usd": 3.9500021000000003,
+      "input_tokens": 1753,
+      "output_tokens": 37882,
+      "request_count": 35
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "c8ace06a-64ef-4a5a-b419-58cdc682a3f6",
+      "total_cost_usd": 9.74942795,
+      "input_tokens": 7009,
+      "output_tokens": 81246,
+      "request_count": 97
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "dbdc41b4-54fc-4cac-af23-c59aba5aa1f2",
+      "total_cost_usd": 0.000411,
+      "input_tokens": 351,
+      "output_tokens": 12,
+      "request_count": 1
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "ecda1491-9b70-449d-a33a-aa8d6f94fe7a",
+      "total_cost_usd": 10.975416499999998,
+      "input_tokens": 753,
+      "output_tokens": 66912,
+      "request_count": 85
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-10@example.com",
+      "session_id": "d2888df2-5827-4795-bb19-16897c215bc5",
+      "total_cost_usd": 0.37262724999999997,
+      "input_tokens": 361,
+      "output_tokens": 3535,
+      "request_count": 14
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-10@example.com",
+      "session_id": "f8c6ab1c-a429-45a6-a6ed-68d65fe347e4",
+      "total_cost_usd": 0.06037425,
+      "input_tokens": 404,
+      "output_tokens": 125,
+      "request_count": 2
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-10@example.com",
+      "session_id": "fac181be-bb07-4c30-9f4f-515ffb54453a",
+      "total_cost_usd": 0.37089375,
+      "input_tokens": 391,
+      "output_tokens": 4906,
+      "request_count": 10
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-10@example.com",
+      "session_id": "fe145b50-8e0f-48ce-abc5-ba4f48962b9d",
+      "total_cost_usd": 1.1853481499999998,
+      "input_tokens": 3226,
+      "output_tokens": 18881,
+      "request_count": 47
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-15@example.com",
+      "session_id": "55929b90-0919-45ab-a0ba-1cf4787d75c5",
+      "total_cost_usd": 0.5006195,
+      "input_tokens": 22,
+      "output_tokens": 2807,
+      "request_count": 14
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-15@example.com",
+      "session_id": "5df9d629-013e-47bf-809d-30d746ee1147",
+      "total_cost_usd": 2.8402565000000006,
+      "input_tokens": 863,
+      "output_tokens": 23414,
+      "request_count": 51
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-15@example.com",
+      "session_id": "ac4b4aad-bfaa-4db6-b6b5-ac7edd5bcf4e",
+      "total_cost_usd": 0.296345,
+      "input_tokens": 7,
+      "output_tokens": 1440,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-15@example.com",
+      "session_id": "c51d6c9b-db93-45be-bc43-e407f17570f7",
+      "total_cost_usd": 0.26177249999999996,
+      "input_tokens": 11,
+      "output_tokens": 1776,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "user-15@example.com",
+      "session_id": "f982cc63-87db-44df-beb2-78d4c8fad21f",
+      "total_cost_usd": 0.48455375,
+      "input_tokens": 15,
+      "output_tokens": 3580,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "0abf9630-5ef3-428f-b66e-1be38897dc83",
+      "total_cost_usd": 2.54130985,
+      "input_tokens": 3441,
+      "output_tokens": 28657,
+      "request_count": 87
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "19a8f687-e1ff-4bdc-bb96-5926ba99e788",
+      "total_cost_usd": 21.868139500000005,
+      "input_tokens": 17416,
+      "output_tokens": 383662,
+      "request_count": 453
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "19b581fb-8987-4df9-949b-7e5768bd1e3f",
+      "total_cost_usd": 0.1158775,
+      "input_tokens": 719,
+      "output_tokens": 558,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "dcf0688a-f174-4d5f-a6de-507c06bae42f",
+      "total_cost_usd": 15.831387149999994,
+      "input_tokens": 16582,
+      "output_tokens": 263400,
+      "request_count": 322
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "e51314a7-6eaf-46bd-8be1-7fa99c6d54b5",
+      "total_cost_usd": 0.43044150000000003,
+      "input_tokens": 3,
+      "output_tokens": 60,
+      "request_count": 1
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-1@example.com",
+      "session_id": "eeca843d-36da-4edc-bdd8-9f42f0e593cd",
+      "total_cost_usd": 0.1393282,
+      "input_tokens": 376,
+      "output_tokens": 1704,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-3@example.com",
+      "session_id": "10d894d8-75b2-4450-8379-6a3d0707bbc6",
+      "total_cost_usd": 1.9122262500000002,
+      "input_tokens": 849,
+      "output_tokens": 21246,
+      "request_count": 31
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-3@example.com",
+      "session_id": "88f4bd53-fe96-4bcd-953d-11dc69c37ce7",
+      "total_cost_usd": 0.3901045000000001,
+      "input_tokens": 819,
+      "output_tokens": 2324,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "2f4468c1-921e-4702-b7a4-f18778294d33",
+      "total_cost_usd": 0.28882375,
+      "input_tokens": 389,
+      "output_tokens": 1261,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "308bf20b-9cd9-40b1-a88b-18a9b872e851",
+      "total_cost_usd": 3.944215500000001,
+      "input_tokens": 522,
+      "output_tokens": 31171,
+      "request_count": 79
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "608e148c-b895-45d1-a35c-ce0b168088c0",
+      "total_cost_usd": 5.540902150000003,
+      "input_tokens": 487,
+      "output_tokens": 135808,
+      "request_count": 36
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "6931b4bd-e583-42ff-b4ba-f97518bf8410",
+      "total_cost_usd": 7.580975700000001,
+      "input_tokens": 8286,
+      "output_tokens": 65874,
+      "request_count": 182
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "b3f702c9-6afa-47e8-8271-c5892aef6653",
+      "total_cost_usd": 22.246126050000008,
+      "input_tokens": 2248,
+      "output_tokens": 88772,
+      "request_count": 266
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "d71656ea-9925-4f68-bcfe-753c54bf6d4e",
+      "total_cost_usd": 4.523357950000002,
+      "input_tokens": 3231,
+      "output_tokens": 62124,
+      "request_count": 79
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "dde6df28-46c6-4cba-85e8-eae53b8be934",
+      "total_cost_usd": 2.16470225,
+      "input_tokens": 85,
+      "output_tokens": 14318,
+      "request_count": 57
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "session_id": "e9052536-8737-48ff-b9da-cf7392ef86a8",
+      "total_cost_usd": 0.56581375,
+      "input_tokens": 402,
+      "output_tokens": 7073,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-5@example.com",
+      "session_id": "1cc2a741-a0db-4091-8b17-e780e3e8491f",
+      "total_cost_usd": 0.38635664999999997,
+      "input_tokens": 830,
+      "output_tokens": 8722,
+      "request_count": 24
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-5@example.com",
+      "session_id": "48795013-8473-4da3-8d6a-63dd207b1b87",
+      "total_cost_usd": 0.34879314999999983,
+      "input_tokens": 555,
+      "output_tokens": 6790,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-5@example.com",
+      "session_id": "58c57d49-8c9e-42a8-99fe-8ed5995655de",
+      "total_cost_usd": 0.7388673999999998,
+      "input_tokens": 1144,
+      "output_tokens": 19165,
+      "request_count": 51
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "0bc45417-8797-4cd6-ba40-c486e23f545a",
+      "total_cost_usd": 12.0737053,
+      "input_tokens": 13214,
+      "output_tokens": 65110,
+      "request_count": 184
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "2c54d0d2-7ebe-4469-a66f-0282e2f56135",
+      "total_cost_usd": 20.747884800000012,
+      "input_tokens": 28403,
+      "output_tokens": 160428,
+      "request_count": 339
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "46081e0d-320e-40b7-9db4-b0b4a5dd5ead",
+      "total_cost_usd": 27.215782799999992,
+      "input_tokens": 41908,
+      "output_tokens": 199510,
+      "request_count": 461
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "53858fc0-74ec-4620-b5cd-3d83ce910746",
+      "total_cost_usd": 1.9071094,
+      "input_tokens": 292,
+      "output_tokens": 23843,
+      "request_count": 73
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "5996307d-e74b-4465-855f-2ac3da1c53ba",
+      "total_cost_usd": 16.119281250000004,
+      "input_tokens": 17877,
+      "output_tokens": 125355,
+      "request_count": 251
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "6f1986f7-2bb1-4f13-bb13-7ed14327a72c",
+      "total_cost_usd": 3.271334,
+      "input_tokens": 1302,
+      "output_tokens": 20607,
+      "request_count": 51
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "8fb23e20-f71c-4da0-aad5-a9075bda36c1",
+      "total_cost_usd": 6.916536249999999,
+      "input_tokens": 1174,
+      "output_tokens": 40887,
+      "request_count": 106
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "a199a104-4e9f-454e-8c58-b546279472c8",
+      "total_cost_usd": 3.0173769999999993,
+      "input_tokens": 1165,
+      "output_tokens": 23785,
+      "request_count": 52
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "b5181be9-a5f9-4c9b-983e-bf18218d5c6e",
+      "total_cost_usd": 3.2519179499999993,
+      "input_tokens": 7686,
+      "output_tokens": 33227,
+      "request_count": 74
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "bb4e06aa-fb39-4690-b707-7006dec5b028",
+      "total_cost_usd": 3.6633922500000002,
+      "input_tokens": 25,
+      "output_tokens": 15282,
+      "request_count": 24
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-6@example.com",
+      "session_id": "bbf0b0b9-2e6b-4728-8239-52378ada7e10",
+      "total_cost_usd": 4.50660815,
+      "input_tokens": 1604,
+      "output_tokens": 27875,
+      "request_count": 96
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-7@example.com",
+      "session_id": "4e2664d3-ea2c-44e8-a60f-4608db7d3928",
+      "total_cost_usd": 0.099908,
+      "input_tokens": 692,
+      "output_tokens": 969,
+      "request_count": 4
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-7@example.com",
+      "session_id": "84ccddcf-586b-4574-ac64-00a9f8909271",
+      "total_cost_usd": 0.1461855,
+      "input_tokens": 361,
+      "output_tokens": 1362,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-7@example.com",
+      "session_id": "c2b26dec-61cc-4af6-b3de-6251b09127c8",
+      "total_cost_usd": 0.22125975,
+      "input_tokens": 365,
+      "output_tokens": 1565,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-8@example.com",
+      "session_id": "39139936-d4d0-4dc1-a200-9488cbebc95e",
+      "total_cost_usd": 2.8901177499999995,
+      "input_tokens": 46,
+      "output_tokens": 10893,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-8@example.com",
+      "session_id": "db492019-a01e-4879-bfcd-1ee167e9f392",
+      "total_cost_usd": 0.05093775,
+      "input_tokens": 420,
+      "output_tokens": 81,
+      "request_count": 2
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-8@example.com",
+      "session_id": "ef99d4e3-79de-4b94-8798-e3020bf11f00",
+      "total_cost_usd": 2.6052163499999996,
+      "input_tokens": 4284,
+      "output_tokens": 26480,
+      "request_count": 95
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-8@example.com",
+      "session_id": "f7358079-e64c-44fb-8d01-f7224a45a944",
+      "total_cost_usd": 4.0974647,
+      "input_tokens": 6204,
+      "output_tokens": 47165,
+      "request_count": 122
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "0ca10d79-75e3-42fa-9651-5d2318f950c9",
+      "total_cost_usd": 4.14333825,
+      "input_tokens": 481,
+      "output_tokens": 25034,
+      "request_count": 69
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "4489491f-9aaa-4e51-b90d-97682760dd0e",
+      "total_cost_usd": 0.5802045,
+      "input_tokens": 9,
+      "output_tokens": 2077,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "48bcd6de-2007-487d-b615-4ca853963c54",
+      "total_cost_usd": 0.26538425,
+      "input_tokens": 756,
+      "output_tokens": 1651,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "5377afcc-9062-47b9-bb1f-1cdfa136dcce",
+      "total_cost_usd": 4.832530500000001,
+      "input_tokens": 3841,
+      "output_tokens": 37425,
+      "request_count": 83
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "6ff4a725-e72a-49a1-8364-bbb8b511259f",
+      "total_cost_usd": 4.340400499999999,
+      "input_tokens": 891,
+      "output_tokens": 51025,
+      "request_count": 68
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "7c073ae2-d811-4fb8-967a-5d04ea88aaaf",
+      "total_cost_usd": 0.8825615,
+      "input_tokens": 832,
+      "output_tokens": 11549,
+      "request_count": 27
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "7dc77bbf-34b0-4348-87c7-193ee9d47ca8",
+      "total_cost_usd": 27.25982900000001,
+      "input_tokens": 133,
+      "output_tokens": 43758,
+      "request_count": 94
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "943d5552-de51-4da2-86a3-c8ad4b37fd43",
+      "total_cost_usd": 9.213120500000006,
+      "input_tokens": 583,
+      "output_tokens": 54877,
+      "request_count": 166
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "9bdcc89f-ae52-4156-a5ed-0291cca8d06e",
+      "total_cost_usd": 13.961088649999999,
+      "input_tokens": 3439,
+      "output_tokens": 58249,
+      "request_count": 132
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "9bfd9542-dea2-4fef-8650-4bb2e627c262",
+      "total_cost_usd": 11.302829349999998,
+      "input_tokens": 1673,
+      "output_tokens": 72857,
+      "request_count": 200
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "a73d960b-2b5f-4e2d-8ca2-d5a4a3615539",
+      "total_cost_usd": 0.23915975,
+      "input_tokens": 1547,
+      "output_tokens": 780,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "ac584dcb-a49f-4532-bdb2-c4b56ded1ed8",
+      "total_cost_usd": 0.1866465,
+      "input_tokens": 374,
+      "output_tokens": 2409,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "b638dcce-2902-4aa9-a049-d7a05cbfe4ae",
+      "total_cost_usd": 0.13839675,
+      "input_tokens": 374,
+      "output_tokens": 346,
+      "request_count": 2
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "b8b122b0-df0d-4a5a-af40-819168c45c47",
+      "total_cost_usd": 16.38509205,
+      "input_tokens": 3067,
+      "output_tokens": 77516,
+      "request_count": 143
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "e6ab5642-4c43-40d4-aee5-e7d55be01930",
+      "total_cost_usd": 1.24515,
+      "input_tokens": 398,
+      "output_tokens": 10513,
+      "request_count": 16
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-9@example.com",
+      "session_id": "6615e2b5-aaa3-48bd-9b94-b36cd404b50d",
+      "total_cost_usd": 0.28156064999999997,
+      "input_tokens": 793,
+      "output_tokens": 5769,
+      "request_count": 17
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-9@example.com",
+      "session_id": "b3b9b1a6-a07d-4eec-9b36-dc3915586f69",
+      "total_cost_usd": 0.5677825999999999,
+      "input_tokens": 950,
+      "output_tokens": 9835,
+      "request_count": 29
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-10@example.com",
+      "session_id": "40c3263b-136f-46a3-859b-863efd9eb8bf",
+      "total_cost_usd": 4.2947529499999995,
+      "input_tokens": 1242,
+      "output_tokens": 42376,
+      "request_count": 102
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-10@example.com",
+      "session_id": "459ac65a-56d0-4db9-af54-600bf936f919",
+      "total_cost_usd": 3.4675355500000005,
+      "input_tokens": 643,
+      "output_tokens": 50230,
+      "request_count": 87
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-10@example.com",
+      "session_id": "d5741897-ee14-4b76-86f3-d78ff70010a5",
+      "total_cost_usd": 0.752847,
+      "input_tokens": 563,
+      "output_tokens": 8536,
+      "request_count": 27
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "251fdf1f-f3b6-4b81-820d-ca8fb0be2328",
+      "total_cost_usd": 5.086201400000001,
+      "input_tokens": 775,
+      "output_tokens": 32949,
+      "request_count": 101
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "6ce87b1e-e6bc-41ae-ba30-1c197839759f",
+      "total_cost_usd": 0.19950275,
+      "input_tokens": 477,
+      "output_tokens": 595,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "784f29ef-a323-4930-b5ce-0780b1b065a1",
+      "total_cost_usd": 18.511829600000013,
+      "input_tokens": 2158,
+      "output_tokens": 61214,
+      "request_count": 218
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "822c32e9-0452-499d-852c-c26b5b0daa0a",
+      "total_cost_usd": 7.933450200000003,
+      "input_tokens": 2705,
+      "output_tokens": 64996,
+      "request_count": 124
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "bd3d124f-8448-4021-bafb-a17ec6bca645",
+      "total_cost_usd": 0.28255675,
+      "input_tokens": 475,
+      "output_tokens": 796,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "session_id": "f01ca2d3-9947-4718-856d-d469b7e7b7e1",
+      "total_cost_usd": 0.47651075,
+      "input_tokens": 1832,
+      "output_tokens": 4719,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "07a00624-71c6-44ac-b6e3-4b53f98d0517",
+      "total_cost_usd": 2.1846309999999995,
+      "input_tokens": 970,
+      "output_tokens": 14945,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "0cd6c6d6-1f14-44b3-ab67-a00b698aee2e",
+      "total_cost_usd": 1.03104415,
+      "input_tokens": 28934,
+      "output_tokens": 14950,
+      "request_count": 39
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "662e4f2d-1649-4f9b-8cf2-e768f3b6489b",
+      "total_cost_usd": 1.7004548999999998,
+      "input_tokens": 26731,
+      "output_tokens": 15548,
+      "request_count": 59
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "73453058-708c-49d3-b30b-9848610d55e5",
+      "total_cost_usd": 0.58148725,
+      "input_tokens": 1648,
+      "output_tokens": 2560,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "aae91af3-9c9d-4c4a-9602-f0b6c2c5e530",
+      "total_cost_usd": 0.304429,
+      "input_tokens": 934,
+      "output_tokens": 1219,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "af41f306-7df8-4e3b-8f18-7d84bcff697a",
+      "total_cost_usd": 6.605035750000001,
+      "input_tokens": 893,
+      "output_tokens": 51656,
+      "request_count": 69
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "d22152fc-8185-4a6e-8265-5491a9793c6e",
+      "total_cost_usd": 0.48216825,
+      "input_tokens": 1000,
+      "output_tokens": 3436,
+      "request_count": 10
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-12@example.com",
+      "session_id": "e82daac0-dddf-4cb9-b609-c705749af230",
+      "total_cost_usd": 3.31110755,
+      "input_tokens": 1230,
+      "output_tokens": 26346,
+      "request_count": 99
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "1d01da98-eaa7-49d0-801c-87dee9bcdf59",
+      "total_cost_usd": 2.33816655,
+      "input_tokens": 644,
+      "output_tokens": 34579,
+      "request_count": 80
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "745c140b-0bd6-4c78-96b3-df579f4d3b6b",
+      "total_cost_usd": 1.0911772999999998,
+      "input_tokens": 495,
+      "output_tokens": 18840,
+      "request_count": 38
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "796f0ad4-a737-436c-8938-42505256dbe1",
+      "total_cost_usd": 1.0453160000000001,
+      "input_tokens": 501,
+      "output_tokens": 7051,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "84762e38-fc4d-455c-b82a-8c79319cdd9f",
+      "total_cost_usd": 4.220073749999999,
+      "input_tokens": 1026,
+      "output_tokens": 43915,
+      "request_count": 128
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "87be76d4-0ad1-445a-bbd3-bdaf941b3692",
+      "total_cost_usd": 0.288976,
+      "input_tokens": 372,
+      "output_tokens": 2610,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "a836497c-4d09-4027-a439-fe01d79d4abb",
+      "total_cost_usd": 0.22280675,
+      "input_tokens": 788,
+      "output_tokens": 2261,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "b82ce40e-ece3-4754-adac-2fbdd6516d9f",
+      "total_cost_usd": 0.14642775000000002,
+      "input_tokens": 3452,
+      "output_tokens": 1085,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-13@example.com",
+      "session_id": "e0a41f03-9769-4ff8-8339-c37726347e67",
+      "total_cost_usd": 15.927279949999999,
+      "input_tokens": 11240,
+      "output_tokens": 92383,
+      "request_count": 210
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "20b0ca3c-ac69-43b3-85ad-f77b365bcb87",
+      "total_cost_usd": 1.77553915,
+      "input_tokens": 5097,
+      "output_tokens": 30027,
+      "request_count": 63
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "297fda2b-f383-4d3f-8778-14d1e13aa7a2",
+      "total_cost_usd": 3.746335049999999,
+      "input_tokens": 86,
+      "output_tokens": 22105,
+      "request_count": 39
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "55929b90-0919-45ab-a0ba-1cf4787d75c5",
+      "total_cost_usd": 2.4376447500000005,
+      "input_tokens": 50,
+      "output_tokens": 9571,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "8d7c261d-e6e7-42c7-9c23-a94606503310",
+      "total_cost_usd": 3.20295785,
+      "input_tokens": 640,
+      "output_tokens": 64342,
+      "request_count": 63
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "aa73a2f3-bd0b-44d0-b06e-2a8b60b52963",
+      "total_cost_usd": 1.8222380000000002,
+      "input_tokens": 46,
+      "output_tokens": 9062,
+      "request_count": 32
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "b0d5543d-a489-48ec-9e24-7a9e5353cdf8",
+      "total_cost_usd": 4.596528449999999,
+      "input_tokens": 1890,
+      "output_tokens": 66765,
+      "request_count": 68
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "cdf77d75-b2eb-43c9-8a8d-cd54ee78df8f",
+      "total_cost_usd": 0.7772807499999999,
+      "input_tokens": 547,
+      "output_tokens": 13758,
+      "request_count": 27
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-15@example.com",
+      "session_id": "d1f270fd-e633-4456-9d58-4fd209f9200e",
+      "total_cost_usd": 1.5844022500000001,
+      "input_tokens": 47,
+      "output_tokens": 11562,
+      "request_count": 31
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "19a8f687-e1ff-4bdc-bb96-5926ba99e788",
+      "total_cost_usd": 3.3384097499999985,
+      "input_tokens": 1963,
+      "output_tokens": 67612,
+      "request_count": 50
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "78d7cd6b-5ae7-43c2-88d2-0894ba672bff",
+      "total_cost_usd": 4.412701949999999,
+      "input_tokens": 520,
+      "output_tokens": 19294,
+      "request_count": 81
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "8cffd08c-da3d-4cfa-b50b-df8fee9e7c91",
+      "total_cost_usd": 0.0008649999999999999,
+      "input_tokens": 730,
+      "output_tokens": 27,
+      "request_count": 2
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "cd59a34c-9a8d-4c31-9c17-46966af84a9d",
+      "total_cost_usd": 0.000864,
+      "input_tokens": 714,
+      "output_tokens": 30,
+      "request_count": 2
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "dcf0688a-f174-4d5f-a6de-507c06bae42f",
+      "total_cost_usd": 13.589942599999995,
+      "input_tokens": 15830,
+      "output_tokens": 195644,
+      "request_count": 241
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-1@example.com",
+      "session_id": "fefcb1a5-7baa-4d21-814c-0858688ed162",
+      "total_cost_usd": 0.9729509999999997,
+      "input_tokens": 1257,
+      "output_tokens": 30411,
+      "request_count": 105
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "072f6821-bfec-48bf-ad19-c3b309d40f9e",
+      "total_cost_usd": 0.57454525,
+      "input_tokens": 820,
+      "output_tokens": 7016,
+      "request_count": 17
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "1cac9436-09da-4fd9-ad45-4d4b474b11bb",
+      "total_cost_usd": 0.37566525,
+      "input_tokens": 977,
+      "output_tokens": 3882,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "21823f69-1415-46da-b7e7-ef369d2bf1a2",
+      "total_cost_usd": 1.049146,
+      "input_tokens": 722,
+      "output_tokens": 11103,
+      "request_count": 27
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "2d206d27-7968-4132-9a32-2b75db156033",
+      "total_cost_usd": 0.5455625000000001,
+      "input_tokens": 107,
+      "output_tokens": 1990,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "7cbf3d90-add0-478c-a61b-f860bdc5df04",
+      "total_cost_usd": 1.2241279999999999,
+      "input_tokens": 519,
+      "output_tokens": 13050,
+      "request_count": 21
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "bafae5e6-9192-41c2-84d5-8e612a66b1a0",
+      "total_cost_usd": 1.0689385,
+      "input_tokens": 684,
+      "output_tokens": 13728,
+      "request_count": 14
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "cbc16954-0e95-4fde-be14-f2702cbfda4e",
+      "total_cost_usd": 1.5707375000000001,
+      "input_tokens": 728,
+      "output_tokens": 13956,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-2@example.com",
+      "session_id": "e5972e6a-c103-451a-97b1-edc24344fccd",
+      "total_cost_usd": 0.2299805,
+      "input_tokens": 463,
+      "output_tokens": 1625,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "0dd5b1ab-ffd0-483a-944d-5f0b7a093f4a",
+      "total_cost_usd": 7.7892602,
+      "input_tokens": 4587,
+      "output_tokens": 44694,
+      "request_count": 124
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "10d894d8-75b2-4450-8379-6a3d0707bbc6",
+      "total_cost_usd": 4.475446599999999,
+      "input_tokens": 97,
+      "output_tokens": 24160,
+      "request_count": 58
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "261d1810-6139-48ff-a23b-b59166961280",
+      "total_cost_usd": 0.32560199999999995,
+      "input_tokens": 20,
+      "output_tokens": 2386,
+      "request_count": 14
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "2b19160e-3e4f-4e29-83c3-db29197c9afd",
+      "total_cost_usd": 0.3435665,
+      "input_tokens": 5,
+      "output_tokens": 1494,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "469110ae-485d-422c-b4d8-3c1f23e454ee",
+      "total_cost_usd": 1.00250025,
+      "input_tokens": 25,
+      "output_tokens": 9839,
+      "request_count": 13
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "b3e108a5-22fc-4bfb-a6e0-2a5a88f8d22d",
+      "total_cost_usd": 4.5847178,
+      "input_tokens": 3815,
+      "output_tokens": 63265,
+      "request_count": 65
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "d465ea05-7bf9-4987-bf36-d269196a5832",
+      "total_cost_usd": 3.4201942499999998,
+      "input_tokens": 61,
+      "output_tokens": 27649,
+      "request_count": 47
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "e647cfc8-611b-425c-8d94-be8735843728",
+      "total_cost_usd": 0.227179,
+      "input_tokens": 809,
+      "output_tokens": 2228,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-3@example.com",
+      "session_id": "e6735bd9-8c6e-4e69-976a-86f208896a1a",
+      "total_cost_usd": 19.22815894999999,
+      "input_tokens": 10263,
+      "output_tokens": 129440,
+      "request_count": 212
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "session_id": "24edc46c-06a8-42ba-b055-f182ee17e5d7",
+      "total_cost_usd": 6.668238750000001,
+      "input_tokens": 395,
+      "output_tokens": 60773,
+      "request_count": 73
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "session_id": "53ac835b-ab20-49ba-80fc-cf03b37b0296",
+      "total_cost_usd": 9.010323049999998,
+      "input_tokens": 796,
+      "output_tokens": 84550,
+      "request_count": 129
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "session_id": "a994be35-6d3d-4843-81ab-4b79e77b54c0",
+      "total_cost_usd": 5.152250500000001,
+      "input_tokens": 694,
+      "output_tokens": 31206,
+      "request_count": 60
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-4@example.com",
+      "session_id": "f1694cda-bfa6-4fbc-8057-f938eb2727e9",
+      "total_cost_usd": 1.58018,
+      "input_tokens": 706,
+      "output_tokens": 11848,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "006da695-5560-4032-b071-30d989904506",
+      "total_cost_usd": 0.12783954999999997,
+      "input_tokens": 827,
+      "output_tokens": 1749,
+      "request_count": 10
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "10a540dc-4e26-478b-9ce8-96186077b092",
+      "total_cost_usd": 0.48848990000000003,
+      "input_tokens": 2005,
+      "output_tokens": 7824,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "27f30430-8f9f-4b89-b148-99abf44559d5",
+      "total_cost_usd": 0.10373305,
+      "input_tokens": 870,
+      "output_tokens": 1745,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "37266787-5ced-446f-a188-30752b94eda5",
+      "total_cost_usd": 2.28970975,
+      "input_tokens": 1259,
+      "output_tokens": 42350,
+      "request_count": 75
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "3b42117c-0eba-4448-978c-2dc327bee327",
+      "total_cost_usd": 0.65053465,
+      "input_tokens": 844,
+      "output_tokens": 14522,
+      "request_count": 31
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "44e705c3-9b7d-48f6-8cbb-858253572a3c",
+      "total_cost_usd": 0.1483899,
+      "input_tokens": 827,
+      "output_tokens": 2505,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "584bf042-1eba-4cbe-bf1d-3e5b25d9811d",
+      "total_cost_usd": 0.7030183000000001,
+      "input_tokens": 833,
+      "output_tokens": 16205,
+      "request_count": 21
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "76c57755-4fb9-4957-999d-1438b6d23d9f",
+      "total_cost_usd": 0.6726902,
+      "input_tokens": 981,
+      "output_tokens": 18405,
+      "request_count": 44
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "7af0ea21-4c09-47b2-ada3-c6a091a8fa64",
+      "total_cost_usd": 0.1675739,
+      "input_tokens": 784,
+      "output_tokens": 4836,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "801564ed-82fa-4650-9200-ca4275e74183",
+      "total_cost_usd": 0.46320959999999994,
+      "input_tokens": 859,
+      "output_tokens": 8347,
+      "request_count": 35
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "8dbc8bfd-1be4-458f-9af7-d23fb4b533e2",
+      "total_cost_usd": 0.13066855,
+      "input_tokens": 801,
+      "output_tokens": 3010,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "926e95ff-b622-4c06-84d1-7add766196ff",
+      "total_cost_usd": 2.606887049999999,
+      "input_tokens": 1170,
+      "output_tokens": 68489,
+      "request_count": 68
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "a9ed3572-8c24-41e1-8965-e54b579873ee",
+      "total_cost_usd": 0.18380714999999997,
+      "input_tokens": 4688,
+      "output_tokens": 2628,
+      "request_count": 10
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "aec8ea49-02f7-4d64-b855-689d8210098c",
+      "total_cost_usd": 1.2602985500000001,
+      "input_tokens": 879,
+      "output_tokens": 36243,
+      "request_count": 23
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "af19a5bd-f045-492f-b223-51c608a2a7ad",
+      "total_cost_usd": 0.27407945,
+      "input_tokens": 816,
+      "output_tokens": 5515,
+      "request_count": 16
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "b81843ca-783e-47c1-9c7c-d4760b942106",
+      "total_cost_usd": 6.519404949999998,
+      "input_tokens": 1024,
+      "output_tokens": 88967,
+      "request_count": 130
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "b8ac06c5-3cb5-42b8-9022-ad4ad24ea72e",
+      "total_cost_usd": 0.8808180999999999,
+      "input_tokens": 812,
+      "output_tokens": 18251,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "d2b4c103-0d9c-46e8-919f-1ff8db02c964",
+      "total_cost_usd": 0.7929233,
+      "input_tokens": 848,
+      "output_tokens": 16518,
+      "request_count": 35
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "e00a6fc0-0f8d-44cd-b2dd-425e0cf1e0c9",
+      "total_cost_usd": 0.4259136,
+      "input_tokens": 1008,
+      "output_tokens": 11207,
+      "request_count": 41
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "e644d34d-e74b-4490-9ba3-08673c52ef6c",
+      "total_cost_usd": 1.01637385,
+      "input_tokens": 898,
+      "output_tokens": 34293,
+      "request_count": 35
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-5@example.com",
+      "session_id": "ee35a13f-17c8-46aa-9bdb-a7ff08fc1af2",
+      "total_cost_usd": 0.16799605,
+      "input_tokens": 3181,
+      "output_tokens": 4958,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "365900d7-f0da-4bcb-9aef-46b5d7161ecf",
+      "total_cost_usd": 0.2857019,
+      "input_tokens": 522,
+      "output_tokens": 5202,
+      "request_count": 16
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "46081e0d-320e-40b7-9db4-b0b4a5dd5ead",
+      "total_cost_usd": 0.9039614999999999,
+      "input_tokens": 87,
+      "output_tokens": 1971,
+      "request_count": 14
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "5996307d-e74b-4465-855f-2ac3da1c53ba",
+      "total_cost_usd": 3.9220027500000003,
+      "input_tokens": 2164,
+      "output_tokens": 18522,
+      "request_count": 33
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "6139c3f0-c94c-4712-b6d1-d8edcb296965",
+      "total_cost_usd": 0.27059565,
+      "input_tokens": 78,
+      "output_tokens": 5119,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "afd7f58a-8a24-4015-9319-87eaf3f0f21b",
+      "total_cost_usd": 5.610021700000001,
+      "input_tokens": 1577,
+      "output_tokens": 41964,
+      "request_count": 103
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "c2348d3d-15e3-473b-8b9f-075e8f7a59b2",
+      "total_cost_usd": 7.574246,
+      "input_tokens": 34042,
+      "output_tokens": 50387,
+      "request_count": 96
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "cd6d3aa3-83b2-456b-9102-22dc5582381e",
+      "total_cost_usd": 0.15487455000000003,
+      "input_tokens": 363,
+      "output_tokens": 1229,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "ce9263c7-9c47-4f46-82f7-b10b275b41b3",
+      "total_cost_usd": 2.2856570000000005,
+      "input_tokens": 1272,
+      "output_tokens": 21876,
+      "request_count": 36
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-6@example.com",
+      "session_id": "fc59ab4e-2e06-41fb-b55e-7b30b688f087",
+      "total_cost_usd": 0.172191,
+      "input_tokens": 626,
+      "output_tokens": 1186,
+      "request_count": 10
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "0ef76d7d-b575-44c3-91d9-6944f53b974c",
+      "total_cost_usd": 0.94699865,
+      "input_tokens": 575,
+      "output_tokens": 13014,
+      "request_count": 54
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "3fffe1bd-a09d-405f-a8fe-e29cff092826",
+      "total_cost_usd": 0.21726459999999997,
+      "input_tokens": 1857,
+      "output_tokens": 4749,
+      "request_count": 13
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "8c3e271c-e37e-4f31-86ee-edf3246eff87",
+      "total_cost_usd": 0.8173850500000001,
+      "input_tokens": 748,
+      "output_tokens": 16175,
+      "request_count": 54
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "9e18329f-cc95-407f-bfac-d432bb8c0397",
+      "total_cost_usd": 0.08091324999999999,
+      "input_tokens": 366,
+      "output_tokens": 553,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "dae7d32d-4787-4f65-866f-e5f5fda5e421",
+      "total_cost_usd": 0.79378425,
+      "input_tokens": 2629,
+      "output_tokens": 12254,
+      "request_count": 15
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "ddfcf219-3772-4338-b900-4ebf95c38c9e",
+      "total_cost_usd": 0.1414885,
+      "input_tokens": 4161,
+      "output_tokens": 1224,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "f6653116-3d99-4971-8153-2dbc8a053cb5",
+      "total_cost_usd": 1.9702759500000007,
+      "input_tokens": 5109,
+      "output_tokens": 39248,
+      "request_count": 136
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-7@example.com",
+      "session_id": "ff22a85e-46cc-47a0-86f1-069cfec89095",
+      "total_cost_usd": 0.18601095,
+      "input_tokens": 1291,
+      "output_tokens": 2207,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-8@example.com",
+      "session_id": "07abd19a-96cc-4338-ba21-6ce06c41ef47",
+      "total_cost_usd": 0.5543702,
+      "input_tokens": 2766,
+      "output_tokens": 10745,
+      "request_count": 18
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-8@example.com",
+      "session_id": "39e682a3-ff23-4524-8cd2-2cbaca8c033b",
+      "total_cost_usd": 0.342658,
+      "input_tokens": 2030,
+      "output_tokens": 6641,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-8@example.com",
+      "session_id": "bbcb549b-09b7-43cf-b5dc-4f2934d99ef3",
+      "total_cost_usd": 0.5368888,
+      "input_tokens": 1025,
+      "output_tokens": 7501,
+      "request_count": 33
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-8@example.com",
+      "session_id": "ef99d4e3-79de-4b94-8798-e3020bf11f00",
+      "total_cost_usd": 1.2563612499999999,
+      "input_tokens": 2309,
+      "output_tokens": 5258,
+      "request_count": 24
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "09d05180-005a-4666-95ad-fd59c5014f1f",
+      "total_cost_usd": 0.7415485000000002,
+      "input_tokens": 589,
+      "output_tokens": 6729,
+      "request_count": 22
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "112ecaa7-c734-49b1-94a6-0461379d732e",
+      "total_cost_usd": 2.2414495,
+      "input_tokens": 401,
+      "output_tokens": 24510,
+      "request_count": 34
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "5199e736-eabc-4f6d-988c-5942c3ab6af8",
+      "total_cost_usd": 74.1368549999999,
+      "input_tokens": 808,
+      "output_tokens": 190857,
+      "request_count": 352
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "59e9d791-5db3-415e-9600-1869f152f7c5",
+      "total_cost_usd": 9.275386899999996,
+      "input_tokens": 3149,
+      "output_tokens": 70179,
+      "request_count": 151
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "6ecdd9dc-f728-43d6-a7ec-3227ab9b45f7",
+      "total_cost_usd": 0.3361305,
+      "input_tokens": 376,
+      "output_tokens": 2417,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "6ff4a725-e72a-49a1-8364-bbb8b511259f",
+      "total_cost_usd": 3.04795675,
+      "input_tokens": 55,
+      "output_tokens": 14887,
+      "request_count": 20
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "70edb3b9-2b2c-4ba4-a8f5-630ad1b36d49",
+      "total_cost_usd": 9.056754000000003,
+      "input_tokens": 490,
+      "output_tokens": 49864,
+      "request_count": 71
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "9bfd9542-dea2-4fef-8650-4bb2e627c262",
+      "total_cost_usd": 12.093335999999995,
+      "input_tokens": 156,
+      "output_tokens": 37480,
+      "request_count": 71
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "ac584dcb-a49f-4532-bdb2-c4b56ded1ed8",
+      "total_cost_usd": 0.32240399999999997,
+      "input_tokens": 20,
+      "output_tokens": 2735,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "ee3691c1-8cbd-4b4d-8f90-7c1fe9c84511",
+      "total_cost_usd": 4.0040328999999995,
+      "input_tokens": 556,
+      "output_tokens": 36126,
+      "request_count": 79
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "f1865e87-ad34-48cf-be05-bf105d439368",
+      "total_cost_usd": 0.31296425000000005,
+      "input_tokens": 352,
+      "output_tokens": 1262,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "f62ca928-d32d-44ba-9357-823fcf81fba1",
+      "total_cost_usd": 3.5648351499999995,
+      "input_tokens": 482,
+      "output_tokens": 30811,
+      "request_count": 57
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "session_id": "fd8c1738-3d15-4de1-a07c-687f068244fe",
+      "total_cost_usd": 19.49951285,
+      "input_tokens": 1899,
+      "output_tokens": 104058,
+      "request_count": 177
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "0ba593c3-416d-4638-9d48-8fe80fa70b90",
+      "total_cost_usd": 0.9058065,
+      "input_tokens": 2569,
+      "output_tokens": 8613,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "179d53a9-64ee-4f54-aeb9-b12a47594be6",
+      "total_cost_usd": 0.49152949999999995,
+      "input_tokens": 803,
+      "output_tokens": 3881,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "2cfbe2c9-3921-4b2c-8995-122824f565f9",
+      "total_cost_usd": 1.2831860000000004,
+      "input_tokens": 393,
+      "output_tokens": 11683,
+      "request_count": 28
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "2e46aaaf-8cb4-4320-8f2f-e327736a5e45",
+      "total_cost_usd": 1.670507,
+      "input_tokens": 915,
+      "output_tokens": 22183,
+      "request_count": 38
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "55601181-a6e4-4868-88e1-69f079e57955",
+      "total_cost_usd": 0.28418975,
+      "input_tokens": 1167,
+      "output_tokens": 1824,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "6e8d3347-48d7-4e49-8848-c8025299b2d0",
+      "total_cost_usd": 14.161299500000002,
+      "input_tokens": 2770,
+      "output_tokens": 61116,
+      "request_count": 240
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "99b35ad4-ed5d-4834-8a01-9df3444c91b8",
+      "total_cost_usd": 8.87083025,
+      "input_tokens": 2689,
+      "output_tokens": 61680,
+      "request_count": 111
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "9b9683b1-36e8-4735-8f71-1ca175e73938",
+      "total_cost_usd": 0.12052775,
+      "input_tokens": 847,
+      "output_tokens": 1149,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "aeddf578-db4c-45a3-857a-d999f3d1bf32",
+      "total_cost_usd": 0.17619574999999998,
+      "input_tokens": 1285,
+      "output_tokens": 1206,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "b7adc96b-00aa-4862-a855-d131f3b8c84b",
+      "total_cost_usd": 9.97262,
+      "input_tokens": 11988,
+      "output_tokens": 203844,
+      "request_count": 82
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "b9e67d7e-a0f5-4a3e-b760-0cc79318650f",
+      "total_cost_usd": 0.17598250000000001,
+      "input_tokens": 999,
+      "output_tokens": 591,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "c0e3972d-41f5-4e2a-973f-cf32a51a2c89",
+      "total_cost_usd": 11.905124,
+      "input_tokens": 1343,
+      "output_tokens": 95812,
+      "request_count": 184
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "e7fc320d-b71d-4747-988d-d16fafc01127",
+      "total_cost_usd": 0.855849,
+      "input_tokens": 1676,
+      "output_tokens": 5185,
+      "request_count": 6
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-9@example.com",
+      "session_id": "fd893cf8-4206-4055-a8df-7d587e989568",
+      "total_cost_usd": 1.244556,
+      "input_tokens": 1768,
+      "output_tokens": 19161,
+      "request_count": 38
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-10@example.com",
+      "session_id": "08a0c574-dcd3-4737-bbd7-d4ae0a641afb",
+      "total_cost_usd": 0.23945975000000003,
+      "input_tokens": 830,
+      "output_tokens": 1866,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-10@example.com",
+      "session_id": "21ed9915-97da-42c6-9e30-0097c187ff41",
+      "total_cost_usd": 0.09934850000000002,
+      "input_tokens": 827,
+      "output_tokens": 667,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-10@example.com",
+      "session_id": "b99512e6-7f2d-44d7-b20f-43dd4626c9f5",
+      "total_cost_usd": 3.4762056500000003,
+      "input_tokens": 946,
+      "output_tokens": 49919,
+      "request_count": 68
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-10@example.com",
+      "session_id": "cf45cc84-edbd-4f20-979e-5bb5e7280a20",
+      "total_cost_usd": 2.7649947499999996,
+      "input_tokens": 831,
+      "output_tokens": 28939,
+      "request_count": 85
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "04bb5632-7355-4217-af58-22d9a433d3e0",
+      "total_cost_usd": 1.047094,
+      "input_tokens": 50372,
+      "output_tokens": 7765,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "20b20e6a-2eb1-4d72-802c-5e3dcd2ed696",
+      "total_cost_usd": 0.6075750000000001,
+      "input_tokens": 876,
+      "output_tokens": 5357,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "23c1f501-a526-4dae-a64b-642acd4406b4",
+      "total_cost_usd": 9.691603500000001,
+      "input_tokens": 875,
+      "output_tokens": 48882,
+      "request_count": 100
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "784f29ef-a323-4930-b5ce-0780b1b065a1",
+      "total_cost_usd": 40.243549749999985,
+      "input_tokens": 1392,
+      "output_tokens": 91093,
+      "request_count": 200
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "8b0cb394-4eed-49ff-8b59-d8fcdc63b1ec",
+      "total_cost_usd": 2.1329124999999998,
+      "input_tokens": 572,
+      "output_tokens": 19530,
+      "request_count": 21
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "9176beaa-fa35-4ebd-ad93-f5f43d4398b0",
+      "total_cost_usd": 0.5766450000000001,
+      "input_tokens": 671,
+      "output_tokens": 2780,
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "94e9a557-1523-44ee-9ad8-bd41319b0149",
+      "total_cost_usd": 0.2689185,
+      "input_tokens": 7,
+      "output_tokens": 704,
+      "request_count": 3
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "b3984ab5-ead8-4dda-92bf-c9562f0689d8",
+      "total_cost_usd": 0.42826724999999993,
+      "input_tokens": 11,
+      "output_tokens": 1626,
+      "request_count": 7
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "d7a60d92-cc62-4d50-b40b-a04771ba47cc",
+      "total_cost_usd": 1.67963715,
+      "input_tokens": 963,
+      "output_tokens": 33302,
+      "request_count": 55
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "session_id": "dd513d86-0b52-471b-ad78-965aaaae34eb",
+      "total_cost_usd": 0.4051915,
+      "input_tokens": 363,
+      "output_tokens": 1080,
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-12@example.com",
+      "session_id": "53e0033e-e556-4b0f-9546-e81dbdf1a935",
+      "total_cost_usd": 2.5285841500000004,
+      "input_tokens": 976,
+      "output_tokens": 18292,
+      "request_count": 58
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-12@example.com",
+      "session_id": "7f8163f7-59b1-4d1b-994e-4ebf98da3eae",
+      "total_cost_usd": 2.5931704499999997,
+      "input_tokens": 7670,
+      "output_tokens": 29758,
+      "request_count": 59
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-12@example.com",
+      "session_id": "98a3bd36-e63e-4b44-8730-855f02a0cb71",
+      "total_cost_usd": 0.6172547500000002,
+      "input_tokens": 9172,
+      "output_tokens": 4099,
+      "request_count": 18
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "263898f8-6b90-40fa-b0d6-b6f462c8c296",
+      "total_cost_usd": 0.6503625000000001,
+      "input_tokens": 458,
+      "output_tokens": 5260,
+      "request_count": 24
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "6183862b-cbe9-49c0-8c6e-0c3d230207cf",
+      "total_cost_usd": 0.79296,
+      "input_tokens": 417,
+      "output_tokens": 7643,
+      "request_count": 28
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "774ebf49-4ca6-4814-97df-7220ed1703b8",
+      "total_cost_usd": 1.8378070000000002,
+      "input_tokens": 837,
+      "output_tokens": 13231,
+      "request_count": 70
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "84543db7-4997-467c-8fc6-d3e8b4549d68",
+      "total_cost_usd": 0.27558075,
+      "input_tokens": 415,
+      "output_tokens": 1953,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "9d196689-f01f-48ce-a980-3d4ed97e0362",
+      "total_cost_usd": 5.03154195,
+      "input_tokens": 7028,
+      "output_tokens": 58855,
+      "request_count": 118
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "ac76e23a-04f4-496e-8dca-a1b0d9cfa01b",
+      "total_cost_usd": 4.905092199999999,
+      "input_tokens": 675,
+      "output_tokens": 41608,
+      "request_count": 162
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "de59366d-64ef-4191-83f0-9b693723ecde",
+      "total_cost_usd": 8.156880750000001,
+      "input_tokens": 729,
+      "output_tokens": 61523,
+      "request_count": 112
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-14@example.com",
+      "session_id": "fa55e7c9-59a0-4e70-b477-563dd7a3b78f",
+      "total_cost_usd": 0.324491,
+      "input_tokens": 368,
+      "output_tokens": 3557,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "01af440a-d02b-4888-8c3f-4292f6c1124a",
+      "total_cost_usd": 0.31016600000000005,
+      "input_tokens": 6,
+      "output_tokens": 3053,
+      "request_count": 4
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "0d556421-a7e4-49bd-aefe-ebbb72e0fa37",
+      "total_cost_usd": 0.3531090499999999,
+      "input_tokens": 39,
+      "output_tokens": 3345,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "0f6a7cf1-3c13-49bc-afbb-a1fdefb9756d",
+      "total_cost_usd": 0.23428449999999998,
+      "input_tokens": 6,
+      "output_tokens": 1124,
+      "request_count": 4
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "2dbf5841-c580-4db3-9b99-aa0976da995b",
+      "total_cost_usd": 0.9623946499999999,
+      "input_tokens": 30,
+      "output_tokens": 10694,
+      "request_count": 17
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "3412a2e3-c459-4678-bd68-89c3ac4faae6",
+      "total_cost_usd": 0.6893797499999998,
+      "input_tokens": 33,
+      "output_tokens": 4399,
+      "request_count": 20
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "3431d69f-a350-4098-a00d-f8bb8348afb3",
+      "total_cost_usd": 4.5955854,
+      "input_tokens": 11718,
+      "output_tokens": 26473,
+      "request_count": 56
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "3f23ba4b-8c03-404c-876f-50d3d0899f8a",
+      "total_cost_usd": 0.26456375,
+      "input_tokens": 11,
+      "output_tokens": 1676,
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "5609a169-19e2-4a90-8aa3-760a2a4762e5",
+      "total_cost_usd": 0.37901599999999996,
+      "input_tokens": 24,
+      "output_tokens": 4093,
+      "request_count": 11
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "6a723b15-b799-4586-ad4f-9ae4c479b3ea",
+      "total_cost_usd": 1.9228079999999996,
+      "input_tokens": 41,
+      "output_tokens": 11525,
+      "request_count": 25
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "7442fe1c-fcfa-450c-99f0-33715a57a252",
+      "total_cost_usd": 1.2111887499999998,
+      "input_tokens": 19,
+      "output_tokens": 5146,
+      "request_count": 15
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "7a1f2d83-172b-4817-b094-bce9e29a7d52",
+      "total_cost_usd": 2.9023304999999993,
+      "input_tokens": 46,
+      "output_tokens": 16655,
+      "request_count": 36
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "8a95a0be-0575-40f3-b89b-ff54927e3bcf",
+      "total_cost_usd": 1.9720881499999998,
+      "input_tokens": 1644,
+      "output_tokens": 30700,
+      "request_count": 50
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "93724492-6e81-4666-ac9f-c7be9d6819b7",
+      "total_cost_usd": 2.7057657999999996,
+      "input_tokens": 9030,
+      "output_tokens": 25079,
+      "request_count": 55
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "a03de097-7d30-4dce-b469-ee2563288f28",
+      "total_cost_usd": 0.49318350000000005,
+      "input_tokens": 46,
+      "output_tokens": 3088,
+      "request_count": 9
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "b7af9ef5-f991-4061-9b6c-40d2b2b35cc1",
+      "total_cost_usd": 7.427985,
+      "input_tokens": 32624,
+      "output_tokens": 48711,
+      "request_count": 85
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-15@example.com",
+      "session_id": "e4fa0cd9-756a-4d50-97f5-23de3b86dbe5",
+      "total_cost_usd": 0.18640825,
+      "input_tokens": 9,
+      "output_tokens": 899,
+      "request_count": 5
+    }
+  ],
+  "eventCount": 50304,
+  "generated": "2026-04-17T09:06:21Z",
+  "meta": {
+    "from": "2025-04-17",
+    "groupBy": "user-session",
+    "to": "2026-04-17"
+  }
+}
