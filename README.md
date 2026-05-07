@@ -75,6 +75,26 @@ npm run dev
 
 → http://localhost:5173 で開く。`mise install` は初回のみ。
 
+### GitHub Codespaces で開く場合
+
+リポジトリに [.devcontainer/](.devcontainer/) を同梱しているので、Codespaces で開けば
+Go / Node / Docker / AWS CLI / GitHub CLI と `npm install` まで自動で揃う。
+
+1. GitHub のリポジトリページ右上 **Code → Codespaces → Create codespace on main**
+2. 初回ビルドが終わると VS Code Web が開く
+3. ターミナルで以下を実行（クイックスタートと同じ）
+
+```bash
+cd dashboard && npm run dev
+```
+
+`5173` が自動で forward され、ポップアップから直接プレビューを開ける。
+Collector を一緒に動かしたい場合は、別ターミナルで `make dev`。
+
+> Codespaces のスペックは **4 core / 8 GB** を推奨（`hostRequirements` で指定済み）。
+> LocalStack + MinIO + Collector + Vite を同時に立てるとメモリ余裕は少なめ。
+> 重ければ `STORAGE=file` モードのまま `docker compose up collector` だけにする。
+
 Claude Code の利用ログを実際に流したい場合は、次節「ローカルの動作モード」のモード B / C へ。
 
 ---
@@ -148,10 +168,12 @@ aws --endpoint-url=http://localhost:4567 logs tail /otel/claude-code --follow
 `make dev` で同時に起動するが、個別操作したい場合：
 
 ```bash
-docker compose up localstack minio init   # 起動
-docker compose stop localstack minio      # 停止（データは残る）
-docker compose down                       # コンテナ削除（永続データは data/ に残る）
+docker compose up localstack minio init
+docker compose stop localstack minio
+docker compose down
 ```
+
+上から順に「起動」「停止（データは残る）」「コンテナ削除（永続データは `data/` に残る）」。
 
 ヘルスチェック：
 
@@ -178,8 +200,9 @@ DATA_DIR=./data STORAGE=file go run ./cmd/collector
 
 ```bash
 curl http://localhost:4318/health
-# {"status":"ok"}
 ```
+
+`{"status":"ok"}` が返れば OK。
 
 ### Dashboard
 
@@ -188,8 +211,10 @@ curl http://localhost:4318/health
 ```bash
 cd dashboard
 npm install
-npm run dev                           # http://localhost:5173
+npm run dev
 ```
+
+→ http://localhost:5173
 
 利用可能なスクリプト：
 
@@ -232,13 +257,14 @@ Claude Code から OTLP/HTTP で本ローカル Collector に向ける。
 | `file` (デフォルト) | `data/logs/otel/YYYY-MM-DD.jsonl` | ローカル単独動作 |
 | `cloudwatch` | LocalStack の CloudWatch Logs (`/otel/claude-code`) | 本番に近い構成 |
 
-`cloudwatch` モードでは以下も併せて設定する（LocalStack は test/test で通る）：
+`cloudwatch` モードでは `.env` に以下も併せて設定する（LocalStack は test/test で通る）。
+`AWS_ENDPOINT_URL` は docker compose 内のサービス名 `localstack:4566` を指す。
 
-```bash
+```dotenv
 AWS_ACCESS_KEY_ID=test
 AWS_SECRET_ACCESS_KEY=test
 AWS_DEFAULT_REGION=ap-northeast-1
-AWS_ENDPOINT_URL=http://localstack:4566   # docker compose 内から見たホスト名
+AWS_ENDPOINT_URL=http://localstack:4566
 ```
 
 ホストで `go run ./cmd/collector` する場合は `AWS_ENDPOINT_URL=http://localhost:4567` に読み替える。
@@ -261,8 +287,10 @@ AWS_ENDPOINT_URL=http://localstack:4566   # docker compose 内から見たホス
 ## テスト
 
 ```bash
-make test        # go test ./... -v
+make test
 ```
+
+(`go test ./... -v` を実行する)
 
 Dashboard の型チェック：
 
@@ -330,8 +358,10 @@ sudo chown -R "$USER":"$USER" data
 ```bash
 docker compose down -v
 rm -rf data/localstack data/minio data/uploads data/logs/otel/raw
-git checkout -- data/logs/otel       # 自分が流したログを捨てて、リポジトリ同梱のサンプルに戻す
+git checkout -- data/logs/otel
 ```
+
+最後の `git checkout` で、自分が流したログを捨ててリポジトリ同梱のサンプルに戻す。
 
 `data/logs/otel/*.jsonl` はサンプルとしてリポジトリに含まれているので、
 丸ごと `rm -rf data/logs` するとサンプルも消える点に注意。
