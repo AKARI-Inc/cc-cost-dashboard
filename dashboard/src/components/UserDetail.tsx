@@ -6,7 +6,7 @@ type Props = { row: UsageRow; from: string; to: string };
 
 export function UserDetail({ row, from, to }: Props) {
   const email = row.user_email ?? row.key ?? '(unknown)';
-  const { models, tools, terminals, skills, sessions, loading, error } = useUserDetail({
+  const { models, tools, mcpTools, terminals, skills, sessions, loading, error } = useUserDetail({
     userEmail: email,
     from,
     to,
@@ -16,7 +16,8 @@ export function UserDetail({ row, from, to }: Props) {
   const cacheHitRate = inputWithCache > 0 ? (row.cache_read_tokens / inputWithCache) * 100 : 0;
   const ioRatio = row.input_tokens > 0 ? row.output_tokens / row.input_tokens : 0;
 
-  const totalToolCalls = tools.reduce((sum, t) => sum + t.request_count, 0);
+  const totalNonMCPToolCalls = tools.reduce((sum, t) => sum + t.request_count, 0);
+  const totalMCPToolCalls = mcpTools.reduce((sum, t) => sum + t.request_count, 0);
   const totalTerminalReqs = terminals.reduce((sum, t) => sum + t.request_count, 0);
   const totalSkillCalls = skills.reduce((sum, s) => sum + s.use_count, 0);
 
@@ -80,7 +81,18 @@ export function UserDetail({ row, from, to }: Props) {
         </div>
         <section className="detail-section">
           <h4>ステータス</h4>
-          <StatHexagon row={row} tools={tools} skills={skills} sessions={sessions} />
+          <StatHexagon
+            row={row}
+            tools={[
+              ...tools,
+              ...mcpTools.map((m) => ({
+                tool_name: `mcp__${m.server}__${m.tool}`,
+                request_count: m.request_count,
+              })),
+            ]}
+            skills={skills}
+            sessions={sessions}
+          />
         </section>
       </div>
 
@@ -216,7 +228,8 @@ export function UserDetail({ row, from, to }: Props) {
                   ツール利用{' '}
                   {tools.length > 0 && (
                     <span className="muted">
-                      ({tools.length.toLocaleString()} 種 / 全 {totalToolCalls.toLocaleString()} 回)
+                      ({tools.length.toLocaleString()} 種 / 全{' '}
+                      {totalNonMCPToolCalls.toLocaleString()} 回)
                     </span>
                   )}
                 </h4>
@@ -236,7 +249,9 @@ export function UserDetail({ row, from, to }: Props) {
                       <tbody>
                         {tools.map((t) => {
                           const pct =
-                            totalToolCalls > 0 ? (t.request_count / totalToolCalls) * 100 : 0;
+                            totalNonMCPToolCalls > 0
+                              ? (t.request_count / totalNonMCPToolCalls) * 100
+                              : 0;
                           return (
                             <tr key={t.tool_name}>
                               <td>{t.tool_name}</td>
@@ -255,6 +270,44 @@ export function UserDetail({ row, from, to }: Props) {
                   </div>
                 )}
           </section>
+
+          {mcpTools.length > 0 && (
+            <section className="detail-section">
+              <h4>MCP ツール利用</h4>
+              <div className="tool-scroll">
+                <table className="detail-table tool-table">
+                  <thead>
+                    <tr>
+                      <th>サーバー</th>
+                      <th>ツール</th>
+                      <th className="num">回数</th>
+                      <th className="num">割合</th>
+                      <th className="bar-col">分布</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mcpTools.map((t) => {
+                      const pct =
+                        totalMCPToolCalls > 0 ? (t.request_count / totalMCPToolCalls) * 100 : 0;
+                      return (
+                        <tr key={`${t.server}::${t.tool}`}>
+                          <td className="muted">{t.server}</td>
+                          <td>{t.tool}</td>
+                          <td className="num">{t.request_count.toLocaleString()}</td>
+                          <td className="num">{pct.toFixed(1)}%</td>
+                          <td className="bar-col">
+                            <div className="bar-track">
+                              <div className="bar-fill" style={{ width: `${pct}%` }} />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
         </>
       )}
     </div>

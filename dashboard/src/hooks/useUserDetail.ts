@@ -62,6 +62,18 @@ export type ToolBreakdownRow = {
   request_count: number;
 };
 
+export type MCPToolBreakdownRow = {
+  server: string;
+  tool: string;
+  request_count: number;
+};
+
+export type MCPServerBreakdownRow = {
+  server: string;
+  request_count: number;
+  tool_variety: number;
+};
+
 export type TerminalBreakdownRow = {
   terminal_type: string;
   os_type?: string;
@@ -87,12 +99,24 @@ export type SessionStats = {
 type DetailResult = {
   models: ModelBreakdownRow[];
   tools: ToolBreakdownRow[];
+  mcpServers: MCPServerBreakdownRow[];
+  mcpTools: MCPToolBreakdownRow[];
   terminals: TerminalBreakdownRow[];
   skills: SkillBreakdownRow[];
   sessions: SessionStats;
   loading: boolean;
   error: string | null;
 };
+
+// `mcp__<server>__<tool>` を server / tool に分解する。
+// server 名・tool 名は `_` 区切りなので、最初の `__` 以降を tool としてまとめれば安全。
+export function parseMCPToolName(name: string): { server: string; tool: string } | null {
+  if (!name.startsWith('mcp__')) return null;
+  const rest = name.slice(5);
+  const sep = rest.indexOf('__');
+  if (sep < 0) return null;
+  return { server: rest.slice(0, sep), tool: rest.slice(sep + 2) };
+}
 
 type Cache = {
   models?: UserModelBucket[];
@@ -177,6 +201,8 @@ export function useUserDetail(params: {
       return {
         models: [],
         tools: [],
+        mcpServers: [],
+        mcpTools: [],
         terminals: [],
         skills: [],
         sessions: EMPTY_SESSIONS,
@@ -188,6 +214,8 @@ export function useUserDetail(params: {
       return {
         models: [],
         tools: [],
+        mcpServers: [],
+        mcpTools: [],
         terminals: [],
         skills: [],
         sessions: EMPTY_SESSIONS,
@@ -225,8 +253,32 @@ export function useUserDetail(params: {
     }
 
     const toolMap = new Map<string, ToolBreakdownRow>();
+    const mcpToolMap = new Map<string, MCPToolBreakdownRow>();
+    const mcpServerMap = new Map<string, { count: number; tools: Set<string> }>();
     for (const b of cache.tools ?? []) {
       if (!inRange(b.date) || !matchUser(b.user_email)) continue;
+      const mcp = parseMCPToolName(b.tool_name);
+      if (mcp) {
+        const key = `${mcp.server}::${mcp.tool}`;
+        const cur = mcpToolMap.get(key);
+        if (cur) {
+          cur.request_count += b.request_count;
+        } else {
+          mcpToolMap.set(key, {
+            server: mcp.server,
+            tool: mcp.tool,
+            request_count: b.request_count,
+          });
+        }
+        const srv = mcpServerMap.get(mcp.server);
+        if (srv) {
+          srv.count += b.request_count;
+          srv.tools.add(mcp.tool);
+        } else {
+          mcpServerMap.set(mcp.server, { count: b.request_count, tools: new Set([mcp.tool]) });
+        }
+        continue;
+      }
       const cur = toolMap.get(b.tool_name);
       if (cur) {
         cur.request_count += b.request_count;
@@ -310,11 +362,31 @@ export function useUserDetail(params: {
       (a, b) => b.total_cost_usd - a.total_cost_usd,
     );
     const tools = Array.from(toolMap.values()).sort((a, b) => b.request_count - a.request_count);
+    const mcpTools = Array.from(mcpToolMap.values()).sort(
+      (a, b) => b.request_count - a.request_count,
+    );
+    const mcpServers: MCPServerBreakdownRow[] = Array.from(mcpServerMap.entries())
+      .map(([server, v]) => ({
+        server,
+        request_count: v.count,
+        tool_variety: v.tools.size,
+      }))
+      .sort((a, b) => b.request_count - a.request_count);
     const terminals = Array.from(termMap.values()).sort(
       (a, b) => b.request_count - a.request_count,
     );
     const skills = Array.from(skillMap.values()).sort((a, b) => b.use_count - a.use_count);
 
-    return { models, tools, terminals, skills, sessions, loading: false, error: null };
+    return {
+      models,
+      tools,
+      mcpServers,
+      mcpTools,
+      terminals,
+      skills,
+      sessions,
+      loading: false,
+      error: null,
+    };
   }, [params.userEmail, params.from, params.to, tick]);
 }
