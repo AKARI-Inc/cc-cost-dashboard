@@ -297,8 +297,20 @@
     {
       "date": "2026-04-15",
       "user_email": "rumina.satoi@akariinc.co.jp",
-      "tool_name": "mcp_tool",
-      "request_count": 20
+      "tool_name": "mcp__sentry__search_issues",
+      "request_count": 8
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "tool_name": "mcp__sentry__update_issue",
+      "request_count": 5
+    },
+    {
+      "date": "2026-04-15",
+      "user_email": "rumina.satoi@akariinc.co.jp",
+      "tool_name": "mcp__notion__authenticate",
+      "request_count": 7
     },
     {
       "date": "2026-04-15",
@@ -567,8 +579,32 @@
     {
       "date": "2026-04-16",
       "user_email": "user-4@example.com",
-      "tool_name": "mcp_tool",
-      "request_count": 184
+      "tool_name": "mcp__claude_ai_Slack__slack_send_message",
+      "request_count": 62
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "tool_name": "mcp__claude_ai_Slack__slack_search_public",
+      "request_count": 41
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "tool_name": "mcp__claude_ai_Slack__slack_read_thread",
+      "request_count": 28
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "tool_name": "mcp__claude_ai_Gmail__search_threads",
+      "request_count": 33
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-4@example.com",
+      "tool_name": "mcp__claude_ai_Gmail__create_draft",
+      "request_count": 20
     },
     {
       "date": "2026-04-16",
@@ -987,8 +1023,20 @@
     {
       "date": "2026-04-16",
       "user_email": "user-11@example.com",
-      "tool_name": "mcp_tool",
-      "request_count": 42
+      "tool_name": "mcp__sentry__search_issues",
+      "request_count": 18
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "tool_name": "mcp__sentry__analyze_issue_with_seer",
+      "request_count": 12
+    },
+    {
+      "date": "2026-04-16",
+      "user_email": "user-11@example.com",
+      "tool_name": "mcp__sentry__get_issue_tag_values",
+      "request_count": 12
     },
     {
       "date": "2026-04-16",
@@ -1401,7 +1449,7 @@
     {
       "date": "2026-04-17",
       "user_email": "user-4@example.com",
-      "tool_name": "mcp_tool",
+      "tool_name": "mcp__claude_ai_Slack__slack_send_message",
       "request_count": 4
     },
     {
@@ -1917,8 +1965,20 @@
     {
       "date": "2026-04-17",
       "user_email": "user-11@example.com",
-      "tool_name": "mcp_tool",
-      "request_count": 52
+      "tool_name": "mcp__sentry__search_issues",
+      "request_count": 22
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "tool_name": "mcp__sentry__update_issue",
+      "request_count": 18
+    },
+    {
+      "date": "2026-04-17",
+      "user_email": "user-11@example.com",
+      "tool_name": "mcp__notion__authenticate",
+      "request_count": 12
     },
     {
       "date": "2026-04-17",
