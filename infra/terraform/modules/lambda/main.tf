@@ -160,8 +160,12 @@ resource "aws_lambda_function" "generator" {
   image_uri     = var.generator_image_uri
   architectures = ["arm64"]
 
-  timeout     = 120
-  memory_size = 512
+  # 利用者数増による CloudWatch Logs 量増加で OOM/timeout が頻発したため、
+  # AWS Console 上で 8192MB/900s に手動引き上げ済み。本ファイルは drift していたため
+  # 整合性を取る目的で更新。並行して lookbackDays = 90 (lambda/generator/main.go)
+  # により実際の処理は数分で済むが、安全マージンを取って上限値のまま据え置く。
+  timeout     = 900
+  memory_size = 8192
 
   environment {
     variables = {

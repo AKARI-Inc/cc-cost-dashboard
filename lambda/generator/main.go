@@ -10,18 +10,20 @@ import (
 	"sort"
 	"time"
 
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
+	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/AKARI-Inc/cc-cost-dashboard/internal/model"
-	"github.com/AKARI-Inc/cc-cost-dashboard/internal/storage"
 )
 
 const (
-	// 集計対象の遡及日数。Frontend は client-side で再フィルタするので
-	// 最大の検索期間 (1 年) をカバー。
-	lookbackDays = 365
+	// 集計対象の遡及日数。
+	// 利用者数増に伴う CloudWatch Logs 量の増加で 365 日全件取得が Lambda の
+	// 15 分タイムアウトに収まらなくなったため、応急対応として 90 日に短縮。
+	// 根本対応は docs/generator-redesign.md の日次パーティション化で対応予定。
+	lookbackDays = 90
 
 	// Raw Events の出力上限。ペイロードサイズを抑える。
 	maxRawEvents = 10000
@@ -148,11 +150,11 @@ func handler(ctx context.Context) error {
 	}
 
 	summaries := map[string]any{
-		"data/summary/per-day-per-model.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Model }), "model"),
-		"data/summary/per-day-per-user.json":       wrap(bucketize(events, func(e model.OtelEvent) string { return e.UserEmail }), "user"),
-		"data/summary/per-day-per-terminal.json":   wrap(bucketize(events, func(e model.OtelEvent) string { return e.TerminalType }), "terminal"),
-		"data/summary/per-day-per-version.json":    wrap(bucketize(events, func(e model.OtelEvent) string { return e.ServiceVersion }), "version"),
-		"data/summary/per-day-per-speed.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
+		"data/summary/per-day-per-model.json":         wrap(bucketize(events, func(e model.OtelEvent) string { return e.Model }), "model"),
+		"data/summary/per-day-per-user.json":          wrap(bucketize(events, func(e model.OtelEvent) string { return e.UserEmail }), "user"),
+		"data/summary/per-day-per-terminal.json":      wrap(bucketize(events, func(e model.OtelEvent) string { return e.TerminalType }), "terminal"),
+		"data/summary/per-day-per-version.json":       wrap(bucketize(events, func(e model.OtelEvent) string { return e.ServiceVersion }), "version"),
+		"data/summary/per-day-per-speed.json":         wrap(bucketize(events, func(e model.OtelEvent) string { return e.Speed }), "speed"),
 		"data/summary/per-day-per-user-model.json":    wrap(bucketizeUserModel(events), "user-model"),
 		"data/summary/per-day-per-user-tool.json":     wrap(bucketizeUserTool(events), "user-tool"),
 		"data/summary/per-day-per-user-terminal.json": wrap(bucketizeUserTerminal(events), "user-terminal"),
@@ -520,7 +522,7 @@ func putJSON(ctx context.Context, key string, data any) error {
 		Key:          aws.String(key),
 		Body:         bytes.NewReader(body),
 		ContentType:  aws.String("application/json"),
-		CacheControl: aws.String("public, max-age=60"), // 1 分キャッシュ (5分ごとに generator 走るので余裕)
+		CacheControl: aws.String("public, max-age=60"), // 1 分キャッシュ (15 分ごとに generator が走るため十分余裕)
 	})
 	if err != nil {
 		return fmt.Errorf("put s3://%s/%s: %w", bucket, key, err)

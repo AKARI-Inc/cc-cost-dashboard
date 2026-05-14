@@ -39,6 +39,15 @@ events, err := reader.ReadOtelEvents(ctx, from, now, nil)  // from = now - 365da
 
 最終成果物（`data/summary/*.json` 計 ~2MB）に対して、毎回 ~13GB の中間状態を作るのが構造的に歪。
 
+> **2026-05-14 追記**: 同月の generator Lambda timeout 再発を受け、本ドキュメントの根本対応に先立つ応急対応として以下を実施。
+>
+> - [lambda/generator/main.go](../lambda/generator/main.go) の `lookbackDays` を `365` → `90` に短縮
+> - EventBridge schedule を `rate(5 minutes)` → `rate(15 minutes)` に変更 (前ジョブ完了前の重複起動防止)
+> - Lambda timeout/memory を AWS Console 手動引き上げ済み (8192MB/900s) と Terraform で整合化
+> - フロントの「1 年」プリセットを削除 (データ範囲を超えるため)
+>
+> これにより当面 OOM/timeout は回避できているが、利用者数が現状の 2〜3 倍まで増えれば再発リスクあり。「13GB 読んで 2MB 作る」線形に詰むパス自体は未解決のため、本ドキュメントの根本対応は継続して必要。
+
 ---
 
 ## 2. ゴール / ノンゴール

@@ -13,7 +13,7 @@ POST /v1/logs (CloudFront → API Gateway → Collector Lambda)
     ▼
 CloudWatch Logs (/otel/claude-code)
     │
-    ▼  EventBridge (5分間隔)
+    ▼  EventBridge (15分間隔)
 Generator Lambda
     │
     ▼
@@ -30,7 +30,7 @@ CloudFront → ブラウザ (React SPA)
 | コンポーネント | 役割 | トリガー |
 |---|---|---|
 | **Collector Lambda** | OTel protobuf → デコード → CloudWatch Logs に書き込み | API Gateway `POST /v1/logs` |
-| **Generator Lambda** | CloudWatch Logs → 集計 JSON + Raw Events JSON を S3 に書き出し | EventBridge スケジュール (5分) |
+| **Generator Lambda** | CloudWatch Logs → 集計 JSON + Raw Events JSON を S3 に書き出し | EventBridge スケジュール (15分) |
 | **フロントエンド** | S3 の静的 JSON を fetch → クライアントサイドでフィルタ・集計・可視化 | ユーザーアクセス |
 
 API Lambda は不要。ダッシュボードのデータはすべて S3 の静的 JSON から読み取る。

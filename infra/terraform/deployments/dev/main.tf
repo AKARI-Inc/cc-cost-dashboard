@@ -26,7 +26,9 @@ module "lambda" {
   lambda_memory_size = 256
   lambda_timeout     = 30
 
-  generator_schedule = "rate(5 minutes)" # TODO: 検証後に rate(1 hour) に変更
+  # 5 分間隔だと前ジョブが終わる前に次が起動して重なるため 15 分に変更。
+  # generator の実処理は 90 日分で 3〜5 分のため十分なマージン。
+  generator_schedule = "rate(15 minutes)"
 
   github_repo                 = "AKARI-Inc/cc-cost-dashboard"
   create_github_oidc_provider = true
