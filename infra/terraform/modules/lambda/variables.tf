@@ -34,7 +34,9 @@ variable "generator_image_uri" {
 variable "generator_schedule" {
   description = "Generator EventBridge スケジュール式"
   type        = string
-  default     = "rate(5 minutes)"
+  # 5 分間隔だと前ジョブ完了前に次が起動し重複するため 15 分を基準値とする
+  # (各環境の deployments/*/main.tf で必要に応じて上書き可能)
+  default = "rate(15 minutes)"
 }
 
 variable "github_repo" {
